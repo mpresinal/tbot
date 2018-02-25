@@ -1,0 +1,9 @@
+{
+    "success": true,
+    "code": "OK",
+    "data": [{
+      "coinType": "BTC",
+      "balance": 1233214,  
+      "freezeBalance": 321321.55 
+    }]
+}

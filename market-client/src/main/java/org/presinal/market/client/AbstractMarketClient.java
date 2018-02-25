@@ -65,7 +65,9 @@ public abstract class AbstractMarketClient implements MarketClient {
                 if (signer == null) {
                     signer = new PayloadSigner(secretKey);
                 }
-
+                
+                clientInitialized = true;
+                
             } catch (Exception ex) {
                 Logger.getLogger(AbstractMarketClient.class.getName()).log(Level.SEVERE, "Error signing payload", ex);
             }

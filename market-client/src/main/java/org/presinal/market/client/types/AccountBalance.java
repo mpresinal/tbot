@@ -67,5 +67,17 @@ public class AccountBalance implements Serializable {
             this.reserved = qtyReserved;
             this.available = qtyAvailable;
         }
+
+        @Override
+        public String toString() {
+            return "Balance{" + "asset=" + asset + ", reserved=" + reserved + ", available=" + available + '}';
+        }
+
     } 
+
+    @Override
+    public String toString() {
+        return "AccountBalance{" + "balances=" + balances + '}';
+    }
+
 }

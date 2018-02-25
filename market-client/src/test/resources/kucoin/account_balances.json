@@ -1,0 +1,15 @@
+{
+    "success": true,
+    "code": "OK",
+    "data": [{
+      "coinType": "BTC",
+      "balance": 1233214,  
+      "freezeBalance": 321321.55 
+    },
+    {
+      "coinType": "R",
+      "balance": 130.21,  
+      "freezeBalance": 12.5
+    }
+    ]
+}
