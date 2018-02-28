@@ -31,7 +31,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import org.presinal.market.client.types.AccountBalance;
+import org.presinal.market.client.util.JsonDeserializerUtil;
+import static org.presinal.market.client.util.JsonObjectDeserializerUtil.getAttrAsDoubleIfNotNull;
 
 /**
  *
@@ -44,20 +47,21 @@ public class AccountBalanceDeserializer implements JsonDeserializer<AccountBalan
     @Override
     public AccountBalance deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
         AccountBalance accountBalance = null;
-        
-        JsonElement dataEl = je.getAsJsonObject().get("data");
-        
-        if(dataEl != null){
+
+        JsonArray jsonArr = JsonDeserializerUtil.getAsJsonArrayIfNotNull(je); //getAttrAsJsonArrayIfNotNull(getAsJsonObjectIfNotNull(je), "data");
+
+        if(jsonArr != null){
             accountBalance = new AccountBalance();
-            JsonArray jsonArr = dataEl.getAsJsonArray();
 
             int size = jsonArr.size();
             double balance = 0.0, freezeBalance = 0.0;
             JsonObject balanceObj;
-            for (int i = 0; i < size; i++) {
-                balanceObj = jsonArr.get(i).getAsJsonObject();
-                balance = balanceObj.get("balance").getAsDouble();
-                freezeBalance = balanceObj.get("freezeBalance").getAsDouble();
+            
+            Iterator<JsonElement> it = jsonArr.iterator();
+            while(it.hasNext()){
+                balanceObj = it.next().getAsJsonObject();
+                balance =  getAttrAsDoubleIfNotNull(balanceObj, "balance");
+                freezeBalance = getAttrAsDoubleIfNotNull(balanceObj, "freezeBalance");
                 accountBalance.addBalance(balanceObj.get("coinType").getAsString(), Math.abs(balance - freezeBalance), freezeBalance);
             }
         }

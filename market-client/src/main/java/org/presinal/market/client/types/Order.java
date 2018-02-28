@@ -41,7 +41,7 @@ public class Order implements Serializable {
     public static final String SIDE_SELL = "SELL";
 
     private AssetPair assetPair;
-    private long orderId;
+    private String orderId;
     private String clientOrderId;
     private Date transactionTime;
     private double price;
@@ -59,11 +59,11 @@ public class Order implements Serializable {
         this.assetPair = assetPair;
     }
 
-    public long getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(long orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
@@ -134,9 +134,8 @@ public class Order implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.assetPair);
-        hash = 79 * hash + (int) (this.orderId ^ (this.orderId >>> 32));
-        hash = 79 * hash + Objects.hashCode(this.clientOrderId);
+        hash = 89 * hash + Objects.hashCode(this.assetPair);
+        hash = 89 * hash + Objects.hashCode(this.orderId);
         return hash;
     }
 

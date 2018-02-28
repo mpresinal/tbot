@@ -23,6 +23,8 @@
  */
 package org.presinal.market.client;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
@@ -44,6 +46,7 @@ public abstract class AbstractMarketClient implements MarketClient {
 
     private PayloadSigner signer;
     private Client client;
+    private Gson gson;
 
     private boolean clientInitialized = false;
     
@@ -53,12 +56,19 @@ public abstract class AbstractMarketClient implements MarketClient {
         this.secretKey = secretKey;
 
     }
+    
+    public abstract void registerTypeDeserializers(GsonBuilder builder);
+    
 
     protected void initClient() {
         
         if (!clientInitialized) {
             
             try {
+                GsonBuilder builder = new GsonBuilder();
+                registerTypeDeserializers(builder);
+                gson = builder.create();
+                
                 client = ClientBuilder.newClient();
                 baseTarget = client.target(apiURL);
 

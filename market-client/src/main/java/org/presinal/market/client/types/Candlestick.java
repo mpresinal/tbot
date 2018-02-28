@@ -73,5 +73,17 @@ public class Candlestick implements Serializable {
     public Date getDateTime() {
         return dateTime;
     }
+
+    @Override
+    public String toString() {
+        return "Candlestick{" + "openPrice=" + openPrice
+                + ", closePrice=" + closePrice 
+                + ", lowPrice=" + lowPrice 
+                + ", highPrice=" + highPrice 
+                + ", volume=" + volume 
+                + ", dateTime=" + dateTime + "}";
+    }
+    
+    
     
 }

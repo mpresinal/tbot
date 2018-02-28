@@ -25,6 +25,7 @@ package org.presinal.market.client.impl.kucoin.deserializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,7 +80,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balance.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
             System.out.println("accountBalance = " + accountBalance);
             assertNotNull("The test has failed.", accountBalance);            
             
@@ -98,7 +100,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balance.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
 
             System.out.println("accountBalance = " + accountBalance);
             
@@ -124,7 +127,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balance.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
             System.out.println("accountBalance = " + accountBalance);
             
             Balance btcBalance = accountBalance.getBalanceFor("BTC");
@@ -155,7 +159,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balances.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
 
             System.out.println("accountBalance = " + accountBalance);
             
@@ -181,7 +186,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balances.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
             System.out.println("accountBalance = " + accountBalance);
             
             Balance rBalance = accountBalance.getBalanceFor("R");
@@ -211,7 +217,8 @@ public class AccountBalanceDeserializerTest {
         try {
             
             Reader reader = Files.newBufferedReader(JSON_DIR_PATH.resolve("account_balance_invalid.json"));
-            AccountBalance accountBalance = gson.fromJson(reader, AccountBalance.class);
+            JsonElement el = gson.fromJson(reader, JsonElement.class);            
+            AccountBalance accountBalance = gson.fromJson(el.getAsJsonObject().get("data"), AccountBalance.class);
             System.out.println("accountBalance = " + accountBalance);
             
             assertNull("The test has failed. accountBalance must be null", accountBalance);

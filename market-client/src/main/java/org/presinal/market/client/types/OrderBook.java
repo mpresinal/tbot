@@ -73,5 +73,16 @@ public class OrderBook implements Serializable {
             this.price = price;
             this.quantity = quantity;
         }
+
+        @Override
+        public String toString() {
+            return "OrderBookEntry{" + "price=" + price + ", quantity=" + quantity + '}';
+        }       
     }
+
+    @Override
+    public String toString() {
+        return "OrderBook{" + "assetPair=" + assetPair + ", bids=" + bids + ", asks=" + asks + '}';
+    }
+
 }

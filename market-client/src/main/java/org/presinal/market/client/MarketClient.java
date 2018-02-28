@@ -84,7 +84,9 @@ public interface MarketClient extends Serializable {
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, 
             Date startDate, Date endDate, int limit) throws MarketClientException;
        
-    public AssetPriceChange loadAssetPriceChange(AssetPair asset) throws MarketClientException;
+    public List<AssetPriceChange> loadAssetsPriceChange(AssetPair asset) throws MarketClientException;
+    
+    public AssetPriceChange getAssetPriceChange(AssetPair asset) throws MarketClientException;
     
     public double getAssetPrice(AssetPair asset) throws MarketClientException;
     
@@ -102,9 +104,9 @@ public interface MarketClient extends Serializable {
     
     public Order placeSellOrder(AssetPair asset, double price, double quantity, OrderType type) throws MarketClientException;
     
-    public OrderStatus getOrderStatus(long orderId) throws MarketClientException;
+    public OrderStatus getOrderStatus(AssetPair asset, String orderId) throws MarketClientException;
     
-    public boolean cancelOrder(long orderId) throws MarketClientException;
+    public boolean cancelOrder(String orderId) throws MarketClientException;
     
     public OpenedOrder loadOpenedOrders(AssetPair asset) throws MarketClientException;
     

@@ -1,0 +1,25 @@
+{
+    "_comment_": "This json object has been taken from kucoin endpoint https://api.kucoin.com/v1/open/tick?symbol=R-BTC",
+    "success": true,
+    "code": "OK",
+    "msg": "Operation succeeded.",
+    "timestamp": 1519752267362,
+    "data": {
+        "coinType": "R",
+        "trading": true,
+        "symbol": "R-BTC",
+        "lastDealPrice": 2.1984E-4,
+        "buy": 2.1843E-4,
+        "sell": 2.2038E-4,
+        "change": -2.97E-6,
+        "coinTypePair": "BTC",
+        "sort": 0,
+        "feeRate": 0.001,
+        "volValue": 328.41776286,
+        "high": 2.2947E-4,
+        "datetime": 1519752266000,
+        "vol": 1473875.507077,
+        "low": 2.15E-4,
+        "changeRate": -0.0133
+    }
+}
