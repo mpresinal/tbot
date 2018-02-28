@@ -59,6 +59,7 @@ public class KucoinMarketClient extends AbstractMarketClient {
         builder.registerTypeAdapter(AccountBalance.class, new AccountBalanceDeserializer());
         builder.registerTypeAdapter(OrderBook.class, new OrderBookDeserializer());
         builder.registerTypeAdapter(Candlestick[].class, new CandlestickDeserializer());
+        builder.registerTypeAdapter(AssetPriceChange.class, new AssetPriceChangeDeserializer());
     }
     
     @Override

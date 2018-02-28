@@ -27,10 +27,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.MediaType;
 import org.presinal.market.client.security.PayloadSigner;
+
 
 /**
  *
@@ -50,17 +56,17 @@ public abstract class AbstractMarketClient implements MarketClient {
 
     private boolean clientInitialized = false;
     
-    public AbstractMarketClient(String apiURL, String apiKey, String secretKey) {
+    public AbstractMarketClient(String apiURL, String apiKey, String secretKey) throws MarketClientException {
         this.apiURL = apiURL;
         this.apiKey = apiKey;
         this.secretKey = secretKey;
-
+        initClient();
     }
     
     public abstract void registerTypeDeserializers(GsonBuilder builder);
     
 
-    protected void initClient() {
+    private void initClient() throws MarketClientException {
         
         if (!clientInitialized) {
             
@@ -79,7 +85,8 @@ public abstract class AbstractMarketClient implements MarketClient {
                 clientInitialized = true;
                 
             } catch (Exception ex) {
-                Logger.getLogger(AbstractMarketClient.class.getName()).log(Level.SEVERE, "Error signing payload", ex);
+                Logger.getLogger(AbstractMarketClient.class.getName()).log(Level.SEVERE, "Error initializing client", ex);
+                throw new MarketClientException("Error initializing client. "+ex.getMessage(), e);
             }
         }
     }
@@ -99,7 +106,42 @@ public abstract class AbstractMarketClient implements MarketClient {
 
         } else {
             throw new MarketClientException("Signer has not been initialized");
-        }        
+        }     
         
+    }
+    
+    protected String doGetRequest(String endPoint, TreeMap<String, Object> requestParam) throws MarketClientException {
+        Response response = baseTarget.path(endPoint+"?"+createQueryParams(requestParam))
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+        
+        if(response.getStatus() == Status.OK.getStatusCode()) {
+            
+        }
+        
+        return null;
+    }
+    
+    private WebTarget addQueryParam(WebTarget target, Map<String, Object> params)  {
+        WebTarget webTarget = target;
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
+            webTarget = webTarget.queryParam(entry.getKey(), entry.getValue());
+        }
+        return webTarget;
+    }
+    
+    protected final String createQueryParams(Map<String, Object> params) {
+        StringBuilder buffer = new StringBuilder();
+        int i = 1;
+        int end = params.size();
+        
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
+           buffer.append(entry.getKey()).append("=").append(entry.getValue()); 
+           if(i < end)
+                buffer.append("&");
+           ++i;
+        }
+        
+        return buffer.toString();
     }
 }
