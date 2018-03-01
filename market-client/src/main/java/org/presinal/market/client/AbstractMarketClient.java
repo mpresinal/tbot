@@ -86,7 +86,7 @@ public abstract class AbstractMarketClient implements MarketClient {
                 
             } catch (Exception ex) {
                 Logger.getLogger(AbstractMarketClient.class.getName()).log(Level.SEVERE, "Error initializing client", ex);
-                throw new MarketClientException("Error initializing client. "+ex.getMessage(), e);
+                throw new MarketClientException("Error initializing client. "+ex.getMessage(), ex);
             }
         }
     }
@@ -110,19 +110,33 @@ public abstract class AbstractMarketClient implements MarketClient {
         
     }
     
-    protected String doGetRequest(String endPoint, TreeMap<String, Object> requestParam) throws MarketClientException {
-        Response response = baseTarget.path(endPoint+"?"+createQueryParams(requestParam))
+    protected String doGetRequest(String endPoint, Map<String, Object> requestParam) throws MarketClientException {
+        System.out.println("doGetRequest() Enter");
+        System.out.println("doGetRequest() baseTarget = "+baseTarget.getUri());
+        System.out.println("doGetRequest() endPoint = "+endPoint);        
+        
+        Response response = addQueryParam(baseTarget.path(endPoint), requestParam)
                 .request(MediaType.APPLICATION_JSON)
                 .get();
         
-        if(response.getStatus() == Status.OK.getStatusCode()) {
-            
-        }
+        String strResponse = null;
+        Status responseCode = Status.fromStatusCode(response.getStatus());
         
-        return null;
+        if(Status.OK == responseCode) {
+            strResponse = response.readEntity(String.class);
+        } else {
+            throw new MarketClientException("Error resquesting the target: "+endPoint+". "+responseCode.getStatusCode()+" "+responseCode.getReasonPhrase());
+        }      
+
+        return strResponse;
     }
     
     private WebTarget addQueryParam(WebTarget target, Map<String, Object> params)  {
+        
+        if(params == null || params.isEmpty()){
+            return target;
+        }
+        
         WebTarget webTarget = target;
         for(Map.Entry<String, Object> entry : params.entrySet()) {
             webTarget = webTarget.queryParam(entry.getKey(), entry.getValue());
@@ -144,4 +158,13 @@ public abstract class AbstractMarketClient implements MarketClient {
         
         return buffer.toString();
     }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+    
 }

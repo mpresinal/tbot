@@ -24,15 +24,20 @@
 
 package org.presinal.market.client.impl.kucoin;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 import org.presinal.market.client.AbstractMarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.OrderStatus;
 import org.presinal.market.client.enums.OrderType;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.impl.kucoin.deserializer.AccountBalanceDeserializer;
+import org.presinal.market.client.impl.kucoin.deserializer.AssetPriceChangeDeserializer;
 import org.presinal.market.client.impl.kucoin.deserializer.CandlestickDeserializer;
 import org.presinal.market.client.impl.kucoin.deserializer.OrderBookDeserializer;
 import org.presinal.market.client.types.AccountBalance;
@@ -49,8 +54,15 @@ import org.presinal.market.client.types.OrderBook;
  * @since 1.0
  */
 public class KucoinMarketClient extends AbstractMarketClient {
-
-    public KucoinMarketClient(String apiURL, String apiKey, String secretKey) {
+    
+    public static final String API_URL = "https://api.kucoin.com";
+    private static final String ORDER_BOOK_ENDPOINT = "v1/open/orders";
+    private static final String OPEN_TICK_ENDPOINT = "v1/open/tick";
+    
+    private static final int ORDER_BOOK_LIMIT = 100;    
+    private static final String SYMBOL_SEPERATOR = "-";
+    
+    public KucoinMarketClient(String apiURL, String apiKey, String secretKey) throws MarketClientException {
         super(apiURL, apiKey, secretKey);
     } 
 
@@ -78,9 +90,17 @@ public class KucoinMarketClient extends AbstractMarketClient {
     }
 
     @Override
-    public OrderBook loadOrderBook(AssetPair assetPair, int limit) throws MarketClientException {
-        //https://api.kucoin.com/v1/open/orders
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public OrderBook loadOrderBook(AssetPair assetPair, int limit) throws MarketClientException {        
+        TreeMap<String, Object> paramMap = new TreeMap<>();
+        paramMap.put("symbol", assetPair.toSymbol(SYMBOL_SEPERATOR));
+        paramMap.put("limit", (limit <= 0? ORDER_BOOK_LIMIT : limit));
+        
+        String response = doGetRequest(ORDER_BOOK_ENDPOINT, paramMap);
+        Gson gson = getGson();
+        JsonElement el = gson.fromJson(response, JsonElement.class);
+        OrderBook orderBook = gson.fromJson(el.getAsJsonObject().get("data"), OrderBook.class);
+        orderBook.setAssetPair(assetPair);
+        return orderBook;
     }
 
     @Override
@@ -90,15 +110,28 @@ public class KucoinMarketClient extends AbstractMarketClient {
     }
     
     @Override
-    public List<AssetPriceChange> loadAssetsPriceChange(AssetPair asset) throws MarketClientException {
-        //https://api.kucoin.com/v1/open/tick
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<AssetPriceChange> loadAssetsPriceChange() throws MarketClientException {
+                
+        String response = doGetRequest(OPEN_TICK_ENDPOINT, null);
+        Gson gson = getGson();
+        JsonElement el = gson.fromJson(response, JsonElement.class);
+        AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange[].class);
+        List<AssetPriceChange> list = Arrays.asList(assetsPriceChange);
+        return list;
     }
 
     @Override
     public AssetPriceChange getAssetPriceChange(AssetPair asset) throws MarketClientException {
-        //https://api.kucoin.com/v1/open/tick?symbol=R-BTC
-        return null;
+        
+        TreeMap<String, Object> paramMap = new TreeMap<>();
+        paramMap.put("symbol", asset.toSymbol(SYMBOL_SEPERATOR));
+        
+        String response = doGetRequest(OPEN_TICK_ENDPOINT, paramMap);
+        Gson gson = getGson();
+        JsonElement el = gson.fromJson(response, JsonElement.class);
+        AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);
+        
+        return assetPriceChange;
     }
     
     @Override

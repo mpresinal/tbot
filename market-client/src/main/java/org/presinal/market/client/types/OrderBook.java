@@ -38,6 +38,9 @@ public class OrderBook implements Serializable {
     private List<OrderBookEntry> bids;
     private List<OrderBookEntry> asks;
 
+    public OrderBook() {
+    }
+
     public OrderBook(AssetPair assetPair) {
         this.assetPair = assetPair;
         bids = new ArrayList<>();
@@ -54,6 +57,10 @@ public class OrderBook implements Serializable {
 
     public AssetPair getAssetPair() {
         return assetPair;
+    }
+
+    public void setAssetPair(AssetPair assetPair) {
+        this.assetPair = assetPair;
     }
 
     public List<OrderBookEntry> getBids() {

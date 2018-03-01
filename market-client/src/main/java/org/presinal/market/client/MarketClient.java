@@ -84,7 +84,7 @@ public interface MarketClient extends Serializable {
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, 
             Date startDate, Date endDate, int limit) throws MarketClientException;
        
-    public List<AssetPriceChange> loadAssetsPriceChange(AssetPair asset) throws MarketClientException;
+    public List<AssetPriceChange> loadAssetsPriceChange() throws MarketClientException;
     
     public AssetPriceChange getAssetPriceChange(AssetPair asset) throws MarketClientException;
     
