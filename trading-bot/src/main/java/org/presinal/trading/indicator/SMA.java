@@ -25,6 +25,8 @@
 package org.presinal.trading.indicator;
 
 import java.util.Collection;
+import java.util.List;
+import org.presinal.market.client.types.Candlestick;
 
 /**
  * Simple Moving Average
@@ -48,6 +50,10 @@ public class SMA implements Indicator<Double> {
 
     public Collection<Double> getMultiResult() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void evaluate(List<Candlestick> candlesticks) {
+        
     }
 
 }

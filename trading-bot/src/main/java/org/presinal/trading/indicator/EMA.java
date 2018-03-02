@@ -25,6 +25,8 @@
 package org.presinal.trading.indicator;
 
 import java.util.Collection;
+import java.util.List;
+import org.presinal.market.client.types.Candlestick;
 
 /**
  *
@@ -49,4 +51,7 @@ public class EMA implements Indicator<Double> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void evaluate(List<Candlestick> candlesticks) {
+        
+    }
 }

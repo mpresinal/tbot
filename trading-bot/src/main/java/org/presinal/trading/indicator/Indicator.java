@@ -25,6 +25,8 @@
 package org.presinal.trading.indicator;
 
 import java.util.Collection;
+import java.util.List;
+import org.presinal.market.client.types.Candlestick;
 
 /**
  *
@@ -41,4 +43,5 @@ public interface Indicator<R> {
     
     Collection<R> getMultiResult();
     
+    void evaluate(List<Candlestick> candlesticks);
 }
