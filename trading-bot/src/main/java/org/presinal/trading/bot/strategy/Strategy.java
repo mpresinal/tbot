@@ -22,37 +22,14 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
-
-import java.util.Collection;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
+package org.presinal.trading.bot.strategy;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T, R extends IndicatorDataReader> {
-
-    String getName();
+public interface Strategy extends Runnable{
     
-    ResultType getResultType();
-    
-    T getSingleResult();
-    
-    Collection<T> getMultiResult();
-    
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void setDataReader(R dataReader);
-    
-    void addListener(IndicatorListener listener);
-    
-    void run();
-    
-    void stop();
-        
+    void setListener(StrategyListener listener);
 }

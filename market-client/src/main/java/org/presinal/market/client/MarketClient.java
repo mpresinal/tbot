@@ -45,6 +45,8 @@ import org.presinal.market.client.types.OrderBook;
  */
 public interface MarketClient extends Serializable {
 
+    public static final int MAX_DATA_LIMIT = 500;
+    
     /**
      * Make a test connection to validate the api url.
      * 
@@ -112,5 +114,8 @@ public interface MarketClient extends Serializable {
     
     public AccountBalance getAccountBalance()throws MarketClientException;
     
+    default int getMaxDataLimit(){
+        return MAX_DATA_LIMIT;
+    }
 }
 

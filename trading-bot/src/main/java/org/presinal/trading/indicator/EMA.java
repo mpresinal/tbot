@@ -26,32 +26,44 @@ package org.presinal.trading.indicator;
 
 import java.util.Collection;
 import java.util.List;
+import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class EMA implements Indicator<Double> {
+public class EMA extends AbstractIndicator<Double, PeriodIndicatorDataReader> {
 
-    public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public ResultType getResultType() {
-        return ResultType.SINGLE_RESULT;
-    }
+    private PeriodIndicatorDataReader dataReader;
+    private static final String NAME = "Simple Moving Average";
+    private double mean;
+    
+     public EMA() {
+        super(NAME, ResultType.SINGLE_RESULT);
+    } 
 
     public Double getSingleResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return mean;
     }
 
     public Collection<Double> getMultiResult() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public void setDataReader(PeriodIndicatorDataReader dataReader){ 
+        this.dataReader = dataReader;
+    }
 
-    public void evaluate(List<Candlestick> candlesticks) {
-        
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void stop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

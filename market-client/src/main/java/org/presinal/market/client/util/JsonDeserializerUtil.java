@@ -37,14 +37,14 @@ import java.util.Date;
 public class JsonDeserializerUtil {
 
     public static JsonArray getAsJsonArrayIfNotNull(JsonElement jsonEl){
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return jsonEl.getAsJsonArray();
         }        
         return null;
     }
     
     public static JsonObject getAsJsonObjectIfNotNull(JsonElement jsonEl){
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return jsonEl.getAsJsonObject();
         }
         
@@ -52,15 +52,23 @@ public class JsonDeserializerUtil {
     }
     
     public static double getAsDoubleIfNotNull(JsonElement jsonEl){
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return jsonEl.getAsDouble();
         }
         
         return 0;
     }
     
+    public static long getAsLongIfNotNull(JsonElement jsonEl){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
+            return jsonEl.getAsLong();
+        }
+        
+        return 0;
+    }
+    
     public static float getAsFloatIfNotNull(JsonElement jsonEl){
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return jsonEl.getAsFloat();
         }
         
@@ -68,7 +76,7 @@ public class JsonDeserializerUtil {
     }
     
     public static String getAsStringIfNotNull(JsonElement jsonEl){
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return jsonEl.getAsString();
         }
         
@@ -76,12 +84,11 @@ public class JsonDeserializerUtil {
     }
     
     public static Date getAsDateIfNotNull(JsonElement jsonEl) {
-        if(jsonEl != null){
+        if(jsonEl != null && !jsonEl.isJsonNull()){
             return new Date(jsonEl.getAsLong());
         }
         return null;
-    }
-    
+    }    
     
      public static Date getArrayValueAsDate(JsonArray array, int index) {
         return getAsDateIfNotNull(getArrayValueAtIfNotOutBound(array, index));  
@@ -91,6 +98,10 @@ public class JsonDeserializerUtil {
         return getAsDoubleIfNotNull(getArrayValueAtIfNotOutBound(array, index));  
     }
     
+      public static long getArrayValueAsLong(JsonArray array, int index) {
+        return getAsLongIfNotNull(getArrayValueAtIfNotOutBound(array, index));  
+    }
+      
     public static JsonElement getArrayValueAtIfNotOutBound(JsonArray array, int index) {
         if(array != null && array.size() > index){
             return array.get(index);

@@ -27,6 +27,7 @@ package org.presinal.market.client.impl.kucoin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +59,8 @@ public class KucoinMarketClient extends AbstractMarketClient {
     public static final String API_URL = "https://api.kucoin.com";
     private static final String ORDER_BOOK_ENDPOINT = "v1/open/orders";
     private static final String OPEN_TICK_ENDPOINT = "v1/open/tick";
+    private static final String CANDLESTICK_TRV_VERSION_ENDPOINT = "v1/open/chart/history";
+    
     
     private static final int ORDER_BOOK_LIMIT = 100;    
     private static final String SYMBOL_SEPERATOR = "-";
@@ -105,8 +108,48 @@ public class KucoinMarketClient extends AbstractMarketClient {
 
     @Override
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, Date startDate, Date endDate, int limit) throws MarketClientException {
+        return null;
+    }
+    
+    public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, Instant startDate, Instant endDate, int limit) throws MarketClientException {
         // https://api.kucoin.com/v1/open/chart/history
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //
+        System.out.println(" ****  assetPair = "+assetPair);
+        System.out.println(" ****  timeFrame = "+timeFrame);
+        System.out.println(" ****  startDate = "+startDate);
+        System.out.println(" ****  endDate = "+endDate);
+                
+        if( !isTimeFrameSupported(timeFrame)){
+            throw new MarketClientException("Not supported time frame: "+timeFrame);
+        }
+        
+        /*long fromTimeStamp = startDate.getTime() / TimeFrame.UNIX_FACTOR;
+        long toTimeStamp = endDate.getTime() / TimeFrame.UNIX_FACTOR;
+        */
+        String resolution = null;
+        
+        if(timeFrame == TimeFrame.ONE_DAY){
+            resolution = "D";
+        } else if(timeFrame == TimeFrame.ONE_WEEK){
+            resolution = "W";
+        } else {
+            resolution = Long.toString(timeFrame.toMinute());
+        }
+        
+        TreeMap<String, Object> paramMap = new TreeMap<>();
+        paramMap.put("symbol", assetPair.toSymbol(SYMBOL_SEPERATOR));
+        paramMap.put("resolution", resolution);
+        paramMap.put("from", startDate.getEpochSecond());
+        paramMap.put("to", endDate.getEpochSecond());
+        
+        System.out.println(" ****  paramMap = "+paramMap);
+        
+        String response = doGetRequest(CANDLESTICK_TRV_VERSION_ENDPOINT, paramMap);
+        System.out.println(" ****  response = "+response);
+        Gson gson = getGson();
+        JsonElement el = gson.fromJson(response, JsonElement.class);
+        Candlestick[] candlesticks = gson.fromJson(el, Candlestick[].class);
+        return Arrays.asList(candlesticks);        
     }
     
     @Override
@@ -186,4 +229,20 @@ public class KucoinMarketClient extends AbstractMarketClient {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    private boolean isTimeFrameSupported(TimeFrame timeFrame) {
+        
+        switch(timeFrame){
+            case ONE_MINUTE:
+            case FIVE_MINUTES:
+            case FIFTEEN_MINUTES:
+            case THIRTY_MINUTES:
+            case ONE_HOUR:
+            case EIGHT_HOURS:
+            case ONE_DAY:
+            case ONE_WEEK:
+                return true;
+        }
+        
+        return false;
+    }
 }

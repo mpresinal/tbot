@@ -25,6 +25,7 @@
 package org.presinal.market.client.types;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -39,39 +40,15 @@ public class Candlestick implements Serializable {
     public final double lowPrice;
     public final double highPrice;
     public final double volume;
-    public final Date dateTime;
+    public final Instant dateTime;
 
-    public Candlestick(double openPrice, double closePrice, double lowPrice, double highPrice, double volume, Date dateTime) {
+    public Candlestick(double openPrice, double closePrice, double lowPrice, double highPrice, double volume, Instant dateTime) {
         this.openPrice = openPrice;
         this.closePrice = closePrice;
         this.lowPrice = lowPrice;
         this.highPrice = highPrice;
         this.volume = volume;
         this.dateTime = dateTime;
-    }
-
-    public double getOpenPrice() {
-        return openPrice;
-    }
-
-    public double getClosePrice() {
-        return closePrice;
-    }
-
-    public double getLowPrice() {
-        return lowPrice;
-    }
-
-    public double getHighPrice() {
-        return highPrice;
-    }
-
-    public double getVolume() {
-        return volume;
-    }
-
-    public Date getDateTime() {
-        return dateTime;
     }
 
     @Override

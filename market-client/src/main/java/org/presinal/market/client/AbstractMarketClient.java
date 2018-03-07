@@ -141,6 +141,7 @@ public abstract class AbstractMarketClient implements MarketClient {
         for(Map.Entry<String, Object> entry : params.entrySet()) {
             webTarget = webTarget.queryParam(entry.getKey(), entry.getValue());
         }
+        
         return webTarget;
     }
     

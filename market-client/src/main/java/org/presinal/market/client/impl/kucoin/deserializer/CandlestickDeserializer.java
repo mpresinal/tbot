@@ -31,6 +31,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import java.time.Instant;
 import org.presinal.market.client.types.Candlestick;
 import static org.presinal.market.client.util.JsonDeserializerUtil.*;
 import static org.presinal.market.client.util.JsonObjectDeserializerUtil.*;
@@ -70,7 +71,8 @@ public class CandlestickDeserializer implements JsonDeserializer<Candlestick[]> 
                             getArrayValueAsDouble(lArray, i),  
                             getArrayValueAsDouble(hArray, i),  
                             getArrayValueAsDouble(vArray, i),
-                            getAsDateIfNotNull(tArray.get(i)));                    
+                            Instant.ofEpochSecond(getArrayValueAsLong(tArray, i))
+                    );                    
                 }
             }
         }

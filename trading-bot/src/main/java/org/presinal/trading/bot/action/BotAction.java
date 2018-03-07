@@ -22,37 +22,33 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.bot.action;
 
+import java.io.Serializable;
 import java.util.Collection;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T, R extends IndicatorDataReader> {
+public interface BotAction extends Serializable {
 
-    String getName();
+    int getExecutionOrder();
+
+    String getContextKey();
     
-    ResultType getResultType();
+    /**
+     * Return a list of actions that must be executed first of this action
+     * 
+     * @return A list of the dependency action.
+     */
+    Collection<BotAction> getDependencyActions();
     
-    T getSingleResult();
+    void performeAction(BotActionContext context);
     
-    Collection<T> getMultiResult();
+    void update();
     
-    void setPeriod(int period);
+    void addListener(BotActionListener listener);
     
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void setDataReader(R dataReader);
-    
-    void addListener(IndicatorListener listener);
-    
-    void run();
-    
-    void stop();
-        
 }

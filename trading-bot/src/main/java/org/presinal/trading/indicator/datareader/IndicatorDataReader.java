@@ -22,37 +22,21 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.indicator.datareader;
 
-import java.util.Collection;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.types.AssetPair;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T, R extends IndicatorDataReader> {
+public interface IndicatorDataReader<T> {
 
-    String getName();
+    void setMarketClient(MarketClient client);
     
-    ResultType getResultType();
+    T readData();
     
-    T getSingleResult();
-    
-    Collection<T> getMultiResult();
-    
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void setDataReader(R dataReader);
-    
-    void addListener(IndicatorListener listener);
-    
-    void run();
-    
-    void stop();
-        
+    void setAsset(AssetPair asset);
 }

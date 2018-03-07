@@ -22,37 +22,54 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.bot.action;
 
-import java.util.Collection;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
+import org.presinal.trading.bot.strategy.Signal;
+import org.presinal.trading.bot.strategy.Strategy;
+import org.presinal.trading.bot.strategy.StrategyListener;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T, R extends IndicatorDataReader> {
+public class BotActionStrategy extends AbstractBotAction implements StrategyListener{
 
-    String getName();
+    public static final String CONTEXT_KEY = BotActionStrategy.class.getSimpleName();
     
-    ResultType getResultType();
+    private Strategy strategy;
+    private boolean running = false;
     
-    T getSingleResult();
+    public BotActionStrategy(int executionOrder, Strategy strategy) {
+        super(executionOrder);
+        this.strategy=strategy;
+        strategy.setListener(this);
+    }
+
+
+    public String getContextKey() {
+        return CONTEXT_KEY;
+    }
     
-    Collection<T> getMultiResult();
-    
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void setDataReader(R dataReader);
-    
-    void addListener(IndicatorListener listener);
-    
-    void run();
-    
-    void stop();
+    @Override
+    public void performeAction(BotActionContext context) {        
+        setContext(context);
         
+        if(!running) {
+            new Thread(strategy).start();            
+        }
+        
+    }
+
+    @Override
+    public void update() {
+       
+    }
+
+    @Override
+    public void onSignal(Signal signal, Strategy source) {
+        getContext().put(CONTEXT_KEY, signal);
+        notifyListener();
+    }
+
 }
