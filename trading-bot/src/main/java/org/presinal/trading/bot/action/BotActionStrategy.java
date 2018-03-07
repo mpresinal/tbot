@@ -52,8 +52,7 @@ public class BotActionStrategy extends AbstractBotAction implements StrategyList
     }
     
     @Override
-    public void performeAction(BotActionContext context) {        
-        setContext(context);
+    public void run() {        
         
         if(!running) {
             new Thread(strategy).start();            

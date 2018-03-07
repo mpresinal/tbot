@@ -35,12 +35,16 @@ import java.util.Set;
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public abstract class AbstractBotAction implements BotAction {
+public abstract class AbstractBotAction extends Thread implements BotAction {
 
     private int executionOrder;
     private Set<BotAction> dependencyActions;
     private Set<BotActionListener> listeners;
     private BotActionContext context;
+    
+    private boolean started = false;
+    
+    private boolean actionEnded = false;
     
     public AbstractBotAction(int executionOrder) {
         this.executionOrder = executionOrder;
@@ -66,6 +70,30 @@ public abstract class AbstractBotAction implements BotAction {
         }
     }
     
+    @Override
+    public void endAction(){
+        actionEnded = true;
+    }
+    
+    @Override
+    public boolean isActionEnded(){
+        return actionEnded;
+    }
+        
+
+    @Override
+    public void setContext(BotActionContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public final void performeAction() {
+        
+        if(!started) {
+            this.start();
+        }
+    }
+    
     protected void notifyListener(){
         for(BotActionListener listener : listeners) {
             try {
@@ -79,9 +107,4 @@ public abstract class AbstractBotAction implements BotAction {
     protected BotActionContext getContext() {
         return context;
     }
-
-    protected void setContext(BotActionContext context) {
-        this.context = context;
-    } 
-
 }

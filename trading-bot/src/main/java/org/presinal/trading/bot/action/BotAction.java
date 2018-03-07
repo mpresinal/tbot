@@ -45,10 +45,15 @@ public interface BotAction extends Serializable {
      */
     Collection<BotAction> getDependencyActions();
     
-    void performeAction(BotActionContext context);
+    void setContext(BotActionContext context);
+    
+    void performeAction();
     
     void update();
     
     void addListener(BotActionListener listener);
     
+    void endAction();
+    
+    boolean isActionEnded();
 }

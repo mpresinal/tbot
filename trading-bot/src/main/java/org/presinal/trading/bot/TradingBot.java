@@ -24,11 +24,71 @@
 
 package org.presinal.trading.bot;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import org.presinal.market.client.MarketClient;
+import org.presinal.trading.bot.action.BotAction;
+import org.presinal.trading.bot.action.BotActionContext;
+import org.presinal.trading.bot.action.BotActionListener;
+
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public class TradingBot {
+public abstract class TradingBot {
+    private MarketClient marketClient;
+    private Set<BotAction> actions;
+    private String botName;
+    private String version;
+
+    private BotActionContext context;
+    
+    public TradingBot(MarketClient marketClient, String botName, String version) {
+        this.marketClient = marketClient;
+        this.botName = botName;
+        this.version = version;
+        
+        context = new BotActionContext();
+        actions = new HashSet<>();
+    }    
+    
+    
+    public abstract void init();
+    
+
+    public void start() {        
+        actions.stream().forEach((BotAction action) ->  action.performeAction() );
+    }
+    
+    public void addBotAction(BotAction action) {
+        
+        if(action != null) {
+            action.setContext(context);
+            actions.add(action);
+        }
+    }
+    
+    public void reactOnChangeOf(BotAction actionToReact, BotAction source) {
+        
+        if(Objects.nonNull(actionToReact) && Objects.nonNull(source)) {
+            // This Lambda Expression will generate an implementation of BotActionListener
+            source.addListener((BotAction saction, BotActionContext context_) -> actionToReact.update());            
+        }
+        
+    }
+    
+    public MarketClient getMarketClient() {
+        return marketClient;
+    }
+
+    public String getBotName() {
+        return botName;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 
 }
