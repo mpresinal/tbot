@@ -3076,21 +3076,26 @@ openTime(datetime)
 <XPD:REF name="ClientDependencies[0]">BJ0+iIo8lEORwZYOwDWBlAAA</XPD:REF>
 <XPD:ATTR name="#TemplateParameters" type="integer">1</XPD:ATTR>
 <XPD:OBJ name="TemplateParameters[0]" type="UMLTemplateParameter" guid="EE1ZA3cZxUGpbYN3yphLwAAA">
-<XPD:ATTR name="Name" type="string">T, R</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">T</XPD:ATTR>
 <XPD:REF name="Template">W0yoxT0pKUuWG8eAuPao6QAA</XPD:REF>
 </XPD:OBJ>
 <XPD:ATTR name="#Specializations" type="integer">3</XPD:ATTR>
 <XPD:REF name="Specializations[0]">2xr+302vqEGbQMVjSNqoOAAA</XPD:REF>
 <XPD:REF name="Specializations[1]">CeZhJ5MqOEWbNumHJ7PU1gAA</XPD:REF>
 <XPD:REF name="Specializations[2]">NXh3GPh/F0yGHB7ts58lMQAA</XPD:REF>
-<XPD:ATTR name="#Operations" type="integer">9</XPD:ATTR>
+<XPD:ATTR name="#Operations" type="integer">8</XPD:ATTR>
 <XPD:OBJ name="Operations[0]" type="UMLOperation" guid="tFc4TawIpEe6EZIxK4dsVAAA">
 <XPD:ATTR name="Name" type="string">evaluate</XPD:ATTR>
 <XPD:REF name="Owner">W0yoxT0pKUuWG8eAuPao6QAA</XPD:REF>
-<XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="I4lQKy2xRUWrc5mAv8P/hQAA">
+<XPD:ATTR name="#Parameters" type="integer">2</XPD:ATTR>
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="JN4T832xmE2o+Q9RoyKt3QAA">
 <XPD:ATTR name="DirectionKind" type="UMLParameterDirectionKind">pdkReturn</XPD:ATTR>
 <XPD:ATTR name="TypeExpression" type="string">void</XPD:ATTR>
+<XPD:REF name="BehavioralFeature">tFc4TawIpEe6EZIxK4dsVAAA</XPD:REF>
+</XPD:OBJ>
+<XPD:OBJ name="Parameters[1]" type="UMLParameter" guid="48X5R+kuTU2RfTqj5fwaagAA">
+<XPD:ATTR name="Name" type="string">data</XPD:ATTR>
+<XPD:ATTR name="TypeExpression" type="string">List&lt;Candlestick&gt;</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">tFc4TawIpEe6EZIxK4dsVAAA</XPD:REF>
 </XPD:OBJ>
 </XPD:OBJ>
@@ -3144,17 +3149,7 @@ openTime(datetime)
 <XPD:REF name="BehavioralFeature">OBY6qHaD1UGELYqbixZFfwAA</XPD:REF>
 </XPD:OBJ>
 </XPD:OBJ>
-<XPD:OBJ name="Operations[6]" type="UMLOperation" guid="3b1BklePRkeWvEHPlBEwWAAA">
-<XPD:ATTR name="Name" type="string">setDataReader</XPD:ATTR>
-<XPD:REF name="Owner">W0yoxT0pKUuWG8eAuPao6QAA</XPD:REF>
-<XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="45FlUearJUSyrWqX/vT1QwAA">
-<XPD:ATTR name="Name" type="string">dataReader</XPD:ATTR>
-<XPD:ATTR name="TypeExpression" type="string">R</XPD:ATTR>
-<XPD:REF name="BehavioralFeature">3b1BklePRkeWvEHPlBEwWAAA</XPD:REF>
-</XPD:OBJ>
-</XPD:OBJ>
-<XPD:OBJ name="Operations[7]" type="UMLOperation" guid="N782s1asDEWATTkg4UxVVgAA">
+<XPD:OBJ name="Operations[6]" type="UMLOperation" guid="N782s1asDEWATTkg4UxVVgAA">
 <XPD:ATTR name="Name" type="string">setTimeFrame</XPD:ATTR>
 <XPD:REF name="Owner">W0yoxT0pKUuWG8eAuPao6QAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
@@ -3164,7 +3159,7 @@ openTime(datetime)
 <XPD:REF name="Type_">66UgoHCEMEihkmN1Npk6jQAA</XPD:REF>
 </XPD:OBJ>
 </XPD:OBJ>
-<XPD:OBJ name="Operations[8]" type="UMLOperation" guid="V5Q010TxDUCJ9jJgjB+tjgAA">
+<XPD:OBJ name="Operations[7]" type="UMLOperation" guid="V5Q010TxDUCJ9jJgjB+tjgAA">
 <XPD:ATTR name="Name" type="string">addListener</XPD:ATTR>
 <XPD:REF name="Owner">W0yoxT0pKUuWG8eAuPao6QAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>

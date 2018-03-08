@@ -35,7 +35,7 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class EMA extends AbstractIndicator<Double, PeriodIndicatorDataReader> {
+public class EMA extends AbstractIndicator<Double> {
 
     private PeriodIndicatorDataReader dataReader;
     private static final String NAME = "Simple Moving Average";
@@ -58,12 +58,8 @@ public class EMA extends AbstractIndicator<Double, PeriodIndicatorDataReader> {
     }
 
     @Override
-    public void run() {
+    public void evaluate(List<Candlestick> data) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

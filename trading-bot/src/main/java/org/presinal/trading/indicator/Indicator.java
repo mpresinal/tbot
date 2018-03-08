@@ -25,7 +25,9 @@
 package org.presinal.trading.indicator;
 
 import java.util.Collection;
+import java.util.List;
 import org.presinal.market.client.enums.TimeFrame;
+import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.indicator.datareader.IndicatorDataReader;
 
 /**
@@ -33,7 +35,7 @@ import org.presinal.trading.indicator.datareader.IndicatorDataReader;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T, R extends IndicatorDataReader> {
+public interface Indicator<T> {
 
     String getName();
     
@@ -47,12 +49,8 @@ public interface Indicator<T, R extends IndicatorDataReader> {
     
     void setTimeFrame(TimeFrame timeFrame);
     
-    void setDataReader(R dataReader);
-    
     void addListener(IndicatorListener listener);
     
-    void run();
-    
-    void stop();
+    void evaluate(List<Candlestick> data);
         
 }

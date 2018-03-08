@@ -26,21 +26,20 @@ package org.presinal.trading.indicator;
 
 import java.util.HashSet;
 import java.util.Set;
+import static javafx.scene.input.KeyCode.R;
 import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public abstract class AbstractIndicator<T, R extends IndicatorDataReader> implements Indicator<T, R>{
+public abstract class AbstractIndicator<T> implements Indicator<T>{
 
     protected int period;
     protected TimeFrame timeFrame;
     private String name;
-    private ResultType resultType;
-    protected R dataReader;
+    private ResultType resultType;    
     
     private Set<IndicatorListener> listeners;
     
@@ -58,11 +57,6 @@ public abstract class AbstractIndicator<T, R extends IndicatorDataReader> implem
     @Override
     public ResultType getResultType() {
         return this.resultType;
-    }
-
-    @Override
-    public void setDataReader(R dataReader) {
-        this.dataReader = dataReader;
     }
 
     @Override

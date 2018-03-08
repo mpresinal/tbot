@@ -65,13 +65,23 @@ public class MainTest implements IndicatorListener {
         TimeFrame timeFrame = TimeFrame.FIVE_MINUTES;
         PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("IHT", "BTC"), period, timeFrame);
         dataReader.setMarketClient(client);
+                
+        Calendar cal = Calendar.getInstance();
+        //'2011-12-03T10:15:30Z'
+        String pattern = "%s-%s-%sT%s:%s:00Z";
         
-        SMA sma = new SMA();
-        sma.setDataReader(dataReader);
+        Instant startDate = Instant.parse(String.format(pattern, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH), 0,0 ));
+        Instant endDate = Instant.parse(String.format(pattern, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH), 23,59 ));
+        dataReader.setDateRange(startDate, endDate);
+        
+        SMA sma = new SMA();        
         sma.setPeriod(period);
         sma.setTimeFrame(timeFrame);
         sma.addListener(new MainTest());
-        sma.run();        
+        
+        Thread thread = new Thread(()-> { 
+            sma.evaluate(dataReader.readData());
+        });
     }
     
     public static void mainx(String[] args) throws InterruptedException {
