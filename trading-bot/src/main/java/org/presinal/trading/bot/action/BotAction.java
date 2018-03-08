@@ -49,7 +49,7 @@ public interface BotAction extends Serializable {
     
     void performeAction();
     
-    void update();
+    void notifySignal();
     
     void addListener(BotActionListener listener);
     

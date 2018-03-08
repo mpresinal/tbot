@@ -61,7 +61,7 @@ public class BotActionStrategy extends AbstractBotAction implements StrategyList
     }
 
     @Override
-    public void update() {
+    public void notifySignal() {
        
     }
 

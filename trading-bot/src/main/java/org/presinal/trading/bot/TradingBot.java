@@ -30,7 +30,6 @@ import java.util.Set;
 import org.presinal.market.client.MarketClient;
 import org.presinal.trading.bot.action.BotAction;
 import org.presinal.trading.bot.action.BotActionContext;
-import org.presinal.trading.bot.action.BotActionListener;
 
 /**
  *
@@ -74,7 +73,7 @@ public abstract class TradingBot {
         
         if(Objects.nonNull(actionToReact) && Objects.nonNull(source)) {
             // This Lambda Expression will generate an implementation of BotActionListener
-            source.addListener((BotAction saction, BotActionContext context_) -> actionToReact.update());            
+            source.addListener((BotAction saction, BotActionContext context_) -> actionToReact.notifySignal());            
         }
         
     }

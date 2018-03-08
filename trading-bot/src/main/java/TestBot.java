@@ -100,7 +100,7 @@ public class TestBot {
         }
 
         @Override
-        public void update() {
+        public void notifySignal() {
             System.out.println(name + " :: update() Enter");
         }
     }
@@ -151,7 +151,7 @@ public class TestBot {
         }
 
         @Override
-        public void update() {
+        public void notifySignal() {
             System.out.println(name + " :: update() Enter");
             synchronized (this) {
                 notifyAll();
@@ -207,7 +207,7 @@ public class TestBot {
         }
 
         @Override
-        public void update() {
+        public void notifySignal() {
             System.out.println(name + " :: update() Enter");
             synchronized (this) {
                 notifyAll();
