@@ -22,7 +22,9 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.indicator.listener;
+
+import org.presinal.trading.indicator.Indicator;
 
 /**
  *
@@ -31,6 +33,6 @@ package org.presinal.trading.indicator;
  */
 public interface IndicatorListener {
 
-    void onUpdate(Indicator indicator);
+    void onEvaluate(Indicator indicator);
     
 }

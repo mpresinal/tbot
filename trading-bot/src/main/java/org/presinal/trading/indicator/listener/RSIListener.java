@@ -22,36 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
-
-import org.presinal.trading.indicator.listener.IndicatorListener;
-import java.util.Collection;
-import java.util.List;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.market.client.types.Candlestick;
-import org.presinal.trading.indicator.datareader.IndicatorDataReader;
+package org.presinal.trading.indicator.listener;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T> {
+public interface RSIListener extends IndicatorListener {
+    
+    void onOverBought(double level);
+    
+    void onOverSold(double level);
 
-    String getName();
-    
-    ResultType getResultType();
-    
-    T getSingleResult();
-    
-    Collection<T> getMultiResult();
-    
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void addListener(IndicatorListener listener);
-    
-    void evaluate(List<Candlestick> data);
-        
 }

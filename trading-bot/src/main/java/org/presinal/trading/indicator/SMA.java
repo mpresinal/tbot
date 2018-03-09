@@ -64,12 +64,27 @@ public class SMA extends AbstractIndicator<Double> {
         
         if (data != null && !data.isEmpty()) {
             double total = 0.0;
-            int length = data.size();
             
-            int p = getPeriod();
+            // calculating the range index
+            int length = data.size();            
+            int start=0;
             
+            int tmpPeriod = getPeriod();
+            int p = tmpPeriod;
+            
+            if(length > tmpPeriod){
+                start = length - tmpPeriod;                
+            } else {
+                p =  length;
+            }
+            
+            /*
             for (int i = 1; i <= p; i++) {
                 total = total + data.get(length - i).closePrice;
+            */
+            
+            for (int i = start; i < length; i++) {
+                total = total + data.get(i).closePrice;
             }
             
             mean = total / p;

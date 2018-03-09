@@ -27,6 +27,7 @@ package org.presinal.trading.indicator;
 import java.util.Collection;
 import java.util.List;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.indicator.listener.IndicatorListener;
 
 /**
  *
@@ -38,11 +39,20 @@ public class RSI extends AbstractIndicator<Double> {
     private static final String INDICATOR_NAME = "RSI";
     
     private Double rsiValue = null;
+    private int overBoughtLevel = 70;
+    private int overSoldLevel = 30;
     
     public RSI() {
         super(INDICATOR_NAME, ResultType.SINGLE_RESULT);
     }
-
+    
+    public boolean isOverBought() {
+        return rsiValue >= overBoughtLevel;
+    }
+    
+    public boolean isOverSold(){
+        return rsiValue <= overSoldLevel;
+    }
     
     @Override
     public Double getSingleResult() {
@@ -65,8 +75,6 @@ public class RSI extends AbstractIndicator<Double> {
         *
         */
         
-        
-        
         if(data != null && data.size() >= 2 ) {
 
             double upward = 0.0;
@@ -76,7 +84,7 @@ public class RSI extends AbstractIndicator<Double> {
             
             // calculating the range index
             int length = data.size();             
-            int end  = length-1;
+            int end = length-1;
             
             int start;
             if(length > period){
@@ -107,5 +115,4 @@ public class RSI extends AbstractIndicator<Double> {
             notifyListeners();
         }
     }
-
 }

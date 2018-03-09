@@ -24,6 +24,7 @@
 
 package org.presinal.trading.indicator;
 
+import org.presinal.trading.indicator.listener.IndicatorListener;
 import java.util.HashSet;
 import java.util.Set;
 import static javafx.scene.input.KeyCode.R;
@@ -41,7 +42,7 @@ public abstract class AbstractIndicator<T> implements Indicator<T>{
     private String name;
     private ResultType resultType;    
     
-    private Set<IndicatorListener> listeners;
+    protected Set<IndicatorListener> listeners;
     
     protected AbstractIndicator(String name, ResultType resultType) {
         this.name = name;
@@ -71,7 +72,7 @@ public abstract class AbstractIndicator<T> implements Indicator<T>{
     protected void notifyListeners(){
         if(listeners != null && !listeners.isEmpty()){
             for (IndicatorListener listener : listeners) {
-                listener.onUpdate(this);
+                listener.onEvaluate(this);
             }
         }
     }

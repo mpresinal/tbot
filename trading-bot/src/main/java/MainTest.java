@@ -2,15 +2,16 @@
 import java.util.Calendar;
 import java.util.Date;
 import java.time.*;
-import java.time.temporal.ChronoField;
+import java.util.List;
 import java.util.TimeZone;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
 import org.presinal.market.client.types.AssetPair;
+import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.indicator.Indicator;
-import org.presinal.trading.indicator.IndicatorListener;
+import org.presinal.trading.indicator.listener.IndicatorListener;
 import org.presinal.trading.indicator.ResultType;
 import org.presinal.trading.indicator.SMA;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
@@ -45,9 +46,9 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
  * @since 1.0
  */
 public class MainTest implements IndicatorListener {
-
+ 
     @Override
-    public void onUpdate(Indicator indicator) {
+    public void onEvaluate(Indicator indicator) {
         System.out.println("MainTest.onUpdate() Enter");
         System.out.println("MainTest.onUpdate() indicator = "+indicator);
         if(indicator.getResultType() == ResultType.SINGLE_RESULT) {
@@ -61,17 +62,35 @@ public class MainTest implements IndicatorListener {
     
     public static void main(String[] args) throws InterruptedException, MarketClientException {
         MarketClient client = new KucoinMarketClient(KucoinMarketClient.API_URL, "test", "xpo");
-        int period = 3;
-        TimeFrame timeFrame = TimeFrame.FIVE_MINUTES;
-        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("IHT", "BTC"), period, timeFrame);
+        int period = 1;
+        TimeFrame timeFrame = TimeFrame.ONE_DAY;
+        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("R", "BTC"), period, timeFrame);
         dataReader.setMarketClient(client);
                 
         Calendar cal = Calendar.getInstance();
-        //'2011-12-03T10:15:30Z'
-        String pattern = "%s-%s-%sT%s:%s:00Z";
+                
         
-        Instant startDate = Instant.parse(String.format(pattern, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH), 0,0 ));
-        Instant endDate = Instant.parse(String.format(pattern, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH), 23,59 ));
+
+        //2011-12-03T10:15:30Z
+        int month = cal.get(Calendar.MONTH)+1;
+        
+        Instant startDate = Instant.parse(
+                cal.get(Calendar.YEAR)+"-"
+                +(month<10? "0"+month : month) +"-"
+                +"08T00:00:00.00Z"                
+        );
+        
+        //month = 3;
+        Instant endDate = Instant.parse(
+                cal.get(Calendar.YEAR)+"-"
+                +(month<10? "0"+month : month) +"-"
+                +"08"//cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+                +"T23:59:59.00Z"                
+        );
+        
+        System.out.println("MainTest.main() startDate = "+startDate);
+        System.out.println("MainTest.main() endDate = "+endDate);
+        
         dataReader.setDateRange(startDate, endDate);
         
         SMA sma = new SMA();        
@@ -79,9 +98,14 @@ public class MainTest implements IndicatorListener {
         sma.setTimeFrame(timeFrame);
         sma.addListener(new MainTest());
         
+        
         Thread thread = new Thread(()-> { 
-            sma.evaluate(dataReader.readData());
-        });
+            List<Candlestick> data = dataReader.readData();
+            System.out.println("*** data = "+data);
+            sma.evaluate(data);
+        }); 
+        
+        thread.start();
     }
     
     public static void mainx(String[] args) throws InterruptedException {
