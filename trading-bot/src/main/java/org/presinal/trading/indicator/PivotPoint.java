@@ -21,70 +21,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package org.presinal.trading.indicator;
 
 import java.util.Collection;
 import java.util.List;
-import static java.util.logging.Level.INFO;
-import java.util.logging.Logger;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.indicator.PivotPoint.PivotPointResult;
 
 /**
- * Simple Moving Average
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class SMA extends AbstractIndicator<Double> {
+public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
-    private final String CLASS_NAME = SMA.class.getSimpleName();
+    private int amountOfPoints;
     
-    private Logger logger = Logger.getLogger(CLASS_NAME);
-    
-    private static final String NAME = "Simple Moving Average";
-    private double mean;
-
-    public SMA() {
-        super(NAME, ResultType.SINGLE_RESULT);
+    public PivotPoint(String name, ResultType resultType) {
+        super(name, resultType);
     }
 
     @Override
-    public Double getSingleResult() {
-        return mean;
+    public PivotPointResult getSingleResult() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Double> getMultiResult() {
+    public Collection<PivotPointResult> getMultiResult() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        final String METOD_NAME = "evaluate";
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void evaluate(Candlestick previousDay) {
+        /*
+        Formula:
+        PP: (H+L+C)/3 (a simple average of the three prices)  
+        S1: (2*PP) – H  
+        S2: PP-H+L  
+        R1: (2*PP)-L  
+        R2: PP+H-L
+        Leer más en: http://www.pullback.es/los-niveles-psicologicos-los-pivot-points/
+        */
+        double pp = (previousDay.highPrice+previousDay.lowPrice+previousDay.closePrice) / 3.0;
+        Double[] resistance = new Double[3];
+    }
+
+    public static class PivotPointResult {
+        public final Double pivotPoint;
+        public final Double[] supports;
+        public final Double[] resistance;
+
+        public PivotPointResult(Double pivotPoint, Double[] supports, Double[] resistance) {
+            this.pivotPoint = pivotPoint;
+            this.supports = supports;
+            this.resistance = resistance;
+        }        
         
-        if (data != null && !data.isEmpty()) {
-            double total = 0.0;
-            
-            // calculating the range index
-            int length = data.size();            
-            int start=0;
-            
-            int tmpPeriod = getPeriod();
-            int p = tmpPeriod;
-            
-            if(length > tmpPeriod){
-                start = length - tmpPeriod;                
-            } else {
-                p =  length;
-            }         
-            
-            for (int i = start; i < length; i++) {
-                total = total + data.get(i).closePrice;
-            }
-            
-            mean = total / p;
-            logger.logp(INFO, CLASS_NAME, METOD_NAME, "average = " + mean);
-            notifyListeners();            
-        }
     }
 }

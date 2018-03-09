@@ -3,6 +3,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.indicator.EMA;
 import org.presinal.trading.indicator.RSI;
 import org.presinal.trading.indicator.SMA;
 
@@ -53,22 +54,22 @@ public class TestRSIFor {
         list.add(new Candlestick(0, 5.63, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.65, 0, 0, 0, Instant.EPOCH));
+        list.add(new Candlestick(0, 5.68, 0, 0, 0, Instant.EPOCH));
         
         RSI rsi = new RSI();
         rsi.setPeriod(14);
         rsi.evaluate(list);
         
-        SMA sma = new SMA();
-        sma.setPeriod(14);
-        sma.evaluate(list);
+        EMA ema = new EMA();
+        ema.setPeriod(14);
+        ema.evaluate(list);
         
-        SMA smaFaster = new SMA();
+        EMA smaFaster = new EMA();
         smaFaster.setPeriod(7);
         smaFaster.evaluate(list);
         
         System.out.println("rsi = " + rsi.getSingleResult()); // expected result = 84.7458
-        System.out.println("sma = " + sma.getSingleResult()); // expected result = 5.556428571
+        System.out.println("sma = " + ema.getSingleResult()); // expected result = 5.556428571
         System.out.println("smaFaster = " + smaFaster.getSingleResult()); // expected result = 84.7458
 
         /*
