@@ -22,16 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.bot.strategy;
+package org.presinal.trading.bot.strategy.listener;
 
-import org.presinal.trading.bot.strategy.listener.StrategyListener;
+import org.presinal.trading.bot.strategy.Signal;
+import org.presinal.trading.bot.strategy.Strategy;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Strategy extends Runnable{
-    
-    void setListener(StrategyListener listener);
+public interface StrategyListener {
+
+    void onSignal(Signal sginal, Strategy source);
 }

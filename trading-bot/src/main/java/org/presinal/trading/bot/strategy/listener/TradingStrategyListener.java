@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.bot.strategy;
+package org.presinal.trading.bot.strategy.listener;
 
 import org.presinal.market.client.types.AssetPair;
 

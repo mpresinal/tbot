@@ -110,10 +110,7 @@ public abstract class AbstractMarketClient implements MarketClient {
         
     }
     
-    protected String doGetRequest(String endPoint, Map<String, Object> requestParam) throws MarketClientException {
-        System.out.println("doGetRequest() Enter");
-        System.out.println("doGetRequest() baseTarget = "+baseTarget.getUri());
-        System.out.println("doGetRequest() endPoint = "+endPoint);        
+    protected String doGetRequest(String endPoint, Map<String, Object> requestParam) throws MarketClientException {        
         
         Response response = addQueryParam(baseTarget.path(endPoint), requestParam)
                 .request(MediaType.APPLICATION_JSON)

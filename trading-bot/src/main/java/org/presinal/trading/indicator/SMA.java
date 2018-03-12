@@ -23,11 +23,7 @@
  */
 package org.presinal.trading.indicator;
 
-import java.util.Collection;
-import java.util.List;
-import static java.util.logging.Level.INFO;
-import java.util.logging.Logger;
-import org.presinal.market.client.types.Candlestick;
+import org.presinal.market.client.enums.TimeFrame;
 
 /**
  * Simple Moving Average
@@ -35,56 +31,18 @@ import org.presinal.market.client.types.Candlestick;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class SMA extends AbstractIndicator<Double> {
-
-    private final String CLASS_NAME = SMA.class.getSimpleName();
-    
-    private Logger logger = Logger.getLogger(CLASS_NAME);
+public class SMA extends MovingAverage {
     
     private static final String NAME = "Simple Moving Average";
-    private double mean;
-
+    
     public SMA() {
-        super(NAME, ResultType.SINGLE_RESULT);
+        super(NAME);
     }
 
-    @Override
-    public Double getSingleResult() {
-        return mean;
+    public SMA(int period, TimeFrame timeFrame) {
+        this();
+        setPeriod(period);
+        setTimeFrame(timeFrame);
     }
 
-    @Override
-    public Collection<Double> getMultiResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void evaluate(List<Candlestick> data) {
-        final String METOD_NAME = "evaluate";
-        
-        if (data != null && !data.isEmpty()) {
-            double total = 0.0;
-            
-            // calculating the range index
-            int length = data.size();            
-            int start=0;
-            
-            int tmpPeriod = getPeriod();
-            int p = tmpPeriod;
-            
-            if(length > tmpPeriod){
-                start = length - tmpPeriod;                
-            } else {
-                p =  length;
-            }         
-            
-            for (int i = start; i < length; i++) {
-                total = total + data.get(i).closePrice;
-            }
-            
-            mean = total / p;
-            logger.logp(INFO, CLASS_NAME, METOD_NAME, "average = " + mean);
-            notifyListeners();            
-        }
-    }
 }

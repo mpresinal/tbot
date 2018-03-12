@@ -1,12 +1,17 @@
 
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.MarketClientException;
+import org.presinal.market.client.enums.TimeFrame;
+import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
+import org.presinal.market.client.types.AssetPair;
 import org.presinal.trading.bot.TradingBot;
 import org.presinal.trading.bot.action.AbstractBotAction;
-import org.presinal.trading.bot.action.BotAction;
-import org.presinal.trading.bot.action.BotActionContext;
-import org.presinal.trading.bot.action.BotActionListener;
+import org.presinal.trading.bot.strategy.ScalpingStrategy;
+import org.presinal.trading.bot.strategy.Signal;
+import org.presinal.trading.bot.strategy.Strategy;
+import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 
 /*
  * The MIT License
@@ -38,9 +43,11 @@ import org.presinal.trading.bot.action.BotActionListener;
  */
 public class TestBot {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MarketClientException {
         System.out.println("Creating bot...");
-        TradingBot bot = new TradingBot(null, "ScalpingBot", "v1.0") {
+        MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
+        
+        TradingBot bot = new TradingBot(marketClient, "ScalpingBot", "v1.0") {
             @Override
             public void init() {
                 System.out.println(getBotName() + ":: Init");
@@ -51,7 +58,7 @@ public class TestBot {
         System.out.println("Adding action to bot...");
         AssetSelectionAction selection = new AssetSelectionAction();
         BuyAction buyAction = new BuyAction();
-        ScalpingAction scalpingAction = new ScalpingAction();
+        ScalpingAction scalpingAction = new ScalpingAction(marketClient);
 
         bot.addBotAction(selection);
         bot.addBotAction(buyAction);
@@ -90,8 +97,10 @@ public class TestBot {
             System.out.println(name + " :: performeAction() Enter");
             System.out.println(name + " :: performeAction() Executing task");
             
+            getContext().put(KEY, new AssetPair("PRL", "BTC"));
+            
             try {
-                Thread.sleep(30*1000L);
+                Thread.sleep(10*1000L);
             } catch (InterruptedException ex) {
                 Logger.getLogger(TestBot.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -161,15 +170,17 @@ public class TestBot {
         }
     }
 
-    private static class ScalpingAction extends AbstractBotAction {
+    private static class ScalpingAction extends AbstractBotAction implements TradingStrategyListener {
         
         public static final String KEY = ScalpingAction.class.getSimpleName();        
         private String name = KEY;
         
         private boolean signalRecieved = false;
-        
-        public ScalpingAction() {
-            super(3);
+        private ScalpingStrategy strategy;
+        private MarketClient client;
+        public ScalpingAction(MarketClient client) {
+            super(3);       
+            this.client=client;
         }
 
         @Override
@@ -198,7 +209,15 @@ public class TestBot {
                     Object signalData = getContext().get(AssetSelectionAction.KEY);
                     System.out.println(name + " :: performeAction() Executing task");
                     System.out.println(name + " :: performeAction() signalData = "+signalData);
-                    notifyListener();
+                    
+                    if(signalData instanceof AssetPair){
+                        strategy = new ScalpingStrategy(client, (AssetPair)signalData, TimeFrame.THIRTY_MINUTES);
+                        strategy.setTrendLineTimeFrame(TimeFrame.THIRTY_MINUTES);                                
+                        strategy.init();
+                        strategy.setListener(this);
+                        new Thread(strategy).start();
+                    }                    
+                    
                 }
 
             }
@@ -214,6 +233,23 @@ public class TestBot {
                 signalRecieved = true;
             }
             System.out.println(name + " :: update() Exit");
+        }
+
+        @Override
+        public void onBuySignal(AssetPair asset, double price) {
+            System.out.println("buy signal: asset = "+asset+", price="+price);
+            notifyListener();
+        }
+
+        @Override
+        public void onSellSignal(AssetPair asset, double price) {
+            System.out.println("sell signal: asset = "+asset+", price="+price);
+            notifyListener();
+        }
+
+        @Override
+        public void onSignal(Signal sginal, Strategy source) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 }

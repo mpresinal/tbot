@@ -22,14 +22,19 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.bot.strategy;
+package org.presinal.trading.indicator;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface StrategyListener {
+public class VolumeMovingAverage extends MovingAverage {
 
-    void onSignal(Signal sginal, Strategy source);
+    private static final String NAME = "Volume Moving Average";
+    
+    public VolumeMovingAverage() {
+        super(NAME, MovingAverage.CandlestickSource.VOLUME);
+    }
+
 }

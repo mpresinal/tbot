@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.Candlestick;
 
 /**
@@ -49,6 +50,12 @@ public class EMA extends AbstractIndicator<Double> {
         super(NAME, ResultType.SINGLE_RESULT);
     }
 
+    public EMA(int period, TimeFrame timeFrame) {
+        this();
+        setPeriod(period);
+        setTimeFrame(timeFrame);
+    }
+
     public Double getSingleResult() {
         return ema;
     }
@@ -59,44 +66,48 @@ public class EMA extends AbstractIndicator<Double> {
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        final String METOD_NAME = ".evaluate() ::";
-        
+        final String METOD_NAME = ".evaluate() :: ";
+
         if (data != null && !data.isEmpty()) {
-            StringBuilder outputBuffer = new StringBuilder();
-            
+
             if (sma == null) {
                 initSMA();
             }
 
             /*
-            * Formula:
-            * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
-            * Where ALPHA = 2 / (PERIOD + 1)
-            * we are goin to use a SMA as a previous EMA for the first EMA calculation
-            */
-            
+             * Formula:
+             * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
+             * Where ALPHA = 2 / (PERIOD + 1)
+             * we are goin to use a SMA as a previous EMA for the first EMA calculation
+             */
             // computing simple moving average
             sma.evaluate(data);
-            
-            Double previousEma = sma.getSingleResult();
-            double alpha = 2.0/(getPeriod()+1);
-            double currentPrice = data.get(data.size()-1).closePrice;
-            ema = previousEma + alpha * (currentPrice - previousEma);
-            
-            outputBuffer.append(CLASS_NAME+METOD_NAME+"previousEma="+previousEma+"\n");
-            outputBuffer.append(CLASS_NAME+METOD_NAME+"alpha="+alpha+"\n");
-            outputBuffer.append(CLASS_NAME+METOD_NAME+"currentPrice="+currentPrice+"\n");
-            outputBuffer.append(CLASS_NAME+METOD_NAME+"ema="+ema+"\n");
-            
-            logger.log(Level.INFO, outputBuffer.toString());
-            notifyListeners();
+            double currentPrice = data.get(data.size() - 1).closePrice;
+            evaluate(data.get(data.size() - 1), sma.getSingleResult());
         }
 
     }
 
+    public void evaluate(Candlestick current, Double previousEma) {
+        final String METOD_NAME = ".evaluate() :: ";
+        StringBuilder outputBuffer = new StringBuilder();
+        double alpha = 2.0 / (getPeriod() + 1);
+        double currentPrice = current.closePrice;
+        ema = previousEma + alpha * (currentPrice - previousEma);
+
+        /*
+        outputBuffer.append(CLASS_NAME + METOD_NAME + "previousEma=" + previousEma + "\n");
+        outputBuffer.append(CLASS_NAME + METOD_NAME + "alpha=" + alpha + "\n");
+        outputBuffer.append(CLASS_NAME + METOD_NAME + "currentPrice=" + currentPrice + "\n");
+        outputBuffer.append(CLASS_NAME + METOD_NAME + "ema=" + ema + "\n"); */
+
+        //logger.log(Level.INFO, outputBuffer.toString());
+        notifyListeners();
+    }
+
     private void initSMA() {
         sma = new SMA();
-        sma.setPeriod(getPeriod());
+        sma.setPeriod(getPeriod()-1);
         sma.setTimeFrame(getTimeFrame());
     }
 }

@@ -24,6 +24,7 @@
 
 package org.presinal.trading.indicator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.presinal.market.client.types.Candlestick;
@@ -36,15 +37,17 @@ import org.presinal.trading.indicator.PivotPoint.PivotPointResult;
  */
 public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
-    private int amountOfPoints;
+    private static final String NAME = "Pivot Point";
     
-    public PivotPoint(String name, ResultType resultType) {
-        super(name, resultType);
+    private final int LEVELS = 3;
+    private PivotPointResult result;
+    public PivotPoint() {
+        super(NAME, ResultType.SINGLE_RESULT);
     }
-
+    
     @Override
     public PivotPointResult getSingleResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return result;
     }
 
     @Override
@@ -54,21 +57,51 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(data != null && !data.isEmpty()){
+            evaluate(data.get(data.size()-1));
+        }
     }
     
     public void evaluate(Candlestick previousDay) {
         /*
         Formula:
         PP: (H+L+C)/3 (a simple average of the three prices)  
-        S1: (2*PP) – H  
-        S2: PP-H+L  
         R1: (2*PP)-L  
-        R2: PP+H-L
+        S1: (2*PP) – H  
+        
+        R2: PP+(H-L)
+        S2: PP-(H-L)        
+        
+        R3 = H + 2(PP – L) => R1 + (H − L)
+        S3 = L – 2(H – PP) => S1 − (H − L)
         Leer más en: http://www.pullback.es/los-niveles-psicologicos-los-pivot-points/
+        https://www.babypips.com/learn/forex/how-to-calculate-pivot-points
+        https://en.wikipedia.org/wiki/Pivot_point_(technical_analysis)        
         */
         double pp = (previousDay.highPrice+previousDay.lowPrice+previousDay.closePrice) / 3.0;
-        Double[] resistance = new Double[3];
+        
+        Double[] resistance = new Double[LEVELS];
+        Double[] supports = new Double[LEVELS];
+        
+        // First level resistance and support
+        resistance[0] = (2.0*pp) - previousDay.lowPrice;
+        supports[0] = (2.0*pp) - previousDay.highPrice;
+        
+        // Second level resistance and support
+        resistance[1] = pp + (previousDay.highPrice - previousDay.lowPrice);
+        supports[1] = pp - (previousDay.highPrice - previousDay.lowPrice);
+        
+        // Thierd level resistance and support
+        resistance[2] =  resistance[0] + (previousDay.highPrice - previousDay.lowPrice);//previousDay.highPrice + (2*(pp - previousDay.lowPrice));
+        supports[2] = supports[0] - (previousDay.highPrice - previousDay.lowPrice);//previousDay.lowPrice + (2*(previousDay.highPrice - pp));
+        
+        result = new PivotPointResult(pp, supports, resistance);
+        notifyListeners();        
+    }
+    
+    private double round(double value ){
+        return value;
+        //return NumberUtil.round(value);
     }
 
     public static class PivotPointResult {
@@ -80,7 +113,14 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
             this.pivotPoint = pivotPoint;
             this.supports = supports;
             this.resistance = resistance;
-        }        
-        
+        }
+
+        @Override
+        public String toString() {
+            return "PivotPointResult{" + "pivotPoint=" + pivotPoint 
+                    + ", supports=" + (supports != null? Arrays.toString(supports) : null) 
+                    + ", resistance=" + (resistance != null? Arrays.toString(resistance) : null) + '}';
+        }
+
     }
 }

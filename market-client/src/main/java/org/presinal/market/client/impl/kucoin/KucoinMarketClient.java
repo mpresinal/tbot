@@ -114,10 +114,11 @@ public class KucoinMarketClient extends AbstractMarketClient {
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, Instant startDate, Instant endDate, int limit) throws MarketClientException {
         // https://api.kucoin.com/v1/open/chart/history
         //
+        /*
         System.out.println(" ****  assetPair = "+assetPair);
         System.out.println(" ****  timeFrame = "+timeFrame);
         System.out.println(" ****  startDate = "+startDate);
-        System.out.println(" ****  endDate = "+endDate);
+        System.out.println(" ****  endDate = "+endDate); */
                 
         if( !isTimeFrameSupported(timeFrame)){
             throw new MarketClientException("Not supported time frame: "+timeFrame);
@@ -140,12 +141,9 @@ public class KucoinMarketClient extends AbstractMarketClient {
         paramMap.put("symbol", assetPair.toSymbol(SYMBOL_SEPERATOR));
         paramMap.put("resolution", resolution);
         paramMap.put("from", startDate.getEpochSecond());
-        paramMap.put("to", endDate.getEpochSecond());
-        
-        System.out.println(" ****  paramMap = "+paramMap);
+        paramMap.put("to", endDate.getEpochSecond());        
         
         String response = doGetRequest(CANDLESTICK_TRV_VERSION_ENDPOINT, paramMap);
-        System.out.println(" ****  response = "+response);
         Gson gson = getGson();
         JsonElement el = gson.fromJson(response, JsonElement.class);
         Candlestick[] candlesticks = gson.fromJson(el, Candlestick[].class);

@@ -62,8 +62,8 @@ public class MainTest implements IndicatorListener {
     
     public static void main(String[] args) throws InterruptedException, MarketClientException {
         MarketClient client = new KucoinMarketClient(KucoinMarketClient.API_URL, "test", "xpo");
-        int period = 1;
-        TimeFrame timeFrame = TimeFrame.ONE_DAY;
+        int period = 200;
+        TimeFrame timeFrame = TimeFrame.FIVE_MINUTES;
         PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("R", "BTC"), period, timeFrame);
         dataReader.setMarketClient(client);
                 
@@ -73,18 +73,19 @@ public class MainTest implements IndicatorListener {
 
         //2011-12-03T10:15:30Z
         int month = cal.get(Calendar.MONTH)+1;
-        
+        month = month - 1;
         Instant startDate = Instant.parse(
                 cal.get(Calendar.YEAR)+"-"
                 +(month<10? "0"+month : month) +"-"
-                +"08T00:00:00.00Z"                
+                +"01T00:00:00.00Z"                
         );
         
         //month = 3;
+        month = month + 1;
         Instant endDate = Instant.parse(
                 cal.get(Calendar.YEAR)+"-"
                 +(month<10? "0"+month : month) +"-"
-                +"08"//cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+                +"09"//cal.getActualMaximum(Calendar.DAY_OF_MONTH)
                 +"T23:59:59.00Z"                
         );
         
@@ -100,7 +101,12 @@ public class MainTest implements IndicatorListener {
         
         
         Thread thread = new Thread(()-> { 
+            Date s = new Date(); 
+            System.out.println("*** reading data at "+s);
             List<Candlestick> data = dataReader.readData();
+            Date e = new Date();
+            System.out.println("*** reading data end at "+e);
+            System.out.println("*** elapse = "+(e.getTime() - s.getTime()));
             System.out.println("*** data = "+data);
             sma.evaluate(data);
         }); 

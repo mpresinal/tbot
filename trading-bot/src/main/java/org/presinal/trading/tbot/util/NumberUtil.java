@@ -22,16 +22,33 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.bot.strategy;
-
-import org.presinal.trading.bot.strategy.listener.StrategyListener;
+package org.presinal.trading.tbot.util;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Strategy extends Runnable{
+public class NumberUtil {
+
+    public static int decimalPlace = 8;
     
-    void setListener(StrategyListener listener);
+    public static void setDecimalPlace(int decimalPlace){
+        NumberUtil.decimalPlace = decimalPlace;
+    }
+    
+    public static double round(double value){
+        return round(value, decimalPlace);
+    }
+    
+    public static double round(double value, int decimalPlaces){
+        String strNum = "1";
+        for(int i = 0 ; i < decimalPlaces; i++) {
+            strNum += "0";
+        }
+        
+        double factor = Double.parseDouble(strNum);
+        //double)Math.round(expectedPP*100)/100)
+        return ((double) Math.round(value*factor)/factor);
+    }
 }

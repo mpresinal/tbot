@@ -40,4 +40,8 @@ public class Signal<T> {
     public T getData() {
         return data;
     }
+    
+    public <K> K getDataAs(){
+        return (K)data;
+    }
 }

@@ -26,7 +26,7 @@ package org.presinal.trading.bot.action;
 
 import org.presinal.trading.bot.strategy.Signal;
 import org.presinal.trading.bot.strategy.Strategy;
-import org.presinal.trading.bot.strategy.StrategyListener;
+import org.presinal.trading.bot.strategy.listener.StrategyListener;
 
 /**
  *
