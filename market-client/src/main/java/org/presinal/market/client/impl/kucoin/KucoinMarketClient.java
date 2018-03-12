@@ -143,6 +143,9 @@ public class KucoinMarketClient extends AbstractMarketClient {
         paramMap.put("from", startDate.getEpochSecond());
         paramMap.put("to", endDate.getEpochSecond());        
         
+        System.out.println(" ****  paramMap = "+paramMap);
+        System.out.println(" ****  endpoint = "+CANDLESTICK_TRV_VERSION_ENDPOINT);
+        
         String response = doGetRequest(CANDLESTICK_TRV_VERSION_ENDPOINT, paramMap);
         Gson gson = getGson();
         JsonElement el = gson.fromJson(response, JsonElement.class);
