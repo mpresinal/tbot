@@ -179,6 +179,8 @@ public final class ScalpingStrategy implements Strategy {
                         // process indictors values
                         if (fastEmaValue > slowEmaValue) {
                             
+                            System.out.println("####### fastEma has crossesp up the slowEma");
+                            
                             if(currentCandlestick.volume > volumeAverageValue){
                                 // Notify lister with a buy signal   
                                 notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
@@ -186,6 +188,7 @@ public final class ScalpingStrategy implements Strategy {
 
                         } else if (slowEmaValue > fastEmaValue) {
                             // Notify lister with a buy signal   
+                            System.out.println("####### fastEma has crossesp down the slowEma");
                             notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, false);
                         }
 
