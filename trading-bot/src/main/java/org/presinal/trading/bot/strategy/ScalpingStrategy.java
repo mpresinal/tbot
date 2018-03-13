@@ -34,7 +34,6 @@ import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
 import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 import org.presinal.trading.indicator.EMA;
-import org.presinal.trading.indicator.SMA;
 import org.presinal.trading.indicator.VolumeMovingAverage;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
@@ -59,7 +58,7 @@ public final class ScalpingStrategy implements Strategy {
     // Indicators
     private EMA fastEMAInd;
     private EMA slowEMAInd;
-    private SMA trendLineEMA;
+    private EMA trendLineEMA;
     private VolumeMovingAverage volumeInd;
 
     private AssetPair asset;
@@ -71,6 +70,9 @@ public final class ScalpingStrategy implements Strategy {
     // Trend line variables
     private TimeFrame trendLineTimeFrame = TimeFrame.EIGHT_HOURS;
     private int trendLinePeriod = 200;
+    
+    private boolean buySignalGenerated = false;
+    private boolean sellSignalGenerated = false;
 
     public ScalpingStrategy(MarketClient marketClient, AssetPair asset, TimeFrame timeFrame) {
         setMarketClient(marketClient);
@@ -91,13 +93,13 @@ public final class ScalpingStrategy implements Strategy {
     public void init() {
         fastEMAInd = new EMA(13, timeFrame);
         slowEMAInd = new EMA(34, timeFrame);
-        trendLineEMA = new SMA(trendLinePeriod, trendLineTimeFrame);
+        trendLineEMA = new EMA(trendLinePeriod, trendLineTimeFrame);
 
         volumeInd = new VolumeMovingAverage();
         volumeInd.setPeriod(10);
 
-        // use slow ema period. 
-        dataReader = new PeriodIndicatorDataReader(asset, slowEMAInd.getPeriod(), timeFrame);
+        // use trend line period multiply by 3. I's much more better to use a big data set for ema calculaton
+        dataReader = new PeriodIndicatorDataReader(asset, trendLinePeriod*3, timeFrame);
         dataReader.setMarketClient(marketClient);
     }
 
@@ -183,18 +185,29 @@ public final class ScalpingStrategy implements Strategy {
                             
                             if(currentCandlestick.volume > volumeAverageValue){
                                 // Notify lister with a buy signal   
-                                notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
+                                if(!buySignalGenerated){
+                                    notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
+                                    buySignalGenerated = true;
+                                    sellSignalGenerated = false;
+                                }
                             }
 
                         } else if (slowEmaValue > fastEmaValue) {
                             // Notify lister with a buy signal   
                             System.out.println("####### fastEma has crossesp down the slowEma");
-                            notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, false);
+                            
+                            // Notify listener with a sell signal only if a previous buy signal was generated
+                            if(!sellSignalGenerated && buySignalGenerated) {
+                                notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, false);
+                                buySignalGenerated = false;
+                                sellSignalGenerated = true;
+                            }
                         }
 
                         System.out.println("################## Procesing data....DONE!!");
 
                         // check if it is still in up trend line
+                        // TODO: calulate the trendLine using the previous trend line ema and the current candlestick
                         trendUp = trendAverage < currentCandlestick.closePrice;
                         
                     } // close price if
@@ -233,7 +246,8 @@ public final class ScalpingStrategy implements Strategy {
     }
 
     private void computeTrendLine() {
-        PeriodIndicatorDataReader dreader = new PeriodIndicatorDataReader(asset, trendLineEMA.getPeriod(), trendLineEMA.getTimeFrame());
+        // get as much data as it can. Big data will guaranty a more acurate EMA
+        PeriodIndicatorDataReader dreader = new PeriodIndicatorDataReader(asset, trendLineEMA.getPeriod()*3, trendLineEMA.getTimeFrame());
         dreader.setMarketClient(marketClient);
         computeDataReaderDateRange(dreader);
         List<Candlestick> data = dreader.readData();

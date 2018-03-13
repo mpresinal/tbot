@@ -40,9 +40,10 @@ public class EMA extends AbstractIndicator<Double> {
     private final String CLASS_NAME = EMA.class.getSimpleName();
     private Logger logger = Logger.getLogger(CLASS_NAME);
 
-    private static final String NAME = "Simple Moving Average";
+    private static final String NAME = "Exponential Moving Average";
 
     private double ema;
+    private double previousEma = -1.0;
 
     private SMA sma;
 
@@ -73,17 +74,25 @@ public class EMA extends AbstractIndicator<Double> {
             if (sma == null) {
                 initSMA();
             }
-
-            /*
-             * Formula:
-             * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
-             * Where ALPHA = 2 / (PERIOD + 1)
-             * we are goin to use a SMA as a previous EMA for the first EMA calculation
-             */
-            // computing simple moving average
-            sma.evaluate(data);
-            double currentPrice = data.get(data.size() - 1).closePrice;
-            evaluate(data.get(data.size() - 1), sma.getSingleResult());
+            
+            int dataLength = data.size();
+            
+            if(dataLength > getPeriod()) {
+                if (previousEma <= 0) {
+                    // computing simple moving average
+                    sma.evaluate(data.subList(0, getPeriod()));
+                    previousEma = sma.getSingleResult();
+                }
+                
+                for(int i = getPeriod(); i < dataLength; i++) {
+                    double currentPrice = data.get(i).closePrice;
+                    evaluate(data.get(i), previousEma);
+                    previousEma = getSingleResult();
+                }
+                
+                ema = previousEma;
+            }           
+            
         }
 
     }
@@ -91,6 +100,14 @@ public class EMA extends AbstractIndicator<Double> {
     public void evaluate(Candlestick current, Double previousEma) {
         final String METOD_NAME = ".evaluate() :: ";
         StringBuilder outputBuffer = new StringBuilder();
+        
+        /*
+         * Formula:
+         * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
+         * Where ALPHA = 2 / (PERIOD + 1)
+         * we are goin to use a SMA as a previous EMA for the first EMA calculation
+         */
+        
         double alpha = 2.0 / (getPeriod() + 1);
         double currentPrice = current.closePrice;
         ema = previousEma + alpha * (currentPrice - previousEma);
