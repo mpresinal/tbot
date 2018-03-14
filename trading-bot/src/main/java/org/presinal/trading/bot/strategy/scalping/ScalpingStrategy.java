@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.presinal.trading.bot.strategy;
+package org.presinal.trading.bot.strategy.scalping;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -31,6 +31,8 @@ import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.bot.strategy.Signal;
+import org.presinal.trading.bot.strategy.Strategy;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
 import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 import org.presinal.trading.indicator.EMA;
@@ -44,14 +46,14 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
  */
 public final class ScalpingStrategy implements Strategy {
 
-    private static final TimeFrame DEFAULT_TIME_FRAME = TimeFrame.FIFTEEN_MINUTES;
+    public static final TimeFrame DEFAULT_TIME_FRAME = TimeFrame.FIFTEEN_MINUTES;
 
     private static final long RETRIEVE_DATA_EVERY_FIVE_SECONDS = 5 * 1000;
 
     private StrategyListener listener;
 
     // Market and Data Reader
-    private TimeFrame timeFrame;
+    
     private MarketClient marketClient;
     private PeriodIndicatorDataReader dataReader;
 
@@ -66,15 +68,16 @@ public final class ScalpingStrategy implements Strategy {
     // computed variables
     private Double trendAverage = null;
     private double currentPrice = -1;
-
-    // Trend line variables
-    private TimeFrame trendLineTimeFrame = TimeFrame.EIGHT_HOURS;
-    private int trendLinePeriod = 200;
+    
     
     private boolean buySignalGenerated = false;
     private boolean sellSignalGenerated = false;
+    
+    // Strategy config  
+   private ScalpingStrategyConfig config;
+    
 
-    public ScalpingStrategy(MarketClient marketClient, AssetPair asset, TimeFrame timeFrame) {
+    public ScalpingStrategy(MarketClient marketClient, AssetPair asset, ScalpingStrategyConfig config) {
         setMarketClient(marketClient);
 
         if (asset == null) {
@@ -82,24 +85,29 @@ public final class ScalpingStrategy implements Strategy {
         }
 
         this.asset = asset;
-        this.timeFrame = timeFrame;
-
+        
+        if(config != null) {
+            this.config = config;            
+        } else {
+            this.config = ScalpingStrategyConfig.getDefault();
+        }
     }
 
     public ScalpingStrategy(MarketClient marketClient, AssetPair asset) {
-        this(marketClient, asset, DEFAULT_TIME_FRAME);
+        this(marketClient, asset, ScalpingStrategyConfig.getDefault());
     }
 
     public void init() {
-        fastEMAInd = new EMA(13, timeFrame);
-        slowEMAInd = new EMA(34, timeFrame);
-        trendLineEMA = new EMA(trendLinePeriod, trendLineTimeFrame);
-
+        TimeFrame indicatorTimeFrame = config.getIndicatorTimeFrame();
+        fastEMAInd = new EMA(13, indicatorTimeFrame);
+        slowEMAInd = new EMA(34, indicatorTimeFrame);
+        trendLineEMA = new EMA(config.getTrendLinePeriod(), config.getTrendLineTimeFrame());
+        
         volumeInd = new VolumeMovingAverage();
-        volumeInd.setPeriod(10);
+        volumeInd.setPeriod(config.getVolumeIndicatorPeriod());
 
         // use trend line period multiply by 3. I's much more better to use a big data set for ema calculaton
-        dataReader = new PeriodIndicatorDataReader(asset, trendLinePeriod*3, timeFrame);
+        dataReader = new PeriodIndicatorDataReader(asset, config.getTrendLinePeriod()*3, indicatorTimeFrame);
         dataReader.setMarketClient(marketClient);
     }
 
@@ -133,10 +141,13 @@ public final class ScalpingStrategy implements Strategy {
             System.out.println("+++++++++++++++++++ is trend line up = " + trendUp);
 
             List<Candlestick> data;
-            Double fastEmaValue, slowEmaValue, volumeAverageValue;
+            Double fastEmaValue, slowEmaValue, volumeAverageValue=0.0;
             Candlestick currentCandlestick;
             
             long iterationIdx = 0;
+            
+            boolean buySignalRequirementFullfiled = false;
+            
             while (trendUp) {
                 System.out.println("\n\n -----------------------------------------------------------------------");
                 iterationIdx += 1;
@@ -173,23 +184,33 @@ public final class ScalpingStrategy implements Strategy {
                         slowEMAInd.evaluate(data);
                         slowEmaValue = slowEMAInd.getSingleResult();
                         System.out.println("+++++++++++++++++++ slowEmaValue = " + slowEmaValue);
-
-                        volumeInd.evaluate(data);
-                        volumeAverageValue = volumeInd.getSingleResult();
-                        System.out.println("+++++++++++++++++++ volumeAverageValue = " + volumeAverageValue);
+                        
+                        if(config.isIncludeVolumeAverageCondition()) {
+                            volumeInd.evaluate(data);
+                            volumeAverageValue = volumeInd.getSingleResult();
+                            System.out.println("+++++++++++++++++++ volumeAverageValue = " + volumeAverageValue);
+                        }
+                        
+                        // ###########################################################################################                        
+                        // Signa logic starte here
 
                         // process indictors values
                         if (fastEmaValue > slowEmaValue) {
                             
                             System.out.println("####### fastEma has crossesp up the slowEma");
                             
-                            if(currentCandlestick.volume > volumeAverageValue){
-                                // Notify lister with a buy signal   
-                                if(!buySignalGenerated){
-                                    notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
-                                    buySignalGenerated = true;
-                                    sellSignalGenerated = false;
-                                }
+                            buySignalRequirementFullfiled = true;
+                            
+                            if(config.isIncludeVolumeAverageCondition()) {
+                                // current volume must be greater than volume average
+                                buySignalRequirementFullfiled = (currentCandlestick.volume > volumeAverageValue);                                
+                            }
+                            
+                            // Notify lister with a buy signal   
+                            if (!buySignalGenerated && buySignalRequirementFullfiled) {
+                                notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
+                                buySignalGenerated = true;
+                                sellSignalGenerated = false;
                             }
 
                         } else if (slowEmaValue > fastEmaValue) {
@@ -202,12 +223,15 @@ public final class ScalpingStrategy implements Strategy {
                                 buySignalGenerated = false;
                                 sellSignalGenerated = true;
                             }
-                        }
+                        }                        
+               
+                        // Signa logic end here
+                        // ###########################################################################################                        
 
                         System.out.println("################## Procesing data....DONE!!");
 
-                        // check if it is still in up trend line
-                        // TODO: calulate the trendLine using the previous trend line ema and the current candlestick
+                        // check if it is still in up trend line. To do so the trend line must be recalculated                        
+                        computeTrendLineMovement();
                         trendUp = trendAverage < currentCandlestick.closePrice;
                         
                     } // close price if
@@ -246,15 +270,30 @@ public final class ScalpingStrategy implements Strategy {
     }
 
     private void computeTrendLine() {
-        // get as much data as it can. Big data will guaranty a more acurate EMA
-        PeriodIndicatorDataReader dreader = new PeriodIndicatorDataReader(asset, trendLineEMA.getPeriod()*3, trendLineEMA.getTimeFrame());
+        // get as much data as it can. Big data will guaranty a more acurate EMA        
+        trendLineEMA.evaluate(readTrendLineData(trendLineEMA.getPeriod()*3));
+        trendAverage = trendLineEMA.getSingleResult();
+    }
+    
+    private void computeTrendLineMovement() {
+        
+        final int SHORT_PERIOD = 5;
+        List<Candlestick> data = readTrendLineData(SHORT_PERIOD);
+        
+        if(data != null && !data.isEmpty()){            
+            trendLineEMA.evaluate(data.get(data.size()-1), trendAverage);
+            trendAverage = trendLineEMA.getSingleResult();
+        }
+    }
+
+    private List<Candlestick> readTrendLineData(int period){
+        PeriodIndicatorDataReader dreader = new PeriodIndicatorDataReader(asset, period, trendLineEMA.getTimeFrame());
         dreader.setMarketClient(marketClient);
         computeDataReaderDateRange(dreader);
         List<Candlestick> data = dreader.readData();
-        trendLineEMA.evaluate(data);
-        trendAverage = trendLineEMA.getSingleResult();
+        return data;
     }
-
+    
     private Double getAssetCurrentPrice() throws MarketClientException {
         return marketClient.getAssetPrice(this.asset);
     }
@@ -285,14 +324,6 @@ public final class ScalpingStrategy implements Strategy {
             throw new NullPointerException("marketClient can not be null");
         }
         this.marketClient = marketClient;
-    }
-
-    public void setTrendLinePeriod(int trendLinePeriod) {
-        this.trendLinePeriod = trendLinePeriod;
-    }
-
-    public void setTrendLineTimeFrame(TimeFrame trendLineTimeFrame) {
-        this.trendLineTimeFrame = trendLineTimeFrame;
     }
 
 }

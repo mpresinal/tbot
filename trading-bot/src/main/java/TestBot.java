@@ -8,10 +8,12 @@ import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.trading.bot.TradingBot;
 import org.presinal.trading.bot.action.AbstractBotAction;
-import org.presinal.trading.bot.strategy.ScalpingStrategy;
+import org.presinal.trading.bot.scalping.ScalpingTradingBot;
+import org.presinal.trading.bot.strategy.scalping.ScalpingStrategy;
 import org.presinal.trading.bot.strategy.Signal;
 import org.presinal.trading.bot.strategy.Strategy;
 import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
+import org.presinal.trading.bot.strategy.scalping.ScalpingStrategyConfig;
 
 /*
  * The MIT License
@@ -44,6 +46,22 @@ import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 public class TestBot {
 
     public static void main(String[] args) throws MarketClientException {
+        
+        System.out.println("Creating bot...");
+        MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
+        ScalpingTradingBot bot = new ScalpingTradingBot(marketClient);
+        System.out.println("Creating bot...OK");
+        
+        System.out.println("Initializing bot...");
+        bot.init();
+        System.out.println("Initializing bot...OK");
+        
+        System.out.println("Starting bot...");
+        bot.start();
+        System.out.println("Starting bot...OK");
+    }
+    
+    public static void mainx(String[] args) throws MarketClientException {
         System.out.println("Creating bot...");
         MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
         
@@ -211,8 +229,9 @@ public class TestBot {
                     System.out.println(name + " :: performeAction() signalData = "+signalData);
                     
                     if(signalData instanceof AssetPair){
-                        strategy = new ScalpingStrategy(client, (AssetPair)signalData, TimeFrame.THIRTY_MINUTES);
-                        strategy.setTrendLineTimeFrame(TimeFrame.THIRTY_MINUTES);                                
+                        //strategy = new ScalpingStrategy(client, (AssetPair)signalData, TimeFrame.THIRTY_MINUTES);
+                        strategy = new ScalpingStrategy(client, (AssetPair)signalData, ScalpingStrategyConfig.getDefault());                        
+                        //strategy.setTrendLineTimeFrame(TimeFrame.THIRTY_MINUTES);                                
                         strategy.init();
                         strategy.setListener(this);
                         new Thread(strategy).start();

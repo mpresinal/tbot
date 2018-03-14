@@ -25,7 +25,6 @@ package org.presinal.trading.indicator;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.Candlestick;
@@ -67,7 +66,6 @@ public class EMA extends AbstractIndicator<Double> {
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        final String METOD_NAME = ".evaluate() :: ";
 
         if (data != null && !data.isEmpty()) {
 
@@ -97,34 +95,22 @@ public class EMA extends AbstractIndicator<Double> {
 
     }
 
-    public void evaluate(Candlestick current, Double previousEma) {
-        final String METOD_NAME = ".evaluate() :: ";
-        StringBuilder outputBuffer = new StringBuilder();
-        
+    public void evaluate(Candlestick current, Double previousEma) {        
         /*
          * Formula:
          * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
          * Where ALPHA = 2 / (PERIOD + 1)
          * we are goin to use a SMA as a previous EMA for the first EMA calculation
-         */
-        
+         */        
         double alpha = 2.0 / (getPeriod() + 1);
         double currentPrice = current.closePrice;
         ema = previousEma + alpha * (currentPrice - previousEma);
-
-        /*
-        outputBuffer.append(CLASS_NAME + METOD_NAME + "previousEma=" + previousEma + "\n");
-        outputBuffer.append(CLASS_NAME + METOD_NAME + "alpha=" + alpha + "\n");
-        outputBuffer.append(CLASS_NAME + METOD_NAME + "currentPrice=" + currentPrice + "\n");
-        outputBuffer.append(CLASS_NAME + METOD_NAME + "ema=" + ema + "\n"); */
-
-        //logger.log(Level.INFO, outputBuffer.toString());
         notifyListeners();
     }
 
     private void initSMA() {
         sma = new SMA();
-        sma.setPeriod(getPeriod()-1);
+        sma.setPeriod(getPeriod());
         sma.setTimeFrame(getTimeFrame());
     }
 }
