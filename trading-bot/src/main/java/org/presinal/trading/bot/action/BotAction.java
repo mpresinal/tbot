@@ -34,8 +34,6 @@ import java.util.Collection;
  */
 public interface BotAction extends Serializable {
 
-    int getExecutionOrder();
-
     String getContextKey();
     
     /**

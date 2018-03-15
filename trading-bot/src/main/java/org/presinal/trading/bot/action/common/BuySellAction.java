@@ -43,7 +43,7 @@ public class BuySellAction extends AbstractBotAction {
     private String generatorOrderActionKey;
 
     public BuySellAction(String generatorOrderActionKey) {
-        super(2);
+        super();
         this.generatorOrderActionKey=generatorOrderActionKey;
     }
     

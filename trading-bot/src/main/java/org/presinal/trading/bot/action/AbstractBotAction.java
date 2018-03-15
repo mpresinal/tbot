@@ -37,7 +37,6 @@ import java.util.Set;
  */
 public abstract class AbstractBotAction extends Thread implements BotAction {
 
-    private int executionOrder;
     private Set<BotAction> dependencyActions;
     private Set<BotActionListener> listeners;
     private BotActionContext context;
@@ -46,16 +45,9 @@ public abstract class AbstractBotAction extends Thread implements BotAction {
     
     private boolean actionEnded = false;
     
-    public AbstractBotAction(int executionOrder) {
-        this.executionOrder = executionOrder;
-        
+    public AbstractBotAction() {        
         dependencyActions = new HashSet<>();
         this.listeners = new HashSet<>();
-    }
-    
-    @Override
-    public int getExecutionOrder() {
-        return executionOrder;
     }
 
     @Override

@@ -102,7 +102,7 @@ public class TestBot {
         private String name = KEY;
         
         public AssetSelectionAction() {
-            super(1);
+            super();
         }
 
         @Override
@@ -140,7 +140,7 @@ public class TestBot {
         private boolean signalRecieved = false;
 
         public BuyAction() {
-            super(2);
+            super();
         }
 
         @Override
@@ -197,7 +197,7 @@ public class TestBot {
         private ScalpingStrategy strategy;
         private MarketClient client;
         public ScalpingAction(MarketClient client) {
-            super(3);       
+            super();       
             this.client=client;
         }
 

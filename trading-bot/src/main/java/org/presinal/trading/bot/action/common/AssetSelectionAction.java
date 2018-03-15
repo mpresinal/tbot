@@ -24,9 +24,14 @@
 package org.presinal.trading.bot.action.common;
 
 
+import com.google.common.base.Objects;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.presinal.market.client.types.AssetPair;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.MarketClientException;
+import org.presinal.market.client.types.AssetPriceChange;
 import org.presinal.trading.bot.action.AbstractBotAction;
 
 /**
@@ -36,37 +41,90 @@ import org.presinal.trading.bot.action.AbstractBotAction;
  */
 public class AssetSelectionAction extends AbstractBotAction {
 
-    public static final String KEY = AssetSelectionAction.class.getSimpleName();
-    private String name = KEY;
+    private static final String CLASS_NAME = AssetSelectionAction.class.getName();
+    private static final Logger logger = Logger.getLogger(CLASS_NAME);    
+    public static final String KEY = CLASS_NAME;
+    public static final String DEFAULT_QUOTEASSET = "BTC";
+    
+    private MarketClient client;
+    
+    private String quoteAsset;
 
-    public AssetSelectionAction() {
-        super(1);
+    public AssetSelectionAction(MarketClient client) {
+        super();
+        this.client = client;
     }
 
     @Override
     public String getContextKey() {
-        return name;
+        return KEY;
     }
 
     @Override
     public void run() {
-        System.out.println(name + " :: performeAction() Enter");
-        System.out.println(name + " :: performeAction() Executing task");
+        final String METHOD = "run()";
+        logger.entering(CLASS_NAME, METHOD);
+        logger.info("Executing task");
 
-        getContext().put(KEY, new AssetPair("PRL", "BTC"));
-
+        int candidateAssetsLimit = 10;
+        int minVolumeValue = 1_000;
+        
         try {
-            Thread.sleep(10 * 1000L);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(AssetSelectionAction.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            
+            logger.info("Loading assets....");
+            
+            List<AssetPriceChange> assets = client.loadAssetsPriceChange();
+            
+            logger.info("Loading assets....OK");
+            logger.info("assets.size = "+ (assets != null? assets.size() : null));
+            
+            if(assets != null && !assets.isEmpty()) {
+                
+                logger.info("Applying filtering and sorting to list....");
+                Iterator<AssetPriceChange> assetsIterator = assets.stream()
+                    .filter(apc -> { 
+                        return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
+                    })
+                    // Sort by priceChange in decending order
+                    .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChange(), asset1.getPriceChange()))
+                    .limit(candidateAssetsLimit)
+                    .filter(apc -> {
+                        return apc.getVolume() >= minVolumeValue;
+                    })
+                    // Sort by volumn in acending order
+                    .sorted((asset1, asset2) -> Double.compare(asset1.getVolume(), asset2.getVolume()))
+                    .iterator();
+                
+                logger.info("Applying filtering and sorting to list....OK");                
+                
+                if(assetsIterator.hasNext()){
+                    AssetPriceChange selectedAsset = assetsIterator.next();
+                    
+                    logger.info("selectedAsset = "+selectedAsset);
+                    
+                    getContext().put(KEY, selectedAsset.getAssetPair());
+                    notifyListener();
+                }
+            }
 
-        notifyListener();
+        } catch (MarketClientException ex) {
+            logger.log(Level.SEVERE, "Error loading assets price changes. "+ex.getMessage(), ex);
+        }
+        logger.exiting(CLASS_NAME, METHOD);
     }
 
     @Override
     public void notifySignal() {
-        System.out.println(name + " :: update() Enter");
+        final String METHOD = "notifySignal()";
+        logger.entering(CLASS_NAME, METHOD);
+        logger.exiting(CLASS_NAME, METHOD);        
     }
 
+    public String getQuoteAsset() {
+        return quoteAsset;
+    }
+
+    public void setQuoteAsset(String quoteAsset) {
+        this.quoteAsset = quoteAsset;
+    }
 }

@@ -40,8 +40,8 @@ public class BotActionStrategy extends AbstractBotAction implements StrategyList
     private Strategy strategy;
     private boolean running = false;
     
-    public BotActionStrategy(int executionOrder, Strategy strategy) {
-        super(executionOrder);
+    public BotActionStrategy(Strategy strategy) {
+        super();
         this.strategy=strategy;
         strategy.setListener(this);
     }

@@ -45,15 +45,17 @@ public class ScalpingTradingBot extends TradingBot {
 
     @Override
     public void init() {
-        AssetSelectionAction selection = new AssetSelectionAction();        
+        AssetSelectionAction assetSelection = new AssetSelectionAction(getMarketClient());        
         ScalpingAction scalpingAction = new ScalpingAction(getMarketClient());        
         BuySellAction buyAction = new BuySellAction(scalpingAction.getContextKey());
         
-        addBotAction(selection);
+        assetSelection.setQuoteAsset(AssetSelectionAction.DEFAULT_QUOTEASSET);
+        
+        addBotAction(assetSelection);
         addBotAction(buyAction);
         addBotAction(scalpingAction);
 
-        reactOnChangeOf(scalpingAction, selection);
+        reactOnChangeOf(scalpingAction, assetSelection);
         reactOnChangeOf(buyAction, scalpingAction);
     }
 

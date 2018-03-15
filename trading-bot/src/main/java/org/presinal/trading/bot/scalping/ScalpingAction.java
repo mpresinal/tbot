@@ -53,7 +53,7 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
     private final ScalpingStrategyConfig strategyConfig;
 
     public ScalpingAction(MarketClient client) {
-        super(3);
+        super();
         this.client = client;
 
         strategyConfig = new ScalpingStrategyConfig();        
@@ -100,7 +100,6 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
                 }
 
             }
-
         }
 
         System.out.println(name + " :: performeAction() Exit");

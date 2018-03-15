@@ -24,6 +24,7 @@
 
 package org.presinal.market.client.impl.kucoin.deserializer;
 
+import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -32,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
@@ -94,7 +96,22 @@ public class AssetPriceChangeDeserializerTest {
             AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange[].class);
             
             System.out.println("assetsPriceChange.length = " + assetsPriceChange.length);
-            //System.out.println("assetsPriceChange = " + Arrays.toString(assetsPriceChange));
+            System.out.println("assetsPriceChange = " + Arrays.toString(assetsPriceChange));
+            
+            List<AssetPriceChange> list = Arrays.asList(assetsPriceChange);
+            list.stream()
+                    .filter(apc -> { 
+                        return Objects.equal("BTC", apc.getAssetPair().getQuoteAsset());
+                    })
+                    // Sort by priceChange in decending order
+                    .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChange(), asset1.getPriceChange()))
+                    .limit(10)
+                    .filter(apc -> {
+                        return apc.getVolume() >= 1_000;
+                    })
+                    // Sort by volumn in acending order
+                    .sorted((asset1, asset2) -> Double.compare(asset1.getVolume(), asset2.getVolume()))                   
+                    .forEach(System.out::println);
             
             assertNotNull("The test has failed. candlesticks is null", assetsPriceChange);  
             
