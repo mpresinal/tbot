@@ -27,8 +27,12 @@ package org.presinal.trading.bot.action.common;
 import com.google.common.base.Objects;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.types.AssetPriceChange;
@@ -53,6 +57,20 @@ public class AssetSelectionAction extends AbstractBotAction {
     public AssetSelectionAction(MarketClient client) {
         super();
         this.client = client;
+        setupLogger();
+    }
+    
+    private void setupLogger() {
+        
+        logger.setLevel(Level.INFO);
+        
+        try {            
+            FileHandler fileHandler = new FileHandler(AssetSelectionAction.class.getSimpleName()+".log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error adding File Handler. "+ex.getMessage(), ex);            
+        }        
     }
 
     @Override
@@ -66,7 +84,7 @@ public class AssetSelectionAction extends AbstractBotAction {
         logger.entering(CLASS_NAME, METHOD);
         logger.info("Executing task");
 
-        int candidateAssetsLimit = 10;
+        int candidateAssetsLimit = 1;
         int minVolumeValue = 1_000;
         
         try {
@@ -80,22 +98,56 @@ public class AssetSelectionAction extends AbstractBotAction {
             
             if(assets != null && !assets.isEmpty()) {
                 
-                logger.info("Applying filtering and sorting to list....");
-                Iterator<AssetPriceChange> assetsIterator = assets.stream()
-                    .filter(apc -> { 
-                        return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
-                    })
-                    // Sort by priceChange in decending order
-                    .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChange(), asset1.getPriceChange()))
-                    .limit(candidateAssetsLimit)
-                    .filter(apc -> {
-                        return apc.getVolume() >= minVolumeValue;
-                    })
-                    // Sort by volumn in acending order
-                    .sorted((asset1, asset2) -> Double.compare(asset1.getVolume(), asset2.getVolume()))
-                    .iterator();
+                logger.info("Applying filtering and sorting to list....");                
+                List<AssetPriceChange> assetList = assets.stream()
+                        .filter(apc -> {
+                            return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
+                        })
+                        // Sort by volumn in decending order
+                        .sorted((asset1, asset2) -> Double.compare(asset2.getQuoteVolume(), asset1.getQuoteVolume()))
+                        
+                        //.sorted((asset1, asset2) -> Double.compare(asset2.getVolume(), asset1.getVolume()))
+                        .limit(candidateAssetsLimit)
+                        // Sort by priceChange in acending order
+                        .sorted((asset1, asset2) -> Double.compare(asset1.getPriceChangePercent(), asset2.getPriceChangePercent()))
+                        .filter(apc -> {
+                            return apc.getVolume() >= minVolumeValue;
+                        })
+                        .collect(Collectors.toList());
                 
                 logger.info("Applying filtering and sorting to list....OK");                
+                
+                logger.info("Assets filtered and sorted:");           
+                
+                logger.info("Notifying the list of assets....");
+                
+                String outputFormat = "Asset: %s, Price: %s, Price Change: %s, Change Rate: %s, High: %s, Volume: %s , Qute Volume: %s";
+                
+                for(AssetPriceChange asset : assetList) {
+                    
+                    logger.info(String.format(outputFormat, asset.getAssetPair().getBaseAsset(),
+                        asset.getAskPrice(),
+                        asset.getPriceChange(),
+                        asset.getPriceChangePercent(),
+                        asset.getHighPrice(),
+                        asset.getVolume(),
+                        asset.getQuoteVolume()));
+                    
+                    getContext().put(KEY, asset.getAssetPair());
+                    notifyListener();
+                    
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(AssetSelectionAction.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
+                logger.info("Notifying the list of assets....OK");
+                
+                /*
+                Iterator<AssetPriceChange> assetsIterator = assetList.iterator();
+                                
                 
                 if(assetsIterator.hasNext()){
                     AssetPriceChange selectedAsset = assetsIterator.next();
@@ -104,7 +156,7 @@ public class AssetSelectionAction extends AbstractBotAction {
                     
                     getContext().put(KEY, selectedAsset.getAssetPair());
                     notifyListener();
-                }
+                }*/
             }
 
         } catch (MarketClientException ex) {

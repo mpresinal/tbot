@@ -26,6 +26,10 @@ package org.presinal.trading.bot.strategy.scalping;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
@@ -48,7 +52,7 @@ public final class ScalpingStrategy implements Strategy {
 
     public static final TimeFrame DEFAULT_TIME_FRAME = TimeFrame.FIFTEEN_MINUTES;
 
-    private static final long RETRIEVE_DATA_EVERY_FIVE_SECONDS = 5 * 1000;
+    private static final long RETRIEVE_DATA_EVERY_TEN_SECONDS = 10 * 1000;
 
     private StrategyListener listener;
 
@@ -111,35 +115,60 @@ public final class ScalpingStrategy implements Strategy {
         dataReader.setMarketClient(marketClient);
     }
 
+    private void setupLogger(Logger logger) {
+        
+        logger.setLevel(Level.FINEST);
+        
+        try {            
+            FileHandler fileHandler = new FileHandler(ScalpingStrategy.class.getSimpleName()+"_"+asset.getBaseAsset()+"-"+asset.getQuoteAsset()+".log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);            
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error adding File Handler. "+ex.getMessage(), ex);            
+        }        
+    }
+    
     @Override
     public void run() {
-
-        boolean trendUp = false;
+        
+        String CLASS_NAME = ScalpingStrategy.class.getName();
+        Logger logger = Logger.getLogger(CLASS_NAME+"."+asset.getBaseAsset()+"."+asset.getQuoteAsset());
+        setupLogger(logger);
+        
+        boolean running = true;        
+        boolean trendUp = false;  
+        
+        logger.info("Running strategy with config: "+config);
 
         try {
-            System.out.println("################## Computing Trend line....");
-            // compute current Trend
-            if (trendAverage == null || trendAverage <= 0) {
-                computeTrendLine();
-            }
+            
+            if(config.isIncludeTrendLineVerification()){
+                logger.finest("Computing Trend line....");
+                // compute current Trend
+                if (trendAverage == null || trendAverage <= 0) {
+                    computeTrendLine();
+                }
 
-            System.out.println("+++++++++++++++++++ Trend line average = " + trendAverage);
-            System.out.println("################## Computing Trend line....DONE!!");
+                logger.finest("Trend line average = " + trendAverage);
+                logger.finest("Computing Trend line....DONE!!");
 
-            System.out.println("################## Computing current price....");
+                logger.finest("Computing current price....");
 
-            // Compute current price
-            if (currentPrice <= 0) {
-                currentPrice = getAssetCurrentPrice();
-            }
-            System.out.println("+++++++++++++++++++ currentPrice = " + currentPrice);
-            System.out.println("################## Computing current price....DONE!!");
+                // Compute current price
+                if (currentPrice <= 0) {
+                    currentPrice = getAssetCurrentPrice();
+                }
+                logger.finest("currentPrice = " + currentPrice);
+                logger.finest("Computing current price....DONE!!");
 
-            // Check if the asset trend line is upward.
-            trendUp = trendAverage < currentPrice;
+                // Check if the asset trend line is upward.
+                trendUp = trendAverage < currentPrice;
 
-            System.out.println("+++++++++++++++++++ is trend line up = " + trendUp);
-
+                logger.finest("is trend line up = " + trendUp);
+                
+                running = trendUp;                
+            } 
+            
             List<Candlestick> data;
             Double fastEmaValue, slowEmaValue, volumeAverageValue=0.0;
             Candlestick currentCandlestick;
@@ -148,30 +177,30 @@ public final class ScalpingStrategy implements Strategy {
             
             boolean buySignalRequirementFullfiled = false;
             
-            while (trendUp) {
-                System.out.println("\n\n -----------------------------------------------------------------------");
+            while (running) {
+                logger.finest("\n\n -----------------------------------------------------------------------");
                 iterationIdx += 1;
-                System.out.println("+++++++++++++++++++ iteration number: " + iterationIdx);
+                logger.finest("iteration number: " + iterationIdx);
                 
-                System.out.println("################## Computing date range data reader....");
+                logger.finest("Computing date range data reader....");
                 // compute date range based on period and time frame to retrieve cancdlesticks
                 computeDataReaderDateRange(dataReader);
-                System.out.println("################## Computing date range data reader....DONE!!");
+                logger.finest("Computing date range data reader....DONE!!");
 
-                System.out.println("################## Readeing data....");
+                logger.finest("Readeing data....");
                 // read data candlesticks
                 data = dataReader.readData();
-                System.out.println("+++++++++++++++++++ data.size = " + (data != null? data.size() : "null"));
-                System.out.println("################## Readeing data....DONE!!");
+                logger.finest("data.size = " + (data != null? data.size() : "null"));
+                logger.finest("Readeing data....DONE!!");
 
-                System.out.println("################## Procesing data....");
+                logger.finest("Procesing data....");
                 if (data != null && !data.isEmpty()) {
 
                     // Get current candlestick which is the last one in the list
                     currentCandlestick = data.get(data.size() - 1);
 
-                    System.out.println("+++++++++++++++++++ currentCandlestick.closePrice = " + currentCandlestick.closePrice);
-                    System.out.println("+++++++++++++++++++ currentCandlestick.volume = " + currentCandlestick.volume);
+                    logger.finest("** currentCandlestick.closePrice = " + currentCandlestick.closePrice);
+                    logger.finest("** currentCandlestick.volume = " + currentCandlestick.volume);
 
                     if (currentCandlestick.closePrice > 0) {
 
@@ -179,16 +208,16 @@ public final class ScalpingStrategy implements Strategy {
                         fastEMAInd.evaluate(data);
                         fastEmaValue = fastEMAInd.getSingleResult();
 
-                        System.out.println("+++++++++++++++++++ fastEmaValue = " + fastEmaValue);
+                        logger.finest("** fastEmaValue = " + fastEmaValue);
 
                         slowEMAInd.evaluate(data);
                         slowEmaValue = slowEMAInd.getSingleResult();
-                        System.out.println("+++++++++++++++++++ slowEmaValue = " + slowEmaValue);
+                        logger.finest("** slowEmaValue = " + slowEmaValue);
                         
                         if(config.isIncludeVolumeAverageCondition()) {
                             volumeInd.evaluate(data);
                             volumeAverageValue = volumeInd.getSingleResult();
-                            System.out.println("+++++++++++++++++++ volumeAverageValue = " + volumeAverageValue);
+                            logger.finest("** volumeAverageValue = " + volumeAverageValue);
                         }
                         
                         // ###########################################################################################                        
@@ -197,7 +226,7 @@ public final class ScalpingStrategy implements Strategy {
                         // process indictors values
                         if (fastEmaValue > slowEmaValue) {
                             
-                            System.out.println("####### fastEma has crossesp up the slowEma");
+                            logger.finest(" fastEma has crossesp up the slowEma");
                             
                             buySignalRequirementFullfiled = true;
                             
@@ -209,13 +238,13 @@ public final class ScalpingStrategy implements Strategy {
                             // Notify lister with a buy signal   
                             if (!buySignalGenerated && buySignalRequirementFullfiled) {
                                 notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
-                                buySignalGenerated = true;
+                                buySignalGenerated = true; 
                                 sellSignalGenerated = false;
                             }
 
                         } else if (slowEmaValue > fastEmaValue) {
                             // Notify lister with a buy signal   
-                            System.out.println("####### fastEma has crossesp down the slowEma");
+                            logger.finest("*** fastEma has crossesp down the slowEma");
                             
                             // Notify listener with a sell signal only if a previous buy signal was generated
                             if(!sellSignalGenerated && buySignalGenerated) {
@@ -225,33 +254,35 @@ public final class ScalpingStrategy implements Strategy {
                             }
                         }                        
                
-                        // Signa logic end here
+                        // Signal logic end here
                         // ###########################################################################################                        
 
-                        System.out.println("################## Procesing data....DONE!!");
+                        logger.finest("Procesing data....DONE!!");
 
-                        // check if it is still in up trend line. To do so the trend line must be recalculated                        
-                        computeTrendLineMovement();
-                        trendUp = trendAverage < currentCandlestick.closePrice;
+                        if(config.isIncludeTrendLineVerification()){
+                            // check if it is still in up trend line. To do so the trend line must be recalculated                        
+                            computeTrendLineMovement();
+                            trendUp = trendAverage < currentCandlestick.closePrice;
+                            running = trendUp;
+                        }
                         
                     } // close price if
                     
-                    if (trendUp) {
+                    if (running) {
                         try {
-                            Thread.sleep(RETRIEVE_DATA_EVERY_FIVE_SECONDS);
+                            Thread.sleep(RETRIEVE_DATA_EVERY_TEN_SECONDS);
                         } catch (InterruptedException ex) {
-                            System.out.println("ScalpingStrategy.run() Thread interrupted. Reason: " + ex.getMessage());
+                            logger.warning("Thread has been interrupted. Reason: " + ex.getMessage());
                         }
                     } // end if                   
 
                 } // end data if                
 
-                System.out.println("\n\n -----------------------------------------------------------------------");
+                logger.finest("\n\n -----------------------------------------------------------------------");
             }
 
         } catch (Exception e) {
-            System.out.println("ScalpingStrategy.run() Error runing strategy. " + e.getMessage());
-            e.printStackTrace(System.out);
+            logger.log(Level.SEVERE, "Error running the strategy. ", e);
         }
     }
 

@@ -1,5 +1,10 @@
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
@@ -47,8 +52,14 @@ public class TestBot {
 
     public static void main(String[] args) throws MarketClientException {
         
+        try {
+            LogManager.getLogManager().readConfiguration(Files.newInputStream(Paths.get("logging.properties"), StandardOpenOption.READ));
+        } catch (IOException ex) {
+            Logger.getLogger(TestBot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         System.out.println("Creating bot...");
-        MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
+        MarketClient marketClient = new KucoinMarketClient("https://kitchen-4.kucoin.com", "TEST", "TEST");
         ScalpingTradingBot bot = new ScalpingTradingBot(marketClient);
         System.out.println("Creating bot...OK");
         

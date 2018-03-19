@@ -47,6 +47,11 @@ public class ScalpingStrategyConfig implements Serializable {
     */
     private boolean includeVolumeAverageCondition = true;
     
+    /*
+    * Flag that indicate to check the asset current trend line before run the scalping logic.
+    */
+    private boolean includeTrendLineVerification = true;
+    
     private static ScalpingStrategyConfig defaultConfig;
 
     public ScalpingStrategyConfig() {
@@ -116,13 +121,23 @@ public class ScalpingStrategyConfig implements Serializable {
         this.includeVolumeAverageCondition = value;
     }
 
+    public boolean isIncludeTrendLineVerification() {
+        return includeTrendLineVerification;
+    }
+
+    public void setIncludeTrendLineVerification(boolean includeTrendLineVerification) {
+        this.includeTrendLineVerification = includeTrendLineVerification;
+    }
+
+    
     @Override
     public String toString() {
         return "ScalpingStrategyConfig{" + "trendLineTimeFrame=" + trendLineTimeFrame 
                 + ", trendLinePeriod=" + trendLinePeriod 
                 + ", indicatorTimeFrame=" + indicatorTimeFrame 
-                + ", volumeIndicatorPeriod="+volumeIndicatorPeriod
+                + ", volumeIndicatorPeriod=" + volumeIndicatorPeriod
                 + ", includeVolumeAverageCondition=" + includeVolumeAverageCondition 
+                +", includeTrendLineVerification=" +includeTrendLineVerification
                 + "}";
     }
     

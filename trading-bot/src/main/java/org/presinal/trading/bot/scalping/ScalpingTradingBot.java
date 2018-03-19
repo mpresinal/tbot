@@ -47,7 +47,7 @@ public class ScalpingTradingBot extends TradingBot {
     public void init() {
         AssetSelectionAction assetSelection = new AssetSelectionAction(getMarketClient());        
         ScalpingAction scalpingAction = new ScalpingAction(getMarketClient());        
-        BuySellAction buyAction = new BuySellAction(scalpingAction.getContextKey());
+        BuySellAction buyAction = new BuySellAction(getMarketClient(), scalpingAction.getContextKey());
         
         assetSelection.setQuoteAsset(AssetSelectionAction.DEFAULT_QUOTEASSET);
         

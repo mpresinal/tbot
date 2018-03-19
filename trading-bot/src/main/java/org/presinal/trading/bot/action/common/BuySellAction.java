@@ -23,8 +23,19 @@
  */
 package org.presinal.trading.bot.action.common;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.MarketClientException;
+import org.presinal.market.client.types.AccountBalance;
+import org.presinal.market.client.types.AccountBalance.Balance;
+import org.presinal.market.client.types.AssetPair;
+import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
 
 /**
@@ -34,62 +45,185 @@ import org.presinal.trading.bot.action.AbstractBotAction;
  */
 public class BuySellAction extends AbstractBotAction {
 
-    public static final String KEY = BuySellAction.class.getSimpleName();
-    private String name = KEY;
+    private static final String CLASS_NAME = BuySellAction.class.getName();
+    private static final Logger logger = Logger.getLogger(CLASS_NAME);    
+    public static final String KEY = CLASS_NAME;;
 
     private boolean signalRecieved = false;
 
     // Action context key of the action that generated buy/sell orders
-    private String generatorOrderActionKey;
-
-    public BuySellAction(String generatorOrderActionKey) {
+    private String generatorOrderActionKey;    
+    private AccountBalance accountBalance;    
+    private MarketClient client;
+    
+    private Map<String, AssetLostProfit> ledger;
+    
+    public BuySellAction(MarketClient client, String generatorOrderActionKey) {
         super();
+        this.client = client;
         this.generatorOrderActionKey=generatorOrderActionKey;
+        
+        ledger = new HashMap<>();
+        setupLogger();
     }
     
+    private void setupLogger() {
+        
+        logger.setLevel(Level.INFO);
+        
+        try {            
+            FileHandler fileHandler = new FileHandler(BuySellAction.class.getSimpleName()+".log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error adding File Handler. "+ex.getMessage(), ex);            
+        }        
+    }
 
     @Override
     public String getContextKey() {
-        return name;
+        return KEY;
     }
 
     @Override
     public void run() {
-        System.out.println(name + " :: performeAction() Enter");
-
+        logger.entering(CLASS_NAME, "run");
+        boolean result;
         while (!isActionEnded()) {
 
             synchronized (this) {
-                System.out.println(name + " :: performeAction() Waiting for signal to place an order");
+                logger.info("Waiting for signal to place an order");
 
                 while (!signalRecieved) {
                     try {
                         wait();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(BuySellAction.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.log(Level.SEVERE, "InterruptedException. "+ex.getMessage(), ex);
                     }
                 }
 
+                logger.info("signal's received!!!");
+                
                 signalRecieved = false;
                 Object signalData = getContext().get(generatorOrderActionKey);
-                System.out.println(name + " :: performeAction() Executing task");
-                System.out.println(name + " :: performeAction() signalData = " + signalData);
+                logger.info("** signalData = " + signalData);
+                
+                if(signalData instanceof Order){
+                    logger.info("Placing order");
+                    result = placeOrder((Order)signalData);
+                    logger.info("Order placed? "+result);
+                }
+                
                 notifyListener();
             }
 
         }
 
-        System.out.println(name + " :: performeAction() Exit");
+        logger.exiting(CLASS_NAME, "run");
     }
 
+    private boolean placeOrder(Order order) {        
+        double quantity = 0.0;
+        try {
+            
+            /*Balance balance = accountBalance.getBalanceFor(order.getAssetPair().getQuoteAsset());
+            double total = quantity * order.getPrice();
+            
+            // check if there is enough balance to place the order.
+            if(balance != null && (balance.available > 0.0 && balance.available > total)){ */
+    
+                Order placedOrder = null;
+                
+                AssetLostProfit assetLostProfit =  ledger.getOrDefault(order.getAssetPair().getBaseAsset(), new AssetLostProfit());
+                assetLostProfit.asset = order.getAssetPair();
+                
+                if( Order.SIDE_BUY.equals(order.getSide()) ) {
+                    assetLostProfit.buyPrice = order.getPrice();
+                    placedOrder = client.placeBuyOrder(order.getAssetPair(), order.getPrice(), quantity, order.getType());
+                    
+                } else if( Order.SIDE_SELL.equals(order.getSide()) ) {
+                    assetLostProfit.sellPrice = order.getPrice();
+                    placedOrder = client.placeSellOrder(order.getAssetPair(), order.getPrice(), quantity, order.getType());
+                    
+                    assetLostProfit.computeProfits();
+                    logger.info("** profit = "+assetLostProfit.profit+", percentage = " + assetLostProfit.profitPercentage+", asset = "+order.getAssetPair());
+                }
+                
+                if(placedOrder != null) {
+                    ledger.put(assetLostProfit.asset.getBaseAsset(), assetLostProfit);
+                    logger.info("Order placed successfully. Order id = " + placedOrder.getOrderId());
+
+                    order.setExecutedQty(placedOrder.getExecutedQty());
+                    order.setClientOrderId(placedOrder.getClientOrderId());
+                    order.setOrderId(placedOrder.getOrderId());
+                    order.setStatus(placedOrder.getStatus());
+                    order.setTransactionTime(placedOrder.getTransactionTime());
+                }
+                
+            /*} else {
+                logger.info("Not enough balance to place the order: "+order);
+            } */
+            
+        } catch (MarketClientException ex) {
+            logger.log(Level.SEVERE, "Error placing order. "+ex.getMessage(), ex);
+            return false;
+        }
+        
+        return true;
+    }
+    
     @Override
     public void notifySignal() {
-        System.out.println(name + " :: update() Enter");
+        logger.entering(CLASS_NAME, "notifySignal()");
+        logger.info("Signal notificacion received!!!");
         synchronized (this) {
             notifyAll();
             signalRecieved = true;
         }
-        System.out.println(name + " :: update() Exit");
+        logger.exiting(CLASS_NAME, "notifySignal()");
+    }
+    
+    private void updateLedger() {
+        
+    }
+    
+    public AccountBalance getAccountBalance() {
+        return accountBalance;
     }
 
+    public void setAccountBalance(AccountBalance accountBalance) {
+        this.accountBalance = accountBalance;
+    }
+    
+    private static class AssetLostProfit {
+        
+        double buyPrice;
+        double sellPrice;
+        AssetPair asset;
+
+        private double profit = -1;
+        private double profitPercentage;
+        
+        public void computeProfits() {
+            profit = (sellPrice - buyPrice);
+            profitPercentage = (profit / buyPrice) * 100.0;
+        }
+        
+        public boolean IsLoose() {
+            return profit < 0;
+        }
+        
+        public boolean isProfit() {
+            return !IsLoose();
+        }
+
+        @Override
+        public String toString() {
+            return "AssetLostProfit{ asset=" + asset
+                    + ", buyPrice=" + buyPrice 
+                    + ", sellPrice=" + sellPrice 
+                    + ", profit=" + profit 
+                    + ", profitPercentage=" + profitPercentage + " }";
+        }
+    }
 }

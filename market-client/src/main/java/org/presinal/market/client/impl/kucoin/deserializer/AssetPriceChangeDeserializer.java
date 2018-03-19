@@ -79,8 +79,11 @@ public class AssetPriceChangeDeserializer implements JsonDeserializer<AssetPrice
             
             priceChange.setPriceChange(getAttrAsDoubleIfNotNull(obj, "change"));
             
-            BigDecimal val = new BigDecimal(getAttrAsStringIfNotNull(obj, "changeRate"));            
-            priceChange.setPriceChangePercent(val.multiply(PERCENT).floatValue());
+            String changeRateStr = getAttrAsStringIfNotNull(obj, "changeRate");
+            if(changeRateStr != null && !changeRateStr.isEmpty()){
+                BigDecimal val = new BigDecimal(changeRateStr);            
+                priceChange.setPriceChangePercent(val.multiply(PERCENT).floatValue());
+            }
             
             // buy is the bid at kucoin exchanger
             priceChange.setBidPrice(getAttrAsDoubleIfNotNull(obj, "buy"));

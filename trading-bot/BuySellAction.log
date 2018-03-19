@@ -1,0 +1,121 @@
+[Sun Mar 18 23:26:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06614099, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448283866  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:31:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06595102, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -1.8996999999999764E-4, percentage = -0.28721977097711665, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448362592  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:32:42 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06612538, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448385070  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:33:05 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06591101, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -2.143699999999915E-4, percentage = -0.32418717291301996, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448396503  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:33:16 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.066118, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448452480  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:34:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06610799, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -1.000999999999086E-5, percentage = -0.015139598898924439, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448463735  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:34:23 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06615784, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448711317  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:38:31 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06590902, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -2.488199999999968E-4, percentage = -0.3761005498365679, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448744947  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:39:04 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06612699, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448778601  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:39:38 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.065915, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -2.1198999999999524E-4, percentage = -0.3205801443555729, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448801450  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:40:01 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.066125, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448812656  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:40:12 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.065913, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -2.1200000000000385E-4, percentage = -0.32060491493384324, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448835637  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:40:35 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06612501, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448869750  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:41:09 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06595964, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -1.6536999999999802E-4, percentage = -0.2500869187014082, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521448881021  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:41:21 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06621189, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=BUY}  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521449094454  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:44:54 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction notifySignal] [INFO] Signal notificacion received!!!  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] signal's received!!!  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] ** signalData = Order{assetPair=AssetPaire {baseAsset=ETH, quoteAsset=BTC}, orderId=null, clientOrderId=null, transactionTime=null, price=0.06568611, quantity=0.0, executedQty=0.0, status=null, type=LIMIT, side=SELL}  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Placing order  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] ** profit = -5.257799999999896E-4, percentage = -0.7940869834707778, asset = AssetPaire {baseAsset=ETH, quoteAsset=BTC}  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction placeOrder] [INFO] Order placed successfully. Order id = 1521449127965  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Order placed? true  
+[Mon Mar 19 04:45:27 BOT 2018] [org.presinal.trading.bot.action.common.BuySellAction run] [INFO] Waiting for signal to place an order  

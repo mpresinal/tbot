@@ -1,0 +1,10 @@
+[Sun Mar 18 23:26:42 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Executing task  
+[Sun Mar 18 23:26:42 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Loading assets....  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Loading assets....OK  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] assets.size = 310  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Applying filtering and sorting to list....  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Applying filtering and sorting to list....OK  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Assets filtered and sorted:  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Notifying the list of assets....  
+[Sun Mar 18 23:26:45 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Asset: ETH, Price: 0.065282, Price Change: -7.1899E-4, Change Rate: -1.09, High: 0.06811, Volume: 5379.9352878 , Qute Volume: 351.64396651  
+[Sun Mar 18 23:26:50 BOT 2018] [org.presinal.trading.bot.action.common.AssetSelectionAction run] [INFO] Notifying the list of assets....OK  

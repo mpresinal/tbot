@@ -26,8 +26,11 @@ package org.presinal.trading.bot.scalping;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.MarketClientException;
+import org.presinal.market.client.enums.OrderType;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.AssetPair;
+import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
 import org.presinal.trading.bot.action.common.AssetSelectionAction;
 import org.presinal.trading.bot.strategy.Signal;
@@ -61,8 +64,9 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
         strategyConfig.setTrendLinePeriod(ScalpingStrategyConfig.DEFAULT_TREND_LINE_PERIOD);
         
         strategyConfig.setIndicatorTimeFrame(TimeFrame.THIRTY_MINUTES);
-        strategyConfig.setIncludeVolumeAverageCondition(true);
+        strategyConfig.setIncludeVolumeAverageCondition(false);
         strategyConfig.setVolumeIndicatorPeriod(10);
+        strategyConfig.setIncludeTrendLineVerification(false);
     }
 
     @Override
@@ -118,17 +122,30 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
     @Override
     public void onBuySignal(AssetPair asset, double price) {
         System.out.println("buy signal: asset = " + asset + ", price=" + price);
+        Order order = createOrder(asset, price, Order.SIDE_BUY);
+        getContext().put(KEY, order);        
         notifyListener();
     }
 
     @Override
     public void onSellSignal(AssetPair asset, double price) {
         System.out.println("sell signal: asset = " + asset + ", price=" + price);
+        Order order = createOrder(asset, price, Order.SIDE_SELL);
+        getContext().put(KEY, order);        
         notifyListener();
     }
 
     @Override
     public void onSignal(Signal sginal, Strategy source) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private Order createOrder(AssetPair asset, double price, String side) {
+        Order order = new Order();
+        order.setAssetPair(asset);
+        order.setPrice(price);
+        order.setSide(side);
+        order.setType(OrderType.LIMIT);
+        return order;
     }
 }
