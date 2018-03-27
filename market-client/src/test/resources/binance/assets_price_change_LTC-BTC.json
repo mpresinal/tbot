@@ -1,0 +1,25 @@
+{
+    "_comment_": "This json object has been taken from binance endpoint https://api.binance.com/api/v1/ticker/24hr",
+    
+    "symbol": "LTCBTC",
+    "priceChange": "-0.00110700",
+    "priceChangePercent": "-5.852",
+    "weightedAvgPrice": "0.01840684",
+    "prevClosePrice": "0.01890300",
+    "lastPrice": "0.01780900",
+    "lastQty": "1.76000000",
+    "bidPrice": "0.01777800",
+    "bidQty": "22.30000000",
+    "askPrice": "0.01780900",
+    "askQty": "21.35000000",
+    "openPrice": "0.01891600",
+    "highPrice": "0.01906900",
+    "lowPrice": "0.01777700",
+    "volume": "116836.88000000",
+    "quoteVolume": "2150.59789849",
+    "openTime": 1522032753106,
+    "closeTime": 1522119153106,
+    "firstId": 9856576,
+    "lastId": 9895116,
+    "count": 38541
+}

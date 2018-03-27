@@ -24,7 +24,11 @@
 
 package org.presinal.trading.bot.strategy;
 
+import java.time.Instant;
+import java.util.Calendar;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
+import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
+import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
 /**
  *
@@ -34,4 +38,36 @@ import org.presinal.trading.bot.strategy.listener.StrategyListener;
 public interface Strategy extends Runnable{
     
     void setListener(StrategyListener listener);
+    
+    Strategy getImpl();
+    
+    public default void computeDataReaderDateRange(PeriodIndicatorDataReader dataReader) {
+
+        long perioTimestamp = dataReader.getTimeFrame().toMilliSecond() * dataReader.getPeriod();
+
+        Calendar cal = Calendar.getInstance();
+        Instant endDate = Instant.now();
+
+        // remove second to avoid invalid date range
+        cal.setTimeInMillis(endDate.toEpochMilli());
+        endDate = Instant.ofEpochMilli(endDate.toEpochMilli() - (cal.get(Calendar.SECOND) * 1000));
+        Instant startDate = Instant.ofEpochMilli(endDate.toEpochMilli() - perioTimestamp);
+        dataReader.setDateRange(startDate, endDate);
+    }
+    
+    public default void notifySignal(BuySellSignal signal, StrategyListener listener) {
+        if (listener != null) {
+            if (listener instanceof TradingStrategyListener) {
+                TradingStrategyListener tradingListener = (TradingStrategyListener) listener;
+                if (signal.isBuySignal()) {
+                    tradingListener.onBuySignal(signal.getAsset(), signal.getPrice());
+                } else {
+                    tradingListener.onSellSignal(signal.getAsset(), signal.getPrice());
+                }
+
+            } else {
+                listener.onSignal(signal, getImpl());
+            }
+        }
+    }
 }

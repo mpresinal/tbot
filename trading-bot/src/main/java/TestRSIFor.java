@@ -48,13 +48,13 @@ public class TestRSIFor {
         list.add(new Candlestick(0, 5.45, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.5, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.57, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.66, 0, 0, 0, Instant.EPOCH));
+        list.add(new Candlestick(0, 4.66, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.69, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.63, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.63, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
         list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.68, 0, 0, 0, Instant.EPOCH));
+        list.add(new Candlestick(0, 5.75, 0, 0, 0, Instant.EPOCH));
         
         RSI rsi = new RSI();
         rsi.setPeriod(14);
@@ -71,6 +71,10 @@ public class TestRSIFor {
         System.out.println("rsi = " + rsi.getSingleResult()); // expected result = 84.7458
         System.out.println("sma = " + ema.getSingleResult()); // expected result = 5.556428571
         System.out.println("smaFaster = " + smaFaster.getSingleResult()); // expected result = 84.7458
+        
+        System.out.println("isOverBought = " + rsi.isOverBought()); // expected result = 84.7458
+        System.out.println("isOverSold = " + rsi.isOverSold()); // expected result = 84.7458
+        System.out.println("isNormal = " + rsi.isNormal()); // expected result = 84.7458
 
         /*
         double[] data = {5.24, 5.44, 5.42, 5.44, 5.43, 4.98};

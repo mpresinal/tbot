@@ -35,6 +35,7 @@ import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
+import org.presinal.trading.bot.strategy.BuySellSignal;
 import org.presinal.trading.bot.strategy.Signal;
 import org.presinal.trading.bot.strategy.Strategy;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
@@ -126,6 +127,10 @@ public final class ScalpingStrategy implements Strategy {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error adding File Handler. "+ex.getMessage(), ex);            
         }        
+    }
+    
+    public Strategy getImpl(){
+        return this;
     }
     
     @Override
@@ -237,7 +242,7 @@ public final class ScalpingStrategy implements Strategy {
                             
                             // Notify lister with a buy signal   
                             if (!buySignalGenerated && buySignalRequirementFullfiled) {
-                                notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, true);
+                                notifySignal(currentCandlestick.closePrice, true);
                                 buySignalGenerated = true; 
                                 sellSignalGenerated = false;
                             }
@@ -248,7 +253,7 @@ public final class ScalpingStrategy implements Strategy {
                             
                             // Notify listener with a sell signal only if a previous buy signal was generated
                             if(!sellSignalGenerated && buySignalGenerated) {
-                                notifySignal(new Signal<>(currentCandlestick.closePrice), currentCandlestick.closePrice, false);
+                                notifySignal(currentCandlestick.closePrice, false);
                                 buySignalGenerated = false;
                                 sellSignalGenerated = true;
                             }
@@ -286,20 +291,6 @@ public final class ScalpingStrategy implements Strategy {
         }
     }
 
-    private void computeDataReaderDateRange(PeriodIndicatorDataReader dataReader) {
-
-        long perioTimestamp = dataReader.getTimeFrame().toMilliSecond() * dataReader.getPeriod();
-
-        Calendar cal = Calendar.getInstance();
-        Instant endDate = Instant.now();
-
-        // remove second to avoid invalid date range
-        cal.setTimeInMillis(endDate.toEpochMilli());
-        endDate = Instant.ofEpochMilli(endDate.toEpochMilli() - (cal.get(Calendar.SECOND) * 1000));
-        Instant startDate = Instant.ofEpochMilli(endDate.toEpochMilli() - perioTimestamp);
-        dataReader.setDateRange(startDate, endDate);
-    }
-
     private void computeTrendLine() {
         // get as much data as it can. Big data will guaranty a more acurate EMA        
         trendLineEMA.evaluate(readTrendLineData(trendLineEMA.getPeriod()*3));
@@ -329,20 +320,9 @@ public final class ScalpingStrategy implements Strategy {
         return marketClient.getAssetPrice(this.asset);
     }
 
-    protected void notifySignal(Signal signal, double price, boolean buySignal) {
-        if (listener != null) {
-            if (listener instanceof TradingStrategyListener) {
-                TradingStrategyListener tradingListener = (TradingStrategyListener) listener;
-                if (buySignal) {
-                    tradingListener.onBuySignal(asset, price);
-                } else {
-                    tradingListener.onSellSignal(asset, price);
-                }
-
-            } else {
-                listener.onSignal(signal, this);
-            }
-        }
+    protected void notifySignal(double price, boolean buySignal) {
+        BuySellSignal signal = new BuySellSignal(asset, price, buySignal);
+        notifySignal(signal, listener);
     }
 
     @Override

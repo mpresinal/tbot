@@ -36,7 +36,11 @@ public class Signal<T> {
     public Signal(T data) {
         this.data = data;
     }
-
+    
+    protected void setData(T data) {
+        this.data = data;
+    }
+    
     public T getData() {
         return data;
     }

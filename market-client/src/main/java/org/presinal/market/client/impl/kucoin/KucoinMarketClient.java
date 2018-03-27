@@ -107,10 +107,6 @@ public class KucoinMarketClient extends AbstractMarketClient {
     }
 
     @Override
-    public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, Date startDate, Date endDate, int limit) throws MarketClientException {
-        return null;
-    }
-    
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, Instant startDate, Instant endDate, int limit) throws MarketClientException {
         // https://api.kucoin.com/v1/open/chart/history
         //
@@ -159,7 +155,7 @@ public class KucoinMarketClient extends AbstractMarketClient {
         String response = doGetRequest(OPEN_TICK_ENDPOINT, null);
         Gson gson = getGson();
         JsonElement el = gson.fromJson(response, JsonElement.class);
-        AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange[].class);
+        AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonArray(), AssetPriceChange[].class);
         List<AssetPriceChange> list = Arrays.asList(assetsPriceChange);
         return list;
     }
@@ -173,7 +169,7 @@ public class KucoinMarketClient extends AbstractMarketClient {
         String response = doGetRequest(OPEN_TICK_ENDPOINT, paramMap);
         Gson gson = getGson();
         JsonElement el = gson.fromJson(response, JsonElement.class);
-        AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);
+        AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject(), AssetPriceChange.class);
         
         return assetPriceChange;
     }

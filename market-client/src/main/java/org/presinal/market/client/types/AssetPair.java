@@ -36,9 +36,14 @@ import java.util.Objects;
  */
 public class AssetPair implements Serializable {
 
-    private final String baseAsset;
-    private final String quoteAsset;
+    private String baseAsset;
+    private String quoteAsset;
+    private String symbol;
 
+    public AssetPair(String symbol) {
+        this.symbol = symbol;
+    }
+    
     public AssetPair(String baseAsset, String quoteAsset) {
         this.baseAsset = baseAsset;
         this.quoteAsset = quoteAsset;
@@ -52,7 +57,16 @@ public class AssetPair implements Serializable {
      * @return a String containing the symbol.
      */
     public String toSymbol(String symbolSeparator) {
+        
+        if(symbol != null) {
+            return symbol;
+        } 
+        
         return baseAsset + (symbolSeparator == null? "" : symbolSeparator) + quoteAsset;
+    }
+    
+    public String toSymbol() {
+        return toSymbol("-");
     }
     
     public String getBaseAsset() {
@@ -65,9 +79,10 @@ public class AssetPair implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 17 * hash + Objects.hashCode(this.baseAsset);
-        hash = 17 * hash + Objects.hashCode(this.quoteAsset);
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.baseAsset);
+        hash = 61 * hash + Objects.hashCode(this.quoteAsset);
+        hash = 61 * hash + Objects.hashCode(this.symbol);
         return hash;
     }
 
@@ -86,13 +101,16 @@ public class AssetPair implements Serializable {
         if (!Objects.equals(this.quoteAsset, other.quoteAsset)) {
             return false;
         }
+        if (!Objects.equals(this.symbol, other.symbol)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "AssetPaire {" + "baseAsset=" + baseAsset + ", quoteAsset=" + quoteAsset + "}";
-    }
-    
+        return "AssetPaire {" + "baseAsset=" + baseAsset + ", quoteAsset=" + quoteAsset 
+                + ", symbol="+symbol+"}";
+    }    
     
 }

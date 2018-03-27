@@ -24,6 +24,7 @@
 package org.presinal.trading.bot.action.common;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.FileHandler;
@@ -33,10 +34,10 @@ import java.util.logging.SimpleFormatter;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.types.AccountBalance;
-import org.presinal.market.client.types.AccountBalance.Balance;
-import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
+import org.presinal.trading.tbot.AssetLostProfit;
+import org.presinal.trading.tbot.util.ProfitLedgerFile;
 
 /**
  *
@@ -57,6 +58,7 @@ public class BuySellAction extends AbstractBotAction {
     private MarketClient client;
     
     private Map<String, AssetLostProfit> ledger;
+    private ProfitLedgerFile ledgerFile;
     
     public BuySellAction(MarketClient client, String generatorOrderActionKey) {
         super();
@@ -79,6 +81,14 @@ public class BuySellAction extends AbstractBotAction {
             logger.log(Level.SEVERE, "Error adding File Handler. "+ex.getMessage(), ex);            
         }        
     }
+    
+    private void init(){
+        try {
+            ledgerFile = new ProfitLedgerFile("ledgers");
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, "Could not be posible to initialize Profit Ledger File. "+ex.getMessage(), ex);
+        }
+    }
 
     @Override
     public String getContextKey() {
@@ -87,7 +97,10 @@ public class BuySellAction extends AbstractBotAction {
 
     @Override
     public void run() {
-        logger.entering(CLASS_NAME, "run");
+        logger.entering(CLASS_NAME, "run");        
+        
+        init();
+        
         boolean result;
         while (!isActionEnded()) {
 
@@ -118,7 +131,8 @@ public class BuySellAction extends AbstractBotAction {
             }
 
         }
-
+        
+        ledgerFile.close();
         logger.exiting(CLASS_NAME, "run");
     }
 
@@ -135,22 +149,24 @@ public class BuySellAction extends AbstractBotAction {
                 Order placedOrder = null;
                 
                 AssetLostProfit assetLostProfit =  ledger.getOrDefault(order.getAssetPair().getBaseAsset(), new AssetLostProfit());
-                assetLostProfit.asset = order.getAssetPair();
+                assetLostProfit.setAsset(order.getAssetPair());
                 
                 if( Order.SIDE_BUY.equals(order.getSide()) ) {
-                    assetLostProfit.buyPrice = order.getPrice();
+                    assetLostProfit.setBuyPrice(order.getPrice());
+                    assetLostProfit.setBuyDate(new Date());
                     placedOrder = client.placeBuyOrder(order.getAssetPair(), order.getPrice(), quantity, order.getType());
                     
                 } else if( Order.SIDE_SELL.equals(order.getSide()) ) {
-                    assetLostProfit.sellPrice = order.getPrice();
+                    assetLostProfit.setSellPrice(order.getPrice());
+                    assetLostProfit.setSellDate(new Date());
                     placedOrder = client.placeSellOrder(order.getAssetPair(), order.getPrice(), quantity, order.getType());
                     
                     assetLostProfit.computeProfits();
-                    logger.info("** profit = "+assetLostProfit.profit+", percentage = " + assetLostProfit.profitPercentage+", asset = "+order.getAssetPair());
+                    logger.info("** profit = "+assetLostProfit.getProfit()+", percentage = " + assetLostProfit.getProfitPercentage()+", asset = "+order.getAssetPair());
                 }
                 
                 if(placedOrder != null) {
-                    ledger.put(assetLostProfit.asset.getBaseAsset(), assetLostProfit);
+                    ledger.put(assetLostProfit.getAsset().getBaseAsset(), assetLostProfit);
                     logger.info("Order placed successfully. Order id = " + placedOrder.getOrderId());
 
                     order.setExecutedQty(placedOrder.getExecutedQty());
@@ -158,6 +174,11 @@ public class BuySellAction extends AbstractBotAction {
                     order.setOrderId(placedOrder.getOrderId());
                     order.setStatus(placedOrder.getStatus());
                     order.setTransactionTime(placedOrder.getTransactionTime());
+                }
+                
+                // if a pair of buy/sell has been placed then write it in the ledger book
+                if(assetLostProfit.getBuyPrice() > 0.0 && assetLostProfit.getSellPrice() > 0.0) {
+                    writeOnLedgerBook(assetLostProfit);
                 }
                 
             /*} else {
@@ -170,6 +191,14 @@ public class BuySellAction extends AbstractBotAction {
         }
         
         return true;
+    }
+    
+    private void writeOnLedgerBook(AssetLostProfit assetLostProfit){
+        try {
+            ledgerFile.writeEntry(assetLostProfit);
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, "Could not write lost or profit on ledger book. "+ex.getMessage(), ex);
+        }
     }
     
     @Override
@@ -193,37 +222,5 @@ public class BuySellAction extends AbstractBotAction {
 
     public void setAccountBalance(AccountBalance accountBalance) {
         this.accountBalance = accountBalance;
-    }
-    
-    private static class AssetLostProfit {
-        
-        double buyPrice;
-        double sellPrice;
-        AssetPair asset;
-
-        private double profit = -1;
-        private double profitPercentage;
-        
-        public void computeProfits() {
-            profit = (sellPrice - buyPrice);
-            profitPercentage = (profit / buyPrice) * 100.0;
-        }
-        
-        public boolean IsLoose() {
-            return profit < 0;
-        }
-        
-        public boolean isProfit() {
-            return !IsLoose();
-        }
-
-        @Override
-        public String toString() {
-            return "AssetLostProfit{ asset=" + asset
-                    + ", buyPrice=" + buyPrice 
-                    + ", sellPrice=" + sellPrice 
-                    + ", profit=" + profit 
-                    + ", profitPercentage=" + profitPercentage + " }";
-        }
     }
 }

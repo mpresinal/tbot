@@ -36,11 +36,11 @@ import org.presinal.trading.bot.action.common.BuySellAction;
  */
 public class ScalpingTradingBot extends TradingBot {
     
-    public static final String NAME = "";
-    public static final String version = "";
+    public static final String NAME = "Alice";
+    public static final String VERSION = "v1.0";
     
     public ScalpingTradingBot(MarketClient marketClient) {
-        super(marketClient, NAME, version);
+        super(marketClient, NAME, VERSION);
     }
 
     @Override

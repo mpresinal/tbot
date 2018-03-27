@@ -25,6 +25,7 @@
 package org.presinal.market.client;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import org.presinal.market.client.enums.OrderStatus;
@@ -84,7 +85,7 @@ public interface MarketClient extends Serializable {
      * @throws MarketClientException 
      */
     public List<Candlestick> loadCandlestick(AssetPair assetPair, TimeFrame timeFrame, 
-            Date startDate, Date endDate, int limit) throws MarketClientException;
+            Instant startDate, Instant endDate, int limit) throws MarketClientException;
        
     public List<AssetPriceChange> loadAssetsPriceChange() throws MarketClientException;
     

@@ -91,7 +91,7 @@ public class PeriodIndicatorDataReader implements IndicatorDataReader<List<Candl
     @Override
     public List<Candlestick> readData() {
         try {
-            return ((KucoinMarketClient) client).loadCandlestick(asset, timeFrame, startDate, endDate, client.getMaxDataLimit());
+            return client.loadCandlestick(asset, timeFrame, startDate, endDate, client.getMaxDataLimit());
         } catch (MarketClientException ex) {
             Logger.getLogger(PeriodIndicatorDataReader.class.getName()).log(Level.SEVERE, "Error loading candlestick", ex);
         }

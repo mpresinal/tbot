@@ -101,7 +101,8 @@ public class AssetSelectionAction extends AbstractBotAction {
                 logger.info("Applying filtering and sorting to list....");                
                 List<AssetPriceChange> assetList = assets.stream()
                         .filter(apc -> {
-                            return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
+                            return apc.getAssetPair().toSymbol("").endsWith(quoteAsset);
+                            //return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
                         })
                         // Sort by volumn in decending order
                         .sorted((asset1, asset2) -> Double.compare(asset2.getQuoteVolume(), asset1.getQuoteVolume()))
@@ -109,7 +110,7 @@ public class AssetSelectionAction extends AbstractBotAction {
                         //.sorted((asset1, asset2) -> Double.compare(asset2.getVolume(), asset1.getVolume()))
                         .limit(candidateAssetsLimit)
                         // Sort by priceChange in acending order
-                        .sorted((asset1, asset2) -> Double.compare(asset1.getPriceChangePercent(), asset2.getPriceChangePercent()))
+                        .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChangePercent(), asset1.getPriceChangePercent()))
                         .filter(apc -> {
                             return apc.getVolume() >= minVolumeValue;
                         })
@@ -125,7 +126,7 @@ public class AssetSelectionAction extends AbstractBotAction {
                 
                 for(AssetPriceChange asset : assetList) {
                     
-                    logger.info(String.format(outputFormat, asset.getAssetPair().getBaseAsset(),
+                    logger.info(String.format(outputFormat, asset.getAssetPair().toSymbol(""),
                         asset.getAskPrice(),
                         asset.getPriceChange(),
                         asset.getPriceChangePercent(),

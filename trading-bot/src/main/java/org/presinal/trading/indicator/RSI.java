@@ -42,8 +42,15 @@ public class RSI extends AbstractIndicator<Double> {
     private int overBoughtLevel = 70;
     private int overSoldLevel = 30;
     
+    private int normalLevel = 50;
+    
     public RSI() {
         super(INDICATOR_NAME, ResultType.SINGLE_RESULT);
+    }
+    
+    public RSI(int period) {
+        this();
+        setPeriod(period);
     }
     
     public boolean isOverBought() {
@@ -52,6 +59,11 @@ public class RSI extends AbstractIndicator<Double> {
     
     public boolean isOverSold(){
         return rsiValue <= overSoldLevel;
+    }
+    
+    public boolean isNormal(){
+        return (rsiValue >= ((overSoldLevel+normalLevel) / 2.0) && rsiValue <= normalLevel)
+                || (rsiValue <= ((overBoughtLevel+normalLevel) / 2.0) && rsiValue >= normalLevel);
     }
     
     @Override
@@ -109,10 +121,29 @@ public class RSI extends AbstractIndicator<Double> {
                 prev = current;
             }
             
-            rs = (upward/period) / (downward/period);
+            double tmpPeriod =  period;
+            rs = (upward/tmpPeriod) / (downward/tmpPeriod);
             rsiValue = 100 - (100/(1+rs));
             
             notifyListeners();
         }
     }
+
+    public int getOverBoughtLevel() {
+        return overBoughtLevel;
+    }
+
+    public void setOverBoughtLevel(int overBoughtLevel) {
+        this.overBoughtLevel = overBoughtLevel;
+    }
+
+    public int getOverSoldLevel() {
+        return overSoldLevel;
+    }
+
+    public void setOverSoldLevel(int overSoldLevel) {
+        this.overSoldLevel = overSoldLevel;
+    }
+    
+    
 }

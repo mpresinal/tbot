@@ -26,7 +26,6 @@ package org.presinal.trading.bot.scalping;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.presinal.market.client.MarketClient;
-import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.OrderType;
 import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.AssetPair;

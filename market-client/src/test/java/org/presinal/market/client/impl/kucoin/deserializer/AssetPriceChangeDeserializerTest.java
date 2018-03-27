@@ -21,10 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package org.presinal.market.client.impl.kucoin.deserializer;
 
-import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -50,17 +48,16 @@ import org.presinal.market.client.types.AssetPriceChange;
  */
 public class AssetPriceChangeDeserializerTest {
 
-    private static Gson gson;    
+    private static Gson gson;
     private static final String CLASS_NAME = AssetPriceChangeDeserializerTest.class.getSimpleName();
-    
+
     private static final Path JSON_FILE_ASSETS_PRICE_CHANGE = Paths.get("src", "test", "resources", "kucoin", "assets_price_change.json");
     private static final Path JSON_FILE_ASSETS_PRICE_CHANGE_R_BTC = Paths.get("src", "test", "resources", "kucoin", "assets_price_change-symbol_R-BTC.json");
 
     //assets_price_change-symbol_R-BTC
-    
     @BeforeClass
     public static void setUp() throws Exception {
-        final String METHOD = CLASS_NAME+ ".setUp() :: ";
+        final String METHOD = CLASS_NAME + ".setUp() :: ";
         System.out.println(METHOD + "Enter");
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(AssetPriceChange.class, new AssetPriceChangeDeserializer());
@@ -69,109 +66,96 @@ public class AssetPriceChangeDeserializerTest {
     }
 
     @Before
-    public void beforeTest(){
+    public void beforeTest() {
         System.out.println("\n-----------------------------------------------------------------------\n");
     }
-    
+
     @After
-    public void afterTest(){
+    public void afterTest() {
         System.out.println("\n-----------------------------------------------------------------------\n");
     }
-    
+
     /**
      * Test of deserialize method, of class OrderBookDeserializer.
      */
     @Test
     public void testDeserialize_Array() {
-        final String METHOD = CLASS_NAME+ ".testDeserialize_Array() :: ";
+        final String METHOD = CLASS_NAME + ".testDeserialize_Array() :: ";
         System.out.println(METHOD + "Start");
 
         try {
-            
+
             Reader reader = Files.newBufferedReader(JSON_FILE_ASSETS_PRICE_CHANGE);
             JsonElement el = gson.fromJson(reader, JsonElement.class);
-            //System.out.println("***el = " + el);
-            System.out.println("\n\n\n");            
-            
+
+            System.out.println("\n\n\n");
+
             AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange[].class);
-            
+
             System.out.println("assetsPriceChange.length = " + assetsPriceChange.length);
             System.out.println("assetsPriceChange = " + Arrays.toString(assetsPriceChange));
-            
+
             List<AssetPriceChange> list = Arrays.asList(assetsPriceChange);
-            list.stream()
-                    .filter(apc -> { 
-                        return Objects.equal("BTC", apc.getAssetPair().getQuoteAsset());
-                    })
-                    // Sort by priceChange in decending order
-                    .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChange(), asset1.getPriceChange()))
-                    .limit(10)
-                    .filter(apc -> {
-                        return apc.getVolume() >= 1_000;
-                    })
-                    // Sort by volumn in acending order
-                    .sorted((asset1, asset2) -> Double.compare(asset1.getVolume(), asset2.getVolume()))                   
-                    .forEach(System.out::println);
-            
-            assertNotNull("The test has failed. candlesticks is null", assetsPriceChange);  
-            
+
+            assertNotNull("The test has failed. candlesticks is null", assetsPriceChange);
+
             int expected = 276;
             assertEquals("The test has failed. ", expected, assetsPriceChange.length);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("The test has failed. Invalid flow.");
-        } finally{ 
+        } finally {
             System.out.println(METHOD + "End");
         }
     }
-    
+
     @Test
     public void testDeserialize_singleObject() {
-        final String METHOD = CLASS_NAME+ ".testDeserialize_singleObject() :: ";
+        final String METHOD = CLASS_NAME + ".testDeserialize_singleObject() :: ";
         System.out.println(METHOD + "Start");
 
         try {
-            
+
             Reader reader = Files.newBufferedReader(JSON_FILE_ASSETS_PRICE_CHANGE_R_BTC);
             JsonElement el = gson.fromJson(reader, JsonElement.class);
             System.out.println("***el = " + el);
-            AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);            
+            AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);
             System.out.println("assetPriceChange = " + assetPriceChange);
-            
+
             assertNotNull("The test has failed. assetPriceChange is null", assetPriceChange);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("The test has failed. Invalid flow.");
-        } finally{ 
+        } finally {
             System.out.println(METHOD + "End");
         }
-    }   
-    
+    }
+
     @Test
     public void testDeserialize_priceChangePercent() {
-        final String METHOD = CLASS_NAME+ ".testDeserialize_priceChangePercent() :: ";
+        final String METHOD = CLASS_NAME + ".testDeserialize_priceChangePercent() :: ";
         System.out.println(METHOD + "Start");
 
         try {
             //1.33            
-            
+
             Reader reader = Files.newBufferedReader(JSON_FILE_ASSETS_PRICE_CHANGE_R_BTC);
             JsonElement el = gson.fromJson(reader, JsonElement.class);
             System.out.println("***el = " + el);
-            AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);            
+            AssetPriceChange assetPriceChange = gson.fromJson(el.getAsJsonObject().get("data"), AssetPriceChange.class);
             System.out.println("assetPriceChange = " + assetPriceChange);
-            
+
             float expected = -1.33f;
             assertEquals("The test has failed. ", expected, assetPriceChange.getPriceChangePercent());
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("The test has failed. Invalid flow.");
-        } finally{ 
+        } finally {
             System.out.println(METHOD + "End");
         }
-    }   
-    
+    }
+
 }
