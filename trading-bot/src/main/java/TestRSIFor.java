@@ -1,11 +1,18 @@
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.MarketClientException;
+import org.presinal.market.client.enums.TimeFrame;
+import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
+import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.indicator.EMA;
 import org.presinal.trading.indicator.RSI;
 import org.presinal.trading.indicator.SMA;
+import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
 /*
  * The MIT License
@@ -37,34 +44,48 @@ import org.presinal.trading.indicator.SMA;
  */
 public class TestRSIFor {
 
-    public static void main(String[] args) {
+    private static void computeDataReaderDateRange(PeriodIndicatorDataReader dataReader) {
 
-        List<Candlestick> list = new ArrayList<>();
-        list.add(new Candlestick(0, 5.24, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.44, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.42, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.44, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.43, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.45, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.5, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.57, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 4.66, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.69, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.63, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.63, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.64, 0, 0, 0, Instant.EPOCH));
-        list.add(new Candlestick(0, 5.75, 0, 0, 0, Instant.EPOCH));
+        long perioTimestamp = dataReader.getTimeFrame().toMilliSecond() * dataReader.getPeriod();
+
+        Calendar cal = Calendar.getInstance();
+        Instant endDate = Instant.now();
+
+        // remove second to avoid invalid date range
+        cal.setTimeInMillis(endDate.toEpochMilli());
+        endDate = Instant.ofEpochMilli(endDate.toEpochMilli() - (cal.get(Calendar.SECOND) * 1000));
+        Instant startDate = Instant.ofEpochMilli(endDate.toEpochMilli() - perioTimestamp);
+        dataReader.setDateRange(startDate, endDate);
+    }
+    
+    private static List<Candlestick> loadData() throws MarketClientException{
+        MarketClient client = new KucoinMarketClient(KucoinMarketClient.API_URL, "test", "test");
+        AssetPair asset = new AssetPair("DRGN", "BTC");
+        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(asset, 15, TimeFrame.ONE_HOUR);
+        dataReader.setMarketClient(client);
+        computeDataReaderDateRange(dataReader);
+        
+        System.out.printf("Start Date(%s): %s %n", dataReader.getStartDate().getEpochSecond(), dataReader.getStartDate());
+        System.out.printf("End Date(%s): %s %n", dataReader.getStartDate().getEpochSecond(), dataReader.getStartDate());
+        
+        return dataReader.readData();
+    }
+    
+    public static void main(String[] args) throws MarketClientException {
+
+        List<Candlestick> list = loadData();
+        
+        list.stream().forEach(c -> System.out.println(c.closePrice));
         
         RSI rsi = new RSI();
         rsi.setPeriod(14);
         rsi.evaluate(list);
         
-        EMA ema = new EMA();
-        ema.setPeriod(14);
+        SMA ema = new SMA();
+        ema.setPeriod(25);
         ema.evaluate(list);
         
-        EMA smaFaster = new EMA();
+        SMA smaFaster = new SMA();
         smaFaster.setPeriod(7);
         smaFaster.evaluate(list);
         

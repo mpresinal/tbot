@@ -50,6 +50,11 @@ public class DefaultTradingBot extends TradingBot {
         
         assetSelection.setQuoteAsset(AssetSelectionAction.DEFAULT_QUOTEASSET);
         
+        assetSelection.excludeAsset("ETH");
+        
+        tradingAction.setStopLostAtPercentage(2);
+        tradingAction.setTakeProfitAtPercentage(3);
+        
         addBotAction(assetSelection);
         addBotAction(buyAction);
         addBotAction(tradingAction);

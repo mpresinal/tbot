@@ -49,7 +49,10 @@ public class DefaultTradingAction extends AbstractBotAction implements TradingSt
     private boolean signalRecieved = false;
     private DefaultStrategy strategy;
     private MarketClient client;
-
+    
+    private int takeProfitAtPercentage = 5;
+    private int stopLostAtPercentage = 5;
+    
     public DefaultTradingAction(MarketClient client) {
         super();
         this.client = client;
@@ -87,6 +90,8 @@ public class DefaultTradingAction extends AbstractBotAction implements TradingSt
                     strategy = new DefaultStrategy(client, (AssetPair) signalData, TimeFrame.FIFTEEN_MINUTES);
                     strategy.init();
                     strategy.setListener(this);
+                    strategy.setTakeProfitPercentage(takeProfitAtPercentage);
+                    strategy.setStopLostPercentage(stopLostAtPercentage);
                     new Thread(strategy).start();
                 }
 
@@ -134,5 +139,21 @@ public class DefaultTradingAction extends AbstractBotAction implements TradingSt
         order.setSide(side);
         order.setType(OrderType.LIMIT);
         return order;
+    }
+
+    public int getTakeProfitAtPercentage() {
+        return takeProfitAtPercentage;
+    }
+
+    public void setTakeProfitAtPercentage(int takeProfitAtPercentage) {
+        this.takeProfitAtPercentage = takeProfitAtPercentage;
+    }
+
+    public int getStopLostAtPercentage() {
+        return stopLostAtPercentage;
+    }
+
+    public void setStopLostAtPercentage(int stopLostAtPercentage) {
+        this.stopLostAtPercentage = stopLostAtPercentage;
     }
 }

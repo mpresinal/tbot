@@ -49,7 +49,11 @@ public class DefaultStrategy implements Strategy {
     private static final int VOLUME_PERIOD = 20;
     private static final int RSI_PERIOD = 14;
     
-    private static final long RETRIEVE_DATA_EVERY_TEN_SECONDS = 10 * 1000;
+    private static final long RETRIEVE_DATA_EVERY_TEN_SECONDS = 20 * 1000;
+    
+    private enum StopLostTaketProfitResult {
+        STOP_LOST, TAKE_PROFIT, NONE;
+    }
     
 
     private StrategyListener listener;
@@ -68,6 +72,11 @@ public class DefaultStrategy implements Strategy {
     private boolean sellSignalGenerated = false;
 
     private TimeFrame timeFrame;
+    
+    private int takeProfitPercentage = 5;
+    private int stopLostPercentage = 5;
+    
+    private double buyPrice;
 
     public DefaultStrategy(MarketClient client, AssetPair asset, TimeFrame timeFrame) {
 
@@ -91,7 +100,7 @@ public class DefaultStrategy implements Strategy {
         volumeInd = new VolumeMovingAverage();
         volumeInd.setPeriod(VOLUME_PERIOD);
 
-        rsiInd = new RSI(RSI_PERIOD);
+        //rsiInd = new RSI(RSI_PERIOD);
 
         // use trend line period multiply by 3. I's much more better to use a big data set for ema calculaton
         dataReader = new PeriodIndicatorDataReader(asset, DATA_READER_PERIOD, timeFrame);
@@ -116,7 +125,8 @@ public class DefaultStrategy implements Strategy {
         List<Candlestick> data;
         Double fastEmaValue, slowEmaValue, volumeAverageValue = 0.0, rsiValue = 0.0;
         Candlestick currentCandlestick;
-
+        StopLostTaketProfitResult stopLTakePResult = StopLostTaketProfitResult.NONE;
+        
         while (running) {
 
             computeDataReaderDateRange(dataReader);
@@ -137,34 +147,50 @@ public class DefaultStrategy implements Strategy {
 
                     volumeInd.evaluate(data);
                     volumeAverageValue = volumeInd.getSingleResult();
-
-                    rsiInd.evaluate(data);
-                    rsiValue = rsiInd.getSingleResult();
                     
-                    logger.info("-----------------------------------------------------------------");
+                    
+                    
+                    /*rsiInd.evaluate(data);
+                    rsiValue = rsiInd.getSingleResult();*/
+                    
+                    logger.info("-----------------------------------------------------------------");                    
                     logger.info("*** current price = "+currentCandlestick.closePrice);
+                    logger.info("*** current volume = "+currentCandlestick.volume);
                     logger.info("** fastEmaValue = "+fastEmaValue);
                     logger.info("** slowEmaValue = "+slowEmaValue);
                     logger.info("** volumeAverageValue = "+volumeAverageValue);
-                    logger.info("** rsiValue = "+rsiValue);
-                    logger.info("-----------------------------------------------------------------");
+                    logger.info("** buyPrice = "+buyPrice);
                     
-                    if (fastEmaValue > slowEmaValue && (rsiInd.isOverSold() || rsiInd.isNormal())) {
+                    if(buySignalGenerated){
+                        stopLTakePResult = computeStopLostOrTakeProfit(currentCandlestick.closePrice);
+                    }
+                    
+                    logger.info("** stopLostTakeProfitResult = "+stopLTakePResult);
+                    logger.info("** takeProfitPercentage = "+takeProfitPercentage);
+                    logger.info("** stopLostPercentage = "+stopLostPercentage);
+                    //logger.info("** rsiValue = "+rsiValue);
+                    logger.info("-----------------------------------------------------------------");
+                                       
+                    
+                    if (fastEmaValue > slowEmaValue /*&& (rsiInd.isOverSold() || rsiInd.isNormal())*/) {
                         if (currentCandlestick.volume > volumeAverageValue) {
                             // Notify lister with a buy signal   
                             if (!buySignalGenerated) {
+                                buyPrice = currentCandlestick.closePrice;
                                 notifySignal(currentCandlestick.closePrice, true);
                                 buySignalGenerated = true;
                                 sellSignalGenerated = false;
                             }
                         }
 
-                    } else if ((fastEmaValue < slowEmaValue) && (rsiInd.isOverBought())) {
+                    } else if ((fastEmaValue < slowEmaValue) /*&& (rsiInd.isOverBought())*/) {
                         // Notify listener with a sell signal only if a previous buy signal was generated
-                        if (!sellSignalGenerated && buySignalGenerated) {
+                        if (!sellSignalGenerated && buySignalGenerated && stopLTakePResult != StopLostTaketProfitResult.NONE) {
+                            
                             notifySignal(currentCandlestick.closePrice, false);
                             buySignalGenerated = false;
                             sellSignalGenerated = true;
+                            stopLTakePResult = StopLostTaketProfitResult.NONE;
                         }
                     }
 
@@ -182,9 +208,37 @@ public class DefaultStrategy implements Strategy {
         }
 
     }
+    
+    private StopLostTaketProfitResult computeStopLostOrTakeProfit(double currentPrice){
+        double delta = buyPrice - currentPrice;
+        
+        delta = (delta < 0)? delta * -1:  delta;
+        
+        double priceChangePercentage = (delta / buyPrice) * 100; 
+        
+        logger.info("** price change = "+delta);
+        
+        if(currentPrice > buyPrice && priceChangePercentage >= takeProfitPercentage) {
+            return StopLostTaketProfitResult.TAKE_PROFIT;
+            
+        } else if(currentPrice < buyPrice && priceChangePercentage <= stopLostPercentage) {
+            return StopLostTaketProfitResult.STOP_LOST;
+            
+        }
+        return StopLostTaketProfitResult.NONE;
+    }
 
     protected void notifySignal(double price, boolean buySignal) {
         BuySellSignal signal = new BuySellSignal(asset, price, buySignal);
         notifySignal(signal, listener);
     }
+
+    public void setTakeProfitPercentage(int takeProfitPercentage) {
+        this.takeProfitPercentage = takeProfitPercentage;
+    }
+
+    public void setStopLostPercentage(int stopLostPercentage) {
+        this.stopLostPercentage = stopLostPercentage;
+    }
+    
 }

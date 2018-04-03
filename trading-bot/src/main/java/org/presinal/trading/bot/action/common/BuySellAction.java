@@ -177,7 +177,7 @@ public class BuySellAction extends AbstractBotAction {
                 }
                 
                 // if a pair of buy/sell has been placed then write it in the ledger book
-                if(assetLostProfit.getBuyPrice() > 0.0 && assetLostProfit.getSellPrice() > 0.0) {
+                if(assetLostProfit.getBuyDate() != null && assetLostProfit.getSellDate() != null) {
                     writeOnLedgerBook(assetLostProfit);
                 }
                 
@@ -195,7 +195,9 @@ public class BuySellAction extends AbstractBotAction {
     
     private void writeOnLedgerBook(AssetLostProfit assetLostProfit){
         try {
+            logger.info("Writing entry on ledger book...");
             ledgerFile.writeEntry(assetLostProfit);
+            logger.info("Writing entry on ledger book...OK");
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Could not write lost or profit on ledger book. "+ex.getMessage(), ex);
         }

@@ -155,12 +155,32 @@ public class BinanceMarketClient extends AbstractMarketClient {
 
     @Override
     public Order placeBuyOrder(AssetPair asset, double price, double quantity, OrderType type) throws MarketClientException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // delete after test
+        Order order = new Order();
+        order.setOrderId(Long.toString(new Date().getTime()));
+        order.setAssetPair(asset);
+        order.setPrice(price);
+        order.setQuantity(quantity);
+        order.setType(type);
+        order.setTransactionTime(new Date());
+        order.setExecutedQty(quantity);
+        order.setClientOrderId(apiKey);
+        return order;
     }
 
     @Override
     public Order placeSellOrder(AssetPair asset, double price, double quantity, OrderType type) throws MarketClientException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // delete after test
+        Order order = new Order();
+        order.setOrderId(Long.toString(new Date().getTime()));
+        order.setAssetPair(asset);
+        order.setPrice(price);
+        order.setQuantity(quantity);
+        order.setType(type);
+        order.setTransactionTime(new Date());
+        order.setExecutedQty(quantity);
+        order.setClientOrderId(apiKey);
+        return order;
     }
 
     @Override

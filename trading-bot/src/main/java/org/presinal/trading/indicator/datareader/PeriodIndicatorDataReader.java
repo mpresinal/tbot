@@ -87,6 +87,15 @@ public class PeriodIndicatorDataReader implements IndicatorDataReader<List<Candl
         this.startDate = startDate;
         this.endDate = endDate;        
     }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
+    
     
     @Override
     public List<Candlestick> readData() {

@@ -24,6 +24,8 @@
 
 package org.presinal.trading.indicator;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.List;
 import org.presinal.market.client.types.Candlestick;
@@ -105,11 +107,19 @@ public class RSI extends AbstractIndicator<Double> {
                 start = 1;
             }
 
-            Candlestick prev = data.get(start-1);
-            Candlestick current;
+            System.out.println("length = "+length);
+            System.out.println("start = "+start);
+            System.out.println("end = "+end);
             
+            DecimalFormat format = new DecimalFormat("#.########");
+            Candlestick prev = data.get(start-1);
+            System.out.println(format.format(prev.closePrice));
+            Candlestick current;
+            //start; 
             for (int i = start; i <= end; i++) {
                 current = data.get(i);
+                System.out.println(format.format(current.closePrice));
+                
                 delta = Math.abs(current.closePrice - prev.closePrice);
                 
                 if(current.closePrice > prev.closePrice ) {
@@ -123,7 +133,7 @@ public class RSI extends AbstractIndicator<Double> {
             
             double tmpPeriod =  period;
             rs = (upward/tmpPeriod) / (downward/tmpPeriod);
-            rsiValue = 100 - (100/(1+rs));
+            rsiValue = 100.0 - (100.0/(1+rs));
             
             notifyListeners();
         }

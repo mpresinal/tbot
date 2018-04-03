@@ -54,7 +54,7 @@ public class DefaultTradingBotMain {
         
         System.out.println("Creating bot...");
         
-        //new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
+        //MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
         MarketClient marketClient = new BinanceMarketClient(BinanceMarketClient.API_URL, null, "testing");
         DefaultTradingBot bot = new DefaultTradingBot(marketClient);
         System.out.println("Creating bot...OK");
@@ -67,4 +67,4 @@ public class DefaultTradingBotMain {
         bot.start();
         System.out.println("Starting bot...OK");
     }
-}
+} 

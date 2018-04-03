@@ -155,7 +155,7 @@ public class KucoinMarketClient extends AbstractMarketClient {
         String response = doGetRequest(OPEN_TICK_ENDPOINT, null);
         Gson gson = getGson();
         JsonElement el = gson.fromJson(response, JsonElement.class);
-        AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonArray(), AssetPriceChange[].class);
+        AssetPriceChange[] assetsPriceChange = gson.fromJson(el.getAsJsonObject().get("data").getAsJsonArray(), AssetPriceChange[].class);
         List<AssetPriceChange> list = Arrays.asList(assetsPriceChange);
         return list;
     }

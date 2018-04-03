@@ -24,15 +24,14 @@
 package org.presinal.trading.bot.action.common;
 
 
-import com.google.common.base.Objects;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.types.AssetPriceChange;
@@ -54,10 +53,13 @@ public class AssetSelectionAction extends AbstractBotAction {
     
     private String quoteAsset;
 
+    private Set<String> excludedAsset;
+    
     public AssetSelectionAction(MarketClient client) {
         super();
         this.client = client;
-        setupLogger();
+        excludedAsset = new HashSet<>();
+        setupLogger();        
     }
     
     private void setupLogger() {
@@ -84,7 +86,7 @@ public class AssetSelectionAction extends AbstractBotAction {
         logger.entering(CLASS_NAME, METHOD);
         logger.info("Executing task");
 
-        int candidateAssetsLimit = 1;
+        int cantAssetsLimit = 5;
         int minVolumeValue = 1_000;
         
         try {
@@ -101,14 +103,17 @@ public class AssetSelectionAction extends AbstractBotAction {
                 logger.info("Applying filtering and sorting to list....");                
                 List<AssetPriceChange> assetList = assets.stream()
                         .filter(apc -> {
-                            return apc.getAssetPair().toSymbol("").endsWith(quoteAsset);
-                            //return Objects.equal(quoteAsset, apc.getAssetPair().getQuoteAsset());
+                            return apc.getAssetPair().toSymbol("").endsWith(quoteAsset);                            
+                        })
+                        .filter(apc -> {
+                            String tmp = apc.getAssetPair().toSymbol("");
+                            return !excludedAsset.contains(tmp.substring(0, tmp.indexOf(quoteAsset)));
                         })
                         // Sort by volumn in decending order
                         .sorted((asset1, asset2) -> Double.compare(asset2.getQuoteVolume(), asset1.getQuoteVolume()))
                         
                         //.sorted((asset1, asset2) -> Double.compare(asset2.getVolume(), asset1.getVolume()))
-                        .limit(candidateAssetsLimit)
+                        .limit(cantAssetsLimit)
                         // Sort by priceChange in acending order
                         .sorted((asset1, asset2) -> Double.compare(asset2.getPriceChangePercent(), asset1.getPriceChangePercent()))
                         .filter(apc -> {
@@ -124,6 +129,8 @@ public class AssetSelectionAction extends AbstractBotAction {
                 
                 String outputFormat = "Asset: %s, Price: %s, Price Change: %s, Change Rate: %s, High: %s, Volume: %s , Qute Volume: %s";
                 
+                getContext().put(KEY, assetList.get(0).getAssetPair());
+                notifyListener();
                 for(AssetPriceChange asset : assetList) {
                     
                     logger.info(String.format(outputFormat, asset.getAssetPair().toSymbol(""),
@@ -134,6 +141,7 @@ public class AssetSelectionAction extends AbstractBotAction {
                         asset.getVolume(),
                         asset.getQuoteVolume()));
                     
+                    /*
                     getContext().put(KEY, asset.getAssetPair());
                     notifyListener();
                     
@@ -141,7 +149,8 @@ public class AssetSelectionAction extends AbstractBotAction {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(AssetSelectionAction.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    }*/                    
+                    
                 }
                 
                 logger.info("Notifying the list of assets....OK");
@@ -179,5 +188,9 @@ public class AssetSelectionAction extends AbstractBotAction {
 
     public void setQuoteAsset(String quoteAsset) {
         this.quoteAsset = quoteAsset;
+    }
+    
+    public void excludeAsset(String asset){
+        excludedAsset.add(asset);
     }
 }
