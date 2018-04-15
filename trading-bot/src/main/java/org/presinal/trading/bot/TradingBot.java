@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import org.presinal.market.client.MarketClient;
+import org.presinal.trading.bot.action.ActionChangeReactionConfig;
 import org.presinal.trading.bot.action.BotAction;
 import org.presinal.trading.bot.action.BotActionContext;
 
@@ -43,6 +44,8 @@ public abstract class TradingBot {
     private String version;
 
     private BotActionContext context;
+    
+    private Set<ActionChangeReactionConfig> actionReactionConfigs;
     
     public TradingBot(MarketClient marketClient, String botName, String version) {
         this.marketClient = marketClient;
@@ -73,7 +76,10 @@ public abstract class TradingBot {
         
         if(Objects.nonNull(actionToReact) && Objects.nonNull(source)) {
             // This Lambda Expression will generate an implementation of BotActionListener
-            source.addListener((BotAction saction, BotActionContext context_) -> actionToReact.notifySignal());            
+            source.addListener((BotAction saction, BotActionContext context_) -> {
+                actionToReact.setSignalDataProducerKey(saction.getContextKey());
+                actionToReact.notifySignal();
+            });
         }
         
     }
@@ -90,4 +96,32 @@ public abstract class TradingBot {
         return version;
     }
 
+    protected BotActionContext getContext() {
+        return context;
+    }
+    
+    public Set<BotAction> getActions() {
+        
+        if(actions == null){
+            actions = new HashSet<>();
+        }
+        
+        return actions;
+    }
+
+    public void setActions(Set<BotAction> actions) {
+        this.actions = actions;
+    }
+
+    public Set<ActionChangeReactionConfig> getActionReactionConfigs() {
+        if(actionReactionConfigs == null){
+            actionReactionConfigs = new HashSet<>();
+        }
+        
+        return actionReactionConfigs;
+    }
+
+    public void setActionReactionConfigs(Set<ActionChangeReactionConfig> actionReactionConfigs) {
+        this.actionReactionConfigs = actionReactionConfigs;
+    }    
 }

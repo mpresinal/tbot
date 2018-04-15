@@ -46,13 +46,8 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
     }
     
     @Override
-    public PivotPointResult getSingleResult() {
+    public PivotPointResult getResult() {
         return result;
-    }
-
-    @Override
-    public Collection<PivotPointResult> getMultiResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -104,7 +99,7 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
         //return NumberUtil.round(value);
     }
 
-    public static class PivotPointResult {
+    public static class PivotPointResult implements Comparable<PivotPointResult>{
         public final Double pivotPoint;
         public final Double[] supports;
         public final Double[] resistance;
@@ -120,6 +115,11 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
             return "PivotPointResult{" + "pivotPoint=" + pivotPoint 
                     + ", supports=" + (supports != null? Arrays.toString(supports) : null) 
                     + ", resistance=" + (resistance != null? Arrays.toString(resistance) : null) + '}';
+        }
+
+        @Override
+        public int compareTo(PivotPointResult o) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }

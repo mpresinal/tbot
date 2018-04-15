@@ -49,6 +49,10 @@ public interface BotAction extends Serializable {
     
     void notifySignal();
     
+    void setSignalDataProducerKey(String signalDataContextKey);
+    
+    String getSignalDataProducerKey();
+    
     void addListener(BotActionListener listener);
     
     void endAction();

@@ -24,6 +24,7 @@
 package org.presinal.trading.bot.action.common;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,8 @@ import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.types.AccountBalance;
 import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
+import org.presinal.trading.bot.action.BotAction;
+import org.presinal.trading.bot.action.BotActionListener;
 import org.presinal.trading.tbot.AssetLostProfit;
 import org.presinal.trading.tbot.util.ProfitLedgerFile;
 
@@ -59,6 +62,10 @@ public class BuySellAction extends AbstractBotAction {
     
     private Map<String, AssetLostProfit> ledger;
     private ProfitLedgerFile ledgerFile;
+    
+    public BuySellAction(MarketClient client, BotAction generatorOrderAction) {
+        this(client, generatorOrderAction.getContextKey());
+    }
     
     public BuySellAction(MarketClient client, String generatorOrderActionKey) {
         super();
@@ -84,7 +91,7 @@ public class BuySellAction extends AbstractBotAction {
     
     private void init(){
         try {
-            ledgerFile = new ProfitLedgerFile("ledgers");
+            ledgerFile = new ProfitLedgerFile(Paths.get("ledgers", client.getMarketName()));
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Could not be posible to initialize Profit Ledger File. "+ex.getMessage(), ex);
         }
@@ -102,6 +109,7 @@ public class BuySellAction extends AbstractBotAction {
         init();
         
         boolean result;
+        Order order = null;
         while (!isActionEnded()) {
 
             synchronized (this) {
@@ -118,21 +126,27 @@ public class BuySellAction extends AbstractBotAction {
                 logger.info("signal's received!!!");
                 
                 signalRecieved = false;
-                Object signalData = getContext().get(generatorOrderActionKey);
+                Object signalData = getContext().get(getSignalDataProducerKey());
                 logger.info("** signalData = " + signalData);
                 
                 if(signalData instanceof Order){
                     logger.info("Placing order");
-                    result = placeOrder((Order)signalData);
+                    order = (Order)signalData;
+                    result = placeOrder(order);
                     logger.info("Order placed? "+result);
-                }
-                
-                notifyListener();
+                    
+                    if(result){
+                        
+                        if(Order.SIDE_SELL.equals(order.getSide())){                            
+                            getContext().put(KEY, order.getAssetPair());
+                            notifyListener();
+                        }                        
+                    }
+                }               
             }
 
         }
         
-        ledgerFile.close();
         logger.exiting(CLASS_NAME, "run");
     }
 
@@ -201,7 +215,7 @@ public class BuySellAction extends AbstractBotAction {
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Could not write lost or profit on ledger book. "+ex.getMessage(), ex);
         }
-    }
+    }   
     
     @Override
     public void notifySignal() {

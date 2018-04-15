@@ -24,7 +24,8 @@
 
 package org.presinal.trading.indicator;
 
-import java.util.Collection;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 import org.presinal.market.client.types.Candlestick;
 
@@ -33,10 +34,10 @@ import org.presinal.market.client.types.Candlestick;
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public class MovingAverage extends AbstractIndicator<Double> {
+public class MovingAverage extends AbstractIndicator<BigDecimal> {
 
     private static final String NAME = "Moving Average";
-    private double mean;
+    private BigDecimal mean;
     
     public static enum CandlestickSource {
         CLOSED_PRICE, VOLUME
@@ -60,30 +61,24 @@ public class MovingAverage extends AbstractIndicator<Double> {
     }
 
     @Override
-    public Double getSingleResult() {
+    public BigDecimal getResult() {
         return mean;
-    }
-
-    @Override
-    public Collection<Double> getMultiResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void evaluate(List<Candlestick> data) {
         
         if (data != null && !data.isEmpty()) {
-            double total = 0.0;
+            BigDecimal sum = BigDecimal.ZERO;
             
             // calculating the range index
             int length = data.size();            
             int start=0;
             
-            int tmpPeriod = getPeriod();
-            int p = tmpPeriod;
+            int p = getPeriod();
             
-            if(length > tmpPeriod){
-                start = length - tmpPeriod;                
+            if(length > p){
+                start = length - p;                
             } else {
                 p =  length;
             }         
@@ -92,7 +87,7 @@ public class MovingAverage extends AbstractIndicator<Double> {
             for (int i = start; i < length; i++) {
                 
                 switch(source) {                    
-                    case VOLUME:
+                    case VOLUME:                        
                         value = data.get(i).volume;
                         break;
                     case CLOSED_PRICE:    
@@ -101,10 +96,10 @@ public class MovingAverage extends AbstractIndicator<Double> {
                         break;                        
                 }
                 
-                total = total + value;
+                sum = sum.add(BigDecimal.valueOf(value));
             }            
             
-            mean = total / p;
+            mean = sum.divide(BigDecimal.valueOf(p), MathContext.DECIMAL64);            
             notifyListeners();            
         }
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
+import org.presinal.market.client.impl.binance.BinanceMarketClient;
 import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
@@ -71,27 +72,38 @@ public class TestRSIFor {
         return dataReader.readData();
     }
     
+    private static List<Candlestick> loadDataFromBinance() throws MarketClientException{
+        MarketClient client = new BinanceMarketClient(BinanceMarketClient.API_URL, "test", "xpo");
+        int period = 200;
+        TimeFrame timeFrame = TimeFrame.FIFTEEN_MINUTES;
+        
+        //https://kitchen-3.kucoin.com/v1/open/chart/history?symbol=XRB-BTC&resolution=480&from=1479321029&to=1520793089
+        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("XVG", "BTC"), period, timeFrame);
+        dataReader.setMarketClient(client);
+        return dataReader.readData();
+    }
+    
     public static void main(String[] args) throws MarketClientException {
 
-        List<Candlestick> list = loadData();
+        List<Candlestick> list = loadDataFromBinance();//loadData();
         
-        list.stream().forEach(c -> System.out.println(c.closePrice));
+        //list.stream().forEach(c -> System.out.println(c.closePrice));
         
         RSI rsi = new RSI();
         rsi.setPeriod(14);
         rsi.evaluate(list);
         
         SMA ema = new SMA();
-        ema.setPeriod(25);
+        ema.setPeriod(5);
         ema.evaluate(list);
         
         SMA smaFaster = new SMA();
-        smaFaster.setPeriod(7);
+        smaFaster.setPeriod(8);
         smaFaster.evaluate(list);
         
-        System.out.println("rsi = " + rsi.getSingleResult()); // expected result = 84.7458
-        System.out.println("sma = " + ema.getSingleResult()); // expected result = 5.556428571
-        System.out.println("smaFaster = " + smaFaster.getSingleResult()); // expected result = 84.7458
+        System.out.println("rsi = " + rsi.getResult()); // expected result = 84.7458
+        System.out.println("sma = " + ema.getResult()); // expected result = 5.556428571
+        System.out.println("smaFaster = " + smaFaster.getResult()); // expected result = 84.7458
         
         System.out.println("isOverBought = " + rsi.isOverBought()); // expected result = 84.7458
         System.out.println("isOverSold = " + rsi.isOverSold()); // expected result = 84.7458

@@ -26,6 +26,8 @@ package org.presinal.trading.bot.strategy;
 
 import java.time.Instant;
 import java.util.Calendar;
+import org.presinal.market.client.MarketClient;
+import org.presinal.market.client.types.AssetPair;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
 import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
@@ -40,6 +42,10 @@ public interface Strategy extends Runnable{
     void setListener(StrategyListener listener);
     
     Strategy getImpl();
+    
+    void setClient(MarketClient client);
+    
+    void setAsset(AssetPair asset);
     
     public default void computeDataReaderDateRange(PeriodIndicatorDataReader dataReader) {
 

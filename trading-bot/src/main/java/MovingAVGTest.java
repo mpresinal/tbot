@@ -8,11 +8,14 @@ import java.util.logging.Logger;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.MarketClientException;
 import org.presinal.market.client.enums.TimeFrame;
+import org.presinal.market.client.impl.binance.BinanceMarketClient;
 import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.indicator.EMA;
+import org.presinal.trading.indicator.RSI;
 import org.presinal.trading.indicator.SMA;
+import org.presinal.trading.indicator.VolumeMovingAverage;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
 /*
@@ -47,29 +50,66 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 public class MovingAVGTest {
 
     public static void main(String[] args) throws MarketClientException {
-        MarketClient client = new KucoinMarketClient(KucoinMarketClient.API_URL, "test", "xpo");
+        MarketClient client = new BinanceMarketClient(BinanceMarketClient.API_URL, "test", "xpo");
         int period = 200;
-        TimeFrame timeFrame = TimeFrame.EIGHT_HOURS;
+        TimeFrame timeFrame = TimeFrame.FIFTEEN_MINUTES;
         
         //https://kitchen-3.kucoin.com/v1/open/chart/history?symbol=XRB-BTC&resolution=480&from=1479321029&to=1520793089
-        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("BTC", "USDT"), period, timeFrame);
+        PeriodIndicatorDataReader dataReader = new PeriodIndicatorDataReader(new AssetPair("XRP", "BTC"), period, timeFrame);
         dataReader.setMarketClient(client);
-        /*
-        dataReader.setDateRange(Instant.ofEpochSecond(1479321029), Instant.ofEpochSecond(1520793089));
+        
+        
+        //dataReader.setDateRange(Instant.ofEpochSecond(1479321029), Instant.ofEpochSecond(1520793089));
         long startMill = System.currentTimeMillis();
         System.out.println("Get data Started at: "+startMill);
         List<Candlestick> data = dataReader.readData();
+        System.out.println("data.size = "+data.size());
+        
+        System.out.println("data prev last element = "+data.get(data.size()-2));
+        System.out.println("data last element = "+data.get(data.size()-1));
+        
+        //data = data.subList(0, data.size()-1);
+        
+        System.out.println("new data.size = "+data.size());
+        System.out.println("new data last element = "+data.get(data.size()-1));
+        
         long end = System.currentTimeMillis();
         System.out.println("Get data End at: "+startMill);
         System.out.println("get Data elapse time: "+ (end - startMill));
         
+        SMA sma5 = new SMA(5, timeFrame);
+        SMA sma8 = new SMA(8, timeFrame);
+        SMA sma13 = new SMA(13, timeFrame);
         
-        startMill = System.currentTimeMillis();
+        VolumeMovingAverage volume = new VolumeMovingAverage();
+        volume.setPeriod(20);
+        volume.setTimeFrame(timeFrame);
+        
+        RSI rsi = new RSI(14);
+        
+        sma5.evaluate(data);
+        sma8.evaluate(data);
+        sma13.evaluate(data);
+        volume.evaluate(data);
+        rsi.evaluate(data);
+        
+        System.out.println("kline: "+data.get(data.size()-1));
+        System.out.println("sma(5): "+sma5.getResult());
+        System.out.println("sma(8): "+sma8.getResult());
+        System.out.println("sma(13): "+sma13.getResult());
+        System.out.println("volume(20): "+volume.getResult());
+        System.out.println("rsi(14): "+rsi.getResult());
+        
+        System.out.println("isOverBought = " + rsi.isOverBought());
+        System.out.println("isOverSold = " + rsi.isOverSold());
+        System.out.println("isNormal = " + rsi.isNormal());
+        
+        /*startMill = System.currentTimeMillis();
         System.out.println("computing ema Started at: "+startMill);
         EMA ema = new EMA(13, timeFrame);
         ema.evaluate(data);
         end = System.currentTimeMillis();
-        System.out.println("ema(13): "+ema.getSingleResult());
+        System.out.println("ema(13): "+ema.getResult());
         System.out.println("computing ema End at: "+startMill);
         System.out.println("computing ema elapse time: "+ (end - startMill));
         
@@ -78,7 +118,7 @@ public class MovingAVGTest {
         EMA ema2 = new EMA(34, timeFrame);
         ema2.evaluate(data);
         end = System.currentTimeMillis();
-        System.out.println("ema(34): "+ema2.getSingleResult());
+        System.out.println("ema(34): "+ema2.getResult());
         System.out.println("computing ema End at: "+startMill);
         System.out.println("computing ema elapse time: "+ (end - startMill));
         
@@ -90,15 +130,16 @@ public class MovingAVGTest {
         sma.setTimeFrame(timeFrame);
         sma.evaluate(data);
         end = System.currentTimeMillis();
-        System.out.println("sma: "+sma.getSingleResult());
+        System.out.println("sma: "+sma.getResult());
         System.out.println("computing sma End at: "+startMill);
         System.out.println("computing sma elapse time: "+ (end - startMill));
         */
         
+        /*
         MovingAverageCalculator calculator = new MovingAverageCalculator(dataReader);
         calculator.period = period;
         calculator.timeFrame = timeFrame;
-        new Thread(calculator).start();
+        new Thread(calculator).start();*/
         
     }
     

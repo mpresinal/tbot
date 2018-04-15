@@ -39,7 +39,7 @@ public class EMA extends AbstractIndicator<Double> {
     private final String CLASS_NAME = EMA.class.getSimpleName();
     private Logger logger = Logger.getLogger(CLASS_NAME);
 
-    private static final String NAME = "Exponential Moving Average";
+    private static final String NAME = "EMA";
 
     private double ema;
     private double previousEma = -1.0;
@@ -56,12 +56,8 @@ public class EMA extends AbstractIndicator<Double> {
         setTimeFrame(timeFrame);
     }
 
-    public Double getSingleResult() {
+    public Double getResult() {
         return ema;
-    }
-
-    public Collection<Double> getMultiResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -79,13 +75,13 @@ public class EMA extends AbstractIndicator<Double> {
                 if (previousEma <= 0) {
                     // computing simple moving average
                     sma.evaluate(data.subList(0, getPeriod()));
-                    previousEma = sma.getSingleResult();
+                    previousEma = sma.getResult().doubleValue();
                 }
                 
                 for(int i = getPeriod(); i < dataLength; i++) {
                     double currentPrice = data.get(i).closePrice;
                     evaluate(data.get(i), previousEma);
-                    previousEma = getSingleResult();
+                    previousEma = getResult();
                 }
                 
                 ema = previousEma;

@@ -25,8 +25,6 @@
 package org.presinal.trading.bot;
 
 import org.presinal.market.client.MarketClient;
-import org.presinal.trading.bot.action.common.AssetSelectionAction;
-import org.presinal.trading.bot.action.common.BuySellAction;
 
 /**
  *
@@ -44,23 +42,16 @@ public class DefaultTradingBot extends TradingBot {
 
     @Override
     public void init() {
-        AssetSelectionAction assetSelection = new AssetSelectionAction(getMarketClient());        
-        DefaultTradingAction tradingAction = new DefaultTradingAction(getMarketClient());        
-        BuySellAction buyAction = new BuySellAction(getMarketClient(), tradingAction.getContextKey());
         
-        assetSelection.setQuoteAsset(AssetSelectionAction.DEFAULT_QUOTEASSET);
+        // Set Action context
+        getActions().forEach(action -> {
+            action.setContext(getContext());
+        });
         
-        assetSelection.excludeAsset("ETH");
-        
-        tradingAction.setStopLostAtPercentage(2);
-        tradingAction.setTakeProfitAtPercentage(3);
-        
-        addBotAction(assetSelection);
-        addBotAction(buyAction);
-        addBotAction(tradingAction);
-
-        reactOnChangeOf(tradingAction, assetSelection);
-        reactOnChangeOf(buyAction, tradingAction);
+        // configure action change listener
+        getActionReactionConfigs().forEach( actRxConfig -> {
+            reactOnChangeOf(actRxConfig.getActionToReact(), actRxConfig.getSourceAction());
+        });        
     }
 
 }

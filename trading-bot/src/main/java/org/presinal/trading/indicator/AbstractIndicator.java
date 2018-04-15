@@ -26,6 +26,7 @@ package org.presinal.trading.indicator;
 
 import org.presinal.trading.indicator.listener.IndicatorListener;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import static javafx.scene.input.KeyCode.R;
 import org.presinal.market.client.enums.TimeFrame;
@@ -35,8 +36,9 @@ import org.presinal.market.client.enums.TimeFrame;
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public abstract class AbstractIndicator<T> implements Indicator<T>{
+public abstract class AbstractIndicator<T extends Comparable> implements Indicator<T>{
 
+    private static final String TO_STR_FORMAT = "%1$s(%2$d): %3$s";
     protected int period;
     protected TimeFrame timeFrame;
     private String name;
@@ -77,6 +79,38 @@ public abstract class AbstractIndicator<T> implements Indicator<T>{
         }
     }
 
+    public int compareTo(Indicator<T> o) {
+       return compareTo(o.getResult());
+    }
+    
+    @Override
+    public int compareTo(T o) {
+        
+       Comparable compData = getAsComparableIfIsIt(getResult());
+       Comparable compWith = getAsComparableIfIsIt(o) ;
+       
+       if (Objects.isNull(compData) && Objects.isNull(compWith)) {           
+           return 0;
+           
+       } else if ( !Objects.isNull(compData) && Objects.isNull(compWith)) {
+           return 1;           
+           
+       } else if ( Objects.isNull(compData) && !Objects.isNull(compWith)) {
+           return -1;           
+           
+       } else {           
+           return compData.compareTo(compWith);
+       }
+    }
+    
+    private Comparable getAsComparableIfIsIt(Object o) {
+        if(o != null && o instanceof Comparable) {
+            return (Comparable) o;
+        }
+        
+        return null;
+    }
+
     public int getPeriod() {
         return period;
     }
@@ -95,4 +129,10 @@ public abstract class AbstractIndicator<T> implements Indicator<T>{
         this.timeFrame = timeFrame;
     }
 
+    @Override
+    public String toString() {
+        return String.format(TO_STR_FORMAT, name, period, getResult());
+    }
+
+    
 }

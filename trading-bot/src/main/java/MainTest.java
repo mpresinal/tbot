@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.time.*;
@@ -15,6 +16,8 @@ import org.presinal.trading.indicator.listener.IndicatorListener;
 import org.presinal.trading.indicator.ResultType;
 import org.presinal.trading.indicator.SMA;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
+import org.presinal.trading.tbot.AssetLostProfit;
+import org.presinal.trading.tbot.util.ProfitLedgerFile;
 
 /*
  * The MIT License
@@ -47,20 +50,39 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
  */
 public class MainTest implements IndicatorListener {
  
+    public static void main(String[] args) {
+        int[] data = {1,2,3,4,5,6,7,8,9,10};
+        int length = data.length;
+            int start=0;
+            
+            int p = 5;
+            
+            if(length > p){
+                start = length - p;                
+            } else {
+                p =  length;
+            }         
+            
+            System.out.println("MovingAverage.p = "+p);
+            System.out.println("MovingAverage.start = "+start);
+            System.out.println("MovingAverage.length = "+length);
+            System.out.println("MovingAverage.steps = "+(length - start));
+            double value;
+            for (int i = start; i < length; i++) {
+                System.out.println(String.format("[%d] = %d ", i, data[i]));
+            }
+    }
     @Override
     public void onEvaluate(Indicator indicator) {
         System.out.println("MainTest.onUpdate() Enter");
         System.out.println("MainTest.onUpdate() indicator = "+indicator);
-        if(indicator.getResultType() == ResultType.SINGLE_RESULT) {
-            System.out.println("MainTest.onUpdate() result = "+indicator.getSingleResult());
-        } else {
-            System.out.println("MainTest.onUpdate() result = "+indicator.getMultiResult());
-        }
+        System.out.println("MainTest.onUpdate() result = "+indicator.getResult());
+        
         
         System.out.println("MainTest.onUpdate() Exit");
     }
     
-    public static void main(String[] args) throws InterruptedException, MarketClientException {
+    public static void main2(String[] args) throws InterruptedException, MarketClientException, IOException {
         MarketClient client = new KucoinMarketClient(KucoinMarketClient.API_URL, "test", "xpo");
         int period = 200;
         TimeFrame timeFrame = TimeFrame.FIVE_MINUTES;
@@ -112,6 +134,16 @@ public class MainTest implements IndicatorListener {
         }); 
         
         thread.start();
+        
+        ProfitLedgerFile ledgerFile = new ProfitLedgerFile("ledger");
+        AssetLostProfit profit = new AssetLostProfit();
+        profit.setAsset(new AssetPair("R", "BTC"));
+        profit.setBuyDate(new Date());
+        profit.setBuyPrice(200);
+        profit.setSellDate(new Date());
+        profit.setSellPrice(201);
+        profit.computeProfits();
+        ledgerFile.writeEntry(profit);
     }
     
     public static void mainx(String[] args) throws InterruptedException {

@@ -33,7 +33,7 @@ import org.presinal.market.client.enums.TimeFrame;
  */
 public class SMA extends MovingAverage {
     
-    private static final String NAME = "Simple Moving Average";
+    private static final String NAME = "SMA";
     
     public SMA() {
         super(NAME);

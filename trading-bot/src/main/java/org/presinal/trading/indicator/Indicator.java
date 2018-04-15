@@ -36,16 +36,14 @@ import org.presinal.trading.indicator.datareader.IndicatorDataReader;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T> {
+public interface Indicator<T> extends Comparable<T> {
 
     String getName();
     
     ResultType getResultType();
     
-    T getSingleResult();
-    
-    Collection<T> getMultiResult();
-    
+    T getResult();
+        
     void setPeriod(int period);
     
     void setTimeFrame(TimeFrame timeFrame);

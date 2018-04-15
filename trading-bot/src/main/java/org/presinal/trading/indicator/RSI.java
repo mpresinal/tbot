@@ -24,6 +24,9 @@
 
 package org.presinal.trading.indicator;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
@@ -69,13 +72,8 @@ public class RSI extends AbstractIndicator<Double> {
     }
     
     @Override
-    public Double getSingleResult() {
+    public Double getResult() {
         return rsiValue;
-    }
-
-    @Override
-    public Collection<Double> getMultiResult() {
-        throw new UnsupportedOperationException("Not supported for SINGLE_RESULT type.");
     }
 
     @Override
@@ -91,11 +89,10 @@ public class RSI extends AbstractIndicator<Double> {
         
         if(data != null && data.size() >= 2 ) {
 
-            double upward = 0.0;
-            double downward = 0.0;
-            double delta;
-            double rs;
-            
+            BigDecimal upward = BigDecimal.ZERO;
+            BigDecimal downward = BigDecimal.ZERO;
+            BigDecimal rs;
+                        
             // calculating the range index
             int length = data.size();             
             int end = length-1;
@@ -107,33 +104,45 @@ public class RSI extends AbstractIndicator<Double> {
                 start = 1;
             }
 
+            System.out.println("period = "+period);
             System.out.println("length = "+length);
             System.out.println("start = "+start);
             System.out.println("end = "+end);
             
-            DecimalFormat format = new DecimalFormat("#.########");
-            Candlestick prev = data.get(start-1);
-            System.out.println(format.format(prev.closePrice));
+            //DecimalFormat format = new DecimalFormat("#.########");
+            Candlestick prev = data.get(start);
+            //System.out.println(format.format(prev.closePrice));
             Candlestick current;
             //start; 
-            for (int i = start; i <= end; i++) {
+            for (int i = start+1; i <= end; i++) {
                 current = data.get(i);
-                System.out.println(format.format(current.closePrice));
-                
-                delta = Math.abs(current.closePrice - prev.closePrice);
-                
+                //System.out.println(format.format(current.closePrice));
+                                
                 if(current.closePrice > prev.closePrice ) {
-                    upward +=  delta;
-                } else if(current.closePrice < prev.closePrice ) {
-                    downward +=  delta;
+                    
+                    upward = upward.add(BigDecimal.valueOf(current.closePrice).subtract(BigDecimal.valueOf(prev.closePrice)));
+                    
+                } else if(current.closePrice < prev.closePrice ) {                    
+                    
+                    downward = downward.add(BigDecimal.valueOf(prev.closePrice).subtract(BigDecimal.valueOf(current.closePrice)));                    
+                    
                 }               
                 
                 prev = current;
             }
             
-            double tmpPeriod =  period;
-            rs = (upward/tmpPeriod) / (downward/tmpPeriod);
-            rsiValue = 100.0 - (100.0/(1+rs));
+            BigDecimal tmpPeriod =  BigDecimal.valueOf(period);
+            BigDecimal avgUpward = upward.divide(tmpPeriod, MathContext.DECIMAL64);
+            BigDecimal avgDownward = downward.divide(tmpPeriod, MathContext.DECIMAL64);
+
+            rs =  avgUpward.divide(avgDownward, MathContext.DECIMAL64);             
+            
+            //rs = (upward/tmpPeriod) / (downward/tmpPeriod);
+            //rsiValue = 100.0 - (100.0/(1+rs));
+            BigDecimal oneHundre = new BigDecimal("100.0");
+            rsiValue = oneHundre.subtract(
+                    oneHundre.divide(BigDecimal.ONE.add(rs), MathContext.DECIMAL64)
+            ).doubleValue(); 
             
             notifyListeners();
         }

@@ -211,17 +211,17 @@ public final class ScalpingStrategy implements Strategy {
 
                         // compute indicators 
                         fastEMAInd.evaluate(data);
-                        fastEmaValue = fastEMAInd.getSingleResult();
+                        fastEmaValue = fastEMAInd.getResult();
 
                         logger.finest("** fastEmaValue = " + fastEmaValue);
 
                         slowEMAInd.evaluate(data);
-                        slowEmaValue = slowEMAInd.getSingleResult();
+                        slowEmaValue = slowEMAInd.getResult();
                         logger.finest("** slowEmaValue = " + slowEmaValue);
                         
                         if(config.isIncludeVolumeAverageCondition()) {
                             volumeInd.evaluate(data);
-                            volumeAverageValue = volumeInd.getSingleResult();
+                            volumeAverageValue = volumeInd.getResult().doubleValue();
                             logger.finest("** volumeAverageValue = " + volumeAverageValue);
                         }
                         
@@ -294,7 +294,7 @@ public final class ScalpingStrategy implements Strategy {
     private void computeTrendLine() {
         // get as much data as it can. Big data will guaranty a more acurate EMA        
         trendLineEMA.evaluate(readTrendLineData(trendLineEMA.getPeriod()*3));
-        trendAverage = trendLineEMA.getSingleResult();
+        trendAverage = trendLineEMA.getResult();
     }
     
     private void computeTrendLineMovement() {
@@ -304,7 +304,7 @@ public final class ScalpingStrategy implements Strategy {
         
         if(data != null && !data.isEmpty()){            
             trendLineEMA.evaluate(data.get(data.size()-1), trendAverage);
-            trendAverage = trendLineEMA.getSingleResult();
+            trendAverage = trendLineEMA.getResult();
         }
     }
 
@@ -335,6 +335,16 @@ public final class ScalpingStrategy implements Strategy {
             throw new NullPointerException("marketClient can not be null");
         }
         this.marketClient = marketClient;
+    }
+
+    @Override
+    public void setClient(MarketClient client) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setAsset(AssetPair asset) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

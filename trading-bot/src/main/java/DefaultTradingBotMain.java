@@ -12,6 +12,8 @@ import org.presinal.market.client.impl.binance.BinanceMarketClient;
 import org.presinal.market.client.impl.kucoin.KucoinMarketClient;
 import org.presinal.trading.bot.DefaultTradingBot;
 import org.presinal.trading.bot.scalping.ScalpingTradingBot;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /*
  * The MIT License
@@ -52,12 +54,13 @@ public class DefaultTradingBotMain {
             Logger.getLogger(DefaultTradingBotMain.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        System.out.println("Creating bot...");
+        System.out.println("Loading Spring Application Context...");
+        ApplicationContext appContext = new ClassPathXmlApplicationContext("application-context.xml");
+        System.out.println("Loading Spring Application Context...OK");
         
-        //MarketClient marketClient = new KucoinMarketClient(KucoinMarketClient.API_URL, "TEST", "TEST");
-        MarketClient marketClient = new BinanceMarketClient(BinanceMarketClient.API_URL, null, "testing");
-        DefaultTradingBot bot = new DefaultTradingBot(marketClient);
-        System.out.println("Creating bot...OK");
+        System.out.println("Getting Bot bean instance from Spring Application Context...");
+        DefaultTradingBot bot = appContext.getBean("binanceDefaultTradingBot", DefaultTradingBot.class);
+        System.out.println("Getting Bot bean instance from Spring Application Context...OK");
         
         System.out.println("Initializing bot...");
         bot.init();
@@ -66,5 +69,6 @@ public class DefaultTradingBotMain {
         System.out.println("Starting bot...");
         bot.start();
         System.out.println("Starting bot...OK");
+        
     }
 } 

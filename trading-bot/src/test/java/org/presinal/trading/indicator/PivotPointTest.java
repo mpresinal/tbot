@@ -45,7 +45,7 @@ public class PivotPointTest {
     
 
     /**
-     * Test of getSingleResult method, of class PivotPoint.
+     * Test of getResult method, of class PivotPoint.
      */
     @Test
     public void testEvalueList_normalFlow() {
@@ -58,7 +58,7 @@ public class PivotPointTest {
         list.add(new Candlestick(0.000086440, 0.0000089130, 0.0000085730, 0.0000092130, 150.05, Instant.now()));
         instance.evaluate(list);        
        
-        PivotPoint.PivotPointResult result = instance.getSingleResult();
+        PivotPoint.PivotPointResult result = instance.getResult();
         System.out.println(METHOD + "result = "+result);
         
         double expectedPP = 10.666;

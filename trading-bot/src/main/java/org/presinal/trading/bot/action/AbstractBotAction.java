@@ -45,6 +45,8 @@ public abstract class AbstractBotAction extends Thread implements BotAction {
     
     private boolean actionEnded = false;
     
+    private String signalDataContextKey;
+    
     public AbstractBotAction() {        
         dependencyActions = new HashSet<>();
         this.listeners = new HashSet<>();
@@ -98,5 +100,19 @@ public abstract class AbstractBotAction extends Thread implements BotAction {
 
     protected BotActionContext getContext() {
         return context;
+    }
+
+    protected Set<BotActionListener> getListeners() {
+        return listeners;
+    }
+
+    @Override
+    public void setSignalDataProducerKey(String signalDataContextKey) {
+        this.signalDataContextKey=signalDataContextKey;
+    }
+
+    @Override
+    public String getSignalDataProducerKey() {
+        return signalDataContextKey;
     }
 }

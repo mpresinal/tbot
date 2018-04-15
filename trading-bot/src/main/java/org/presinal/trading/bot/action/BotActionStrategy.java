@@ -24,51 +24,113 @@
 
 package org.presinal.trading.bot.action;
 
+import org.presinal.market.client.enums.OrderType;
+import org.presinal.market.client.types.AssetPair;
+import org.presinal.market.client.types.Order;
+import static org.presinal.trading.bot.DefaultTradingAction.KEY;
 import org.presinal.trading.bot.strategy.Signal;
 import org.presinal.trading.bot.strategy.Strategy;
-import org.presinal.trading.bot.strategy.listener.StrategyListener;
+import org.presinal.trading.bot.strategy.StrategyFactory;
+import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public class BotActionStrategy extends AbstractBotAction implements StrategyListener{
+public class BotActionStrategy extends AbstractBotAction implements TradingStrategyListener {
 
     public static final String CONTEXT_KEY = BotActionStrategy.class.getSimpleName();
+    private String name = CONTEXT_KEY;
     
-    private Strategy strategy;
+    private boolean signalRecieved = false;
     private boolean running = false;
+    private StrategyFactory strategyFactory;
     
-    public BotActionStrategy(Strategy strategy) {
-        super();
-        this.strategy=strategy;
-        strategy.setListener(this);
-    }
-
-
     public String getContextKey() {
         return CONTEXT_KEY;
     }
     
     @Override
-    public void run() {        
-        
-        if(!running) {
-            new Thread(strategy).start();            
+    public void run() {
+        System.out.println(name + " :: performeAction() Enter");
+        Strategy strategy;
+        while (!isActionEnded()) {
+
+            synchronized (this) {
+                System.out.println(name + " :: performeAction() Waiting for signal to place an order");
+
+                while (!signalRecieved) {
+                    try {
+                        wait();
+                    } catch (InterruptedException ex) { 
+                        ex.printStackTrace(); 
+                    }
+                }
+
+                signalRecieved = false;
+                Object signalData = getContext().get(getSignalDataProducerKey());
+                System.out.println(name + " :: performeAction() Executing task");
+                System.out.println(name + " :: performeAction() signalData = " + signalData);
+
+                if (signalData instanceof AssetPair) {
+                    strategy = strategyFactory.newStrategy();
+                    strategy.setAsset((AssetPair) signalData);
+                    strategy.setListener(this);                    
+                    new Thread(strategy).start();
+                }
+
+            }
         }
-        
+
+        System.out.println(name + " :: performeAction() Exit");
     }
 
     @Override
     public void notifySignal() {
-       
+        System.out.println(name + " :: update() Enter");
+        synchronized (this) {
+            notifyAll();
+            signalRecieved = true;
+        }
+        System.out.println(name + " :: update() Exit");
     }
 
     @Override
-    public void onSignal(Signal signal, Strategy source) {
-        getContext().put(CONTEXT_KEY, signal);
+    public void onBuySignal(AssetPair asset, double price) {
+        System.out.println("buy signal: asset = " + asset + ", price=" + price);
+        Order order = createOrder(asset, price, Order.SIDE_BUY);
+        getContext().put(getContextKey(), order);        
         notifyListener();
     }
 
+    @Override
+    public void onSellSignal(AssetPair asset, double price) {
+        System.out.println("sell signal: asset = " + asset + ", price=" + price);
+        Order order = createOrder(asset, price, Order.SIDE_SELL);
+        getContext().put(getContextKey(), order);        
+        notifyListener();
+    }
+
+    @Override
+    public void onSignal(Signal sginal, Strategy source) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private Order createOrder(AssetPair asset, double price, String side) {
+        Order order = new Order();
+        order.setAssetPair(asset);
+        order.setPrice(price);
+        order.setSide(side);
+        order.setType(OrderType.LIMIT);
+        return order;
+    }
+
+    public StrategyFactory getStrategyFactory() {
+        return strategyFactory;
+    }
+
+    public void setStrategyFactory(StrategyFactory strategyFactory) {
+        this.strategyFactory = strategyFactory;
+    }
 }

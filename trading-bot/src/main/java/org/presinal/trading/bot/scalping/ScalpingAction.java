@@ -48,8 +48,7 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
     public static final String KEY = ScalpingAction.class.getSimpleName();
     private String name = KEY;
 
-    private boolean signalRecieved = false;
-    private ScalpingStrategy strategy;
+    private boolean signalRecieved = false;    
     private MarketClient client;
 
     private final ScalpingStrategyConfig strategyConfig;
@@ -76,7 +75,9 @@ public class ScalpingAction extends AbstractBotAction implements TradingStrategy
     @Override
     public void run() {
         System.out.println(name + " :: performeAction() Enter");
-
+        
+        ScalpingStrategy strategy;
+                
         while (!isActionEnded()) {
 
             synchronized (this) {

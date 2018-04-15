@@ -50,12 +50,14 @@ public class PeriodIndicatorDataReader implements IndicatorDataReader<List<Candl
     
     private Instant startDate, endDate;
 
+    public PeriodIndicatorDataReader() {
+    }
+    
     public PeriodIndicatorDataReader(AssetPair asset, int period, TimeFrame timeFrame) {
         this.period = period;
         this.timeFrame = timeFrame;
         this.asset = asset;
-    }
-    
+    }    
     
     @Override
     public void setMarketClient(MarketClient client) {

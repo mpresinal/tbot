@@ -50,8 +50,8 @@ public class DefaultTradingAction extends AbstractBotAction implements TradingSt
     private DefaultStrategy strategy;
     private MarketClient client;
     
-    private int takeProfitAtPercentage = 5;
-    private int stopLostAtPercentage = 5;
+    private int takeProfitAtPercentage = 1;
+    private int stopLostAtPercentage = 2;
     
     public DefaultTradingAction(MarketClient client) {
         super();
@@ -82,7 +82,7 @@ public class DefaultTradingAction extends AbstractBotAction implements TradingSt
                 }
 
                 signalRecieved = false;
-                Object signalData = getContext().get(AssetSelectionAction.KEY);
+                Object signalData = getContext().get(getSignalDataProducerKey());
                 System.out.println(name + " :: performeAction() Executing task");
                 System.out.println(name + " :: performeAction() signalData = " + signalData);
 

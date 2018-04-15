@@ -31,7 +31,7 @@ package org.presinal.trading.indicator;
  */
 public class VolumeMovingAverage extends MovingAverage {
 
-    private static final String NAME = "Volume Moving Average";
+    private static final String NAME = "Volume";
     
     public VolumeMovingAverage() {
         super(NAME, MovingAverage.CandlestickSource.VOLUME);
