@@ -75,6 +75,7 @@ public class BotActionStrategy extends AbstractBotAction implements TradingStrat
 
                 if (signalData instanceof AssetPair) {
                     strategy = strategyFactory.newStrategy();
+                    System.out.println(name + " :: performeAction() strategy = "+strategy);
                     strategy.setAsset((AssetPair) signalData);
                     strategy.setListener(this);                    
                     new Thread(strategy).start();

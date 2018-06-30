@@ -27,6 +27,7 @@ package org.presinal.market.client.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -53,7 +54,7 @@ public class JsonDeserializerUtil {
     
     public static double getAsDoubleIfNotNull(JsonElement jsonEl){
         if(jsonEl != null && !jsonEl.isJsonNull()){
-            return jsonEl.getAsDouble();
+            return jsonEl.getAsBigDecimal().doubleValue();
         }
         
         return 0;

@@ -30,7 +30,6 @@ import org.presinal.market.client.enums.TimeFrame;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
-import org.presinal.trading.bot.action.common.AssetSelectionAction;
 import org.presinal.trading.bot.strategy.DefaultStrategy;
 import org.presinal.trading.bot.strategy.Signal;
 import org.presinal.trading.bot.strategy.Strategy;
@@ -41,6 +40,7 @@ import org.presinal.trading.bot.strategy.listener.TradingStrategyListener;
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
+@Deprecated
 public class DefaultTradingAction extends AbstractBotAction implements TradingStrategyListener {
 
     public static final String KEY = DefaultTradingAction.class.getSimpleName();

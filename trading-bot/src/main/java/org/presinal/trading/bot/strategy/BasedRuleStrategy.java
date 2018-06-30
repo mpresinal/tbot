@@ -24,14 +24,25 @@
 
 package org.presinal.trading.bot.strategy;
 
+import org.presinal.trading.bot.strategy.rule.definitions.IndicatorStrategyRuleDefinition;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import org.presinal.market.client.MarketClient;
 import org.presinal.market.client.types.AssetPair;
 import org.presinal.market.client.types.Candlestick;
 import org.presinal.trading.bot.strategy.listener.StrategyListener;
+import org.presinal.trading.bot.strategy.rule.ComparisonOperator;
+import org.presinal.trading.bot.strategy.rule.IndicatorStrategyRule;
+import org.presinal.trading.bot.strategy.rule.LogicalOperator;
 import org.presinal.trading.bot.strategy.rule.Rule;
+import org.presinal.trading.bot.strategy.rule.StrategyRuleGroup;
+import org.presinal.trading.bot.strategy.rule.definitions.StrategyRuleGroupDefinition;
+import org.presinal.trading.bot.strategy.rule.definitions.StrategyRuleDefinition;
+import org.presinal.trading.indicator.AbstractIndicator;
 import org.presinal.trading.indicator.Indicator;
 import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 
@@ -43,19 +54,31 @@ import org.presinal.trading.indicator.datareader.PeriodIndicatorDataReader;
 public class BasedRuleStrategy implements Strategy {
 
     private static final Logger logger = Logger.getLogger(BasedRuleStrategy.class.getName());
-    private static final long RETRIEVE_DATA_EVERY_TEN_SECONDS = 20 * 1000;
+    private static final long DEFAULT_DATA_READ_INTERVAL_SECONDS = 30;
     
-   
+    // Properties
     private StrategyListener listener;
     private MarketClient client;
     private AssetPair asset;    
     private PeriodIndicatorDataReader dataReader;
     
-    private Rule buyRule;
-    private Rule sellRule;
-    
     private Set<Indicator> indicators;
+    private long dataReadIntervalSeconds = DEFAULT_DATA_READ_INTERVAL_SECONDS;
     
+    private Rule buyRule;
+    private Rule sellRule;    
+    
+    // Buy or Sell Rule defition
+    /*
+    * This is usefull to create buy or sell rule using the current indicators.
+    * Note: if buyRule or sellRule is alreade set then
+    * buyRuleDefinition or sellRuleDefinition won't be taken
+    * into consideration
+    */
+    private StrategyRuleDefinition buyRuleDefinition;
+    private StrategyRuleDefinition sellRuleDefinition;
+    
+    // Internal
     private boolean buySignalGenerated = false;
     private boolean sellSignalGenerated = false;
     
@@ -64,6 +87,80 @@ public class BasedRuleStrategy implements Strategy {
         return this;
     }
 
+    private IndicatorStrategyRule createRule(IndicatorStrategyRuleDefinition def, Map<String, Indicator> map) {
+        String leftOpId = def.getLeftOpererandId();
+        String rightOpId = def.getRightOpererandId();
+        
+        if(leftOpId == null || !map.containsKey(leftOpId)) {
+            return null;
+        }
+        
+        if(rightOpId == null || !map.containsKey(rightOpId)) {
+            return null;
+        }
+        
+        IndicatorStrategyRule rule = new IndicatorStrategyRule();
+        rule.setLeftOperand((AbstractIndicator)map.get(leftOpId));
+        rule.setRightOperand((AbstractIndicator)map.get(rightOpId));
+        
+        ComparisonOperator cp = ComparisonOperator.valueOf(def.getComparisonOperator());
+        
+        rule.setComparisonOperator(cp != null? cp : ComparisonOperator.EQUAL);
+        
+        return rule;
+    }
+    
+    private StrategyRuleGroup createRule(StrategyRuleGroupDefinition groupDef, Map<String, Indicator> map) {
+        
+        StrategyRuleGroup group = new StrategyRuleGroup();        
+        LogicalOperator op = LogicalOperator.valueOf(groupDef.getLogicalOperator());                
+        group.setLogicalOperator(op == null? LogicalOperator.AND : op);
+        
+        Set<IndicatorStrategyRuleDefinition> list = groupDef.getRulesDefinition();
+        Rule rule;
+        
+        for (IndicatorStrategyRuleDefinition idf : list) {
+            rule = createRule(idf, map);
+            if(rule == null){
+                return null;
+            }
+            group.getRules().add(rule);
+        }
+        
+        return group;
+    }
+    
+    private Rule createRule(StrategyRuleDefinition def,  Map<String, Indicator> map) {
+        
+        Rule rule = null;
+        
+        if(def instanceof IndicatorStrategyRuleDefinition) {
+            rule = createRule((IndicatorStrategyRuleDefinition) def, map);
+            
+        } else if(def instanceof StrategyRuleGroupDefinition) {
+            
+           rule = createRule((StrategyRuleGroupDefinition)def, map);
+        }
+        
+        return rule;
+    }
+    
+    private boolean createRuleFromDefinition() {
+        Map<String, Indicator> map = new HashMap<>();
+        
+        getIndicators().forEach(ind -> map.put(ind.getId(), ind));
+        
+        if(buyRule == null && buyRuleDefinition != null) {
+           buyRule = createRule(buyRuleDefinition, map);
+        }
+        
+        if(sellRule == null && sellRuleDefinition != null){
+           sellRule = createRule(sellRuleDefinition, map);
+        }
+        
+        return buyRule != null && sellRule != null;
+    }
+    
     @Override
     public void run() {
         boolean running = true;
@@ -73,10 +170,28 @@ public class BasedRuleStrategy implements Strategy {
         dataReader.setMarketClient(client);
         dataReader.setAsset(asset);
         
+        long sleepTime = dataReadIntervalSeconds * 1000;
+        
         boolean buyRuleCondSatisfied = false;
         boolean sellRuleCondSatisfied = false;
+             
+        if (getIndicators().isEmpty()) {
+            logger.severe("Not indicators added to performa buy/sell signal");
+            return;
+        }
+        
+        // Create rule from definition
+        if(buyRuleDefinition != null || sellRuleDefinition != null) {
+            createRuleFromDefinition();            
+        }        
+        
+        if(buyRule == null || sellRule == null) {
+            logger.severe("Not buy or sell rule set to performa buy/sell signal");
+            return;
+        }
+        
         while (running) {
-            
+    
             computeDataReaderDateRange(dataReader);
             data = dataReader.readData();
 
@@ -87,18 +202,15 @@ public class BasedRuleStrategy implements Strategy {
 
                 if (currentCandlestick.closePrice > 0) {
                     
-                    for(Indicator ind : indicators) {
-                        ind.evaluate(data);
-                    }
-                    
                     logger.info("-----------------------------------------------------------------");
                     logger.info("*** asset = " + asset.toSymbol());
                     logger.info("*** current price = " + currentCandlestick.closePrice);
-                    logger.info("*** current volume = " + currentCandlestick.volume);                                        
-                    
-                    indicators.forEach( ind -> {
+                    logger.info("*** current volume = " + currentCandlestick.volume);                   
+
+                    for(Indicator ind : indicators) {
+                        ind.evaluate(data);
                         logger.info("*** "+ind);
-                    });
+                    }
                     
                     logger.info("*** buyRule = " + buyRule);  
                     buyRuleCondSatisfied = buyRule.evaluate();
@@ -106,33 +218,36 @@ public class BasedRuleStrategy implements Strategy {
                     sellRuleCondSatisfied = sellRule.evaluate();                   
                     
                     logger.info("*** buyRuleCondSatisfied = " + buyRuleCondSatisfied);   
-                    logger.info("*** sellRuleCondSatisfied = " + sellRuleCondSatisfied);  
+                    logger.info("*** buySignalGenerated = " + buySignalGenerated);
                     
-                    logger.info("*** buySignalGenerated = " + buySignalGenerated);  
+                    logger.info("*** sellRuleCondSatisfied = " + sellRuleCondSatisfied);
                     logger.info("*** sellSignalGenerated = " + sellSignalGenerated);  
                     
                     if (!buySignalGenerated && buyRuleCondSatisfied) {
                         logger.info(" Buy signal detected at price: "+currentCandlestick.closePrice);
                         // Notify lister with a buy signal
                         notifySignal(currentCandlestick.closePrice, true);
-                        buySignalGenerated = true;
-                        sellSignalGenerated = false;
+                        buySignalGenerated = true;                       
 
                         //continue;
 
                     } else if( (!sellSignalGenerated && buySignalGenerated) && sellRuleCondSatisfied) {
                         
                         logger.info(" Sell signal detected at price: "+currentCandlestick.closePrice);
-                        notifySignal(currentCandlestick.closePrice, false);
-                        buySignalGenerated = false;
+                        notifySignal(currentCandlestick.closePrice, false);                        
                         sellSignalGenerated = true;
+                    }
+                    
+                    if(buySignalGenerated && sellSignalGenerated){
+                        buySignalGenerated = false;
+                        sellSignalGenerated = false;
                     }
                 }
             }
             
             if (running) {
                 try {
-                    Thread.sleep(RETRIEVE_DATA_EVERY_TEN_SECONDS);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException ex) {
                     logger.warning("Thread has been interrupted. Reason: " + ex.getMessage());
                 }
@@ -192,12 +307,39 @@ public class BasedRuleStrategy implements Strategy {
         this.sellRule = sellRule;
     }
 
+    public StrategyRuleDefinition getBuyRuleDefinition() {
+        return buyRuleDefinition;
+    }
+
+    public void setBuyRuleDefinition(StrategyRuleDefinition buyRuleDefinition) {
+        this.buyRuleDefinition = buyRuleDefinition;
+    }
+
+    public StrategyRuleDefinition getSellRuleDefinition() {
+        return sellRuleDefinition;
+    }
+
+    public void setSellRuleDefinition(StrategyRuleDefinition sellRuleDefinition) {
+        this.sellRuleDefinition = sellRuleDefinition;
+    }
+    
     public Set<Indicator> getIndicators() {
+        if(indicators == null){
+            indicators = new HashSet<>();
+        }
+        
         return indicators;
     }
 
     public void setIndicators(Set<Indicator> indicators) {
         this.indicators = indicators;
     }
-    
+
+    public long getDataReadIntervalSeconds() {
+        return dataReadIntervalSeconds;
+    }
+
+    public void setDataReadIntervalSeconds(long dataReadIntervalSeconds) {
+        this.dataReadIntervalSeconds = dataReadIntervalSeconds;
+    }    
 }

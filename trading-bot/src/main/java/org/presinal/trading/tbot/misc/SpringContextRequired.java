@@ -22,35 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.tbot.misc;
 
-import org.presinal.trading.indicator.listener.IndicatorListener;
-import java.util.List;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.market.client.types.Candlestick;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T> extends Comparable<T> {
+public interface SpringContextRequired {
 
-    String getName();
-    
-    void setId(String id);
-    String getId();
-    
-    ResultType getResultType();
-    
-    T getResult();
-        
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void addListener(IndicatorListener listener);
-    
-    void evaluate(List<Candlestick> data);
-        
+    void setSpringContext(ApplicationContext context);
 }

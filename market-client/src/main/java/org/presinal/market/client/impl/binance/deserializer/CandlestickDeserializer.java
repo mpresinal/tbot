@@ -92,5 +92,9 @@ public class CandlestickDeserializer implements JsonDeserializer<Candlestick[]> 
         }
         return candlesticks;
     }
+    
+    private Candlestick newCandlestick(JsonArray kline) {        
+        return null;
+    }
 
 }

@@ -28,6 +28,7 @@
 	<modules>
 		<module>market-client</module>
 		<module>trading-bot</module>
+	 <module>SpringSamples</module>
 	</modules>
 	
     <build>

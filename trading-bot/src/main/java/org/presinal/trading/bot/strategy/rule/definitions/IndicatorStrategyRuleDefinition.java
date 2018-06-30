@@ -22,44 +22,51 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.bot.strategy.factory.impl;
+package org.presinal.trading.bot.strategy.rule.definitions;
 
-import org.presinal.trading.bot.strategy.Strategy;
-import org.presinal.trading.bot.strategy.StrategyFactory;
-import org.presinal.trading.tbot.annotation.SpringContextRequire;
-import org.presinal.trading.tbot.misc.SpringContextRequired;
-import org.springframework.context.ApplicationContext;
+import org.presinal.trading.bot.strategy.rule.Rule;
 
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-@SpringContextRequire(field = "springContext")
-public class DIBasedRuleStrategyFactoryImpl implements StrategyFactory, SpringContextRequired {
+public class IndicatorStrategyRuleDefinition implements StrategyRuleDefinition {
 
-    private String prototypeBeanName;
-    private ApplicationContext springContext;
+    private String leftOpererandId;
+    private String rightOpererandId;
+    private String comparisonOperator;
+    private String definitionFor;
     
-    @Override
-    public Strategy newStrategy() {
-        return springContext.getBean(prototypeBeanName, Strategy.class);
+    public String getLeftOpererandId() {
+        return leftOpererandId;
     }
 
-    public String getPrototypeBeanName() {
-        return prototypeBeanName;
+    public void setLeftOpererandId(String leftOpererandId) {
+        this.leftOpererandId = leftOpererandId;
     }
 
-    public void setPrototypeBeanName(String prototypeBeanName) {
-        this.prototypeBeanName = prototypeBeanName;
+    public String getRightOpererandId() {
+        return rightOpererandId;
     }
 
-    public ApplicationContext getSpringContext() {
-        return springContext;
+    public void setRightOpererandId(String rightOpererandId) {
+        this.rightOpererandId = rightOpererandId;
     }
 
-    @Override
-    public void setSpringContext(ApplicationContext springContext) {
-        this.springContext = springContext;
+    public String getComparisonOperator() {
+        return comparisonOperator;
+    }
+
+    public void setComparisonOperator(String comparisonOperator) {
+        this.comparisonOperator = comparisonOperator;
+    }
+
+    public String getDefinitionFor() {
+        return definitionFor;
+    }
+
+    public void setDefinitionFor(String definitionFor) {
+        this.definitionFor = definitionFor;
     }
 }

@@ -20,7 +20,7 @@ Any value defined here will override the pom.xml file value but is only applicab
     <spring-data xmlns="http://www.netbeans.org/ns/spring-data/1">
         <config-files>
             <config-file>src/main/resources/application-context.xml</config-file>
-            <config-file>src/main/resources/common-beans.xml</config-file>
+            <config-file>src/main/resources/bot/mat/binance/bot-beans-def.xml</config-file>
         </config-files>
         <config-file-groups/>
     </spring-data>

@@ -22,35 +22,40 @@
  * THE SOFTWARE.
  */
 
-package org.presinal.trading.indicator;
+package org.presinal.trading.bot.strategy.rule.definitions;
 
-import org.presinal.trading.indicator.listener.IndicatorListener;
-import java.util.List;
-import org.presinal.market.client.enums.TimeFrame;
-import org.presinal.market.client.types.Candlestick;
+import java.util.HashSet;
+import java.util.Set;
+import org.presinal.trading.bot.strategy.rule.Rule;
 
 /**
  *
- * @author Miguel Presinal<presinal378@gmail.com>
+ * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public interface Indicator<T> extends Comparable<T> {
+public class StrategyRuleGroupDefinition implements StrategyRuleDefinition {
 
-    String getName();
+    private String logicalOperator;
+    private Set<IndicatorStrategyRuleDefinition> rulesDefinition;
     
-    void setId(String id);
-    String getId();
-    
-    ResultType getResultType();
-    
-    T getResult();
+    public String getLogicalOperator() {
+        return logicalOperator;
+    }
+
+    public void setLogicalOperator(String logicalOperator) {
+        this.logicalOperator = logicalOperator;
+    }
+
+    public Set<IndicatorStrategyRuleDefinition> getRulesDefinition() {
+        if(rulesDefinition == null){
+            rulesDefinition = new HashSet<>();
+        }
         
-    void setPeriod(int period);
-    
-    void setTimeFrame(TimeFrame timeFrame);
-    
-    void addListener(IndicatorListener listener);
-    
-    void evaluate(List<Candlestick> data);
-        
+        return rulesDefinition;
+    }
+
+    public void setRulesDefinition(Set<IndicatorStrategyRuleDefinition> rulesDefinition) {
+        this.rulesDefinition = rulesDefinition;
+    }
+
 }

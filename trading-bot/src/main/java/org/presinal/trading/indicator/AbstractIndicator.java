@@ -42,6 +42,7 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     protected int period;
     protected TimeFrame timeFrame;
     private String name;
+    private String id;
     private ResultType resultType;    
     
     protected Set<IndicatorListener> listeners;
@@ -127,6 +128,14 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     @Override
     public void setTimeFrame(TimeFrame timeFrame) {
         this.timeFrame = timeFrame;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

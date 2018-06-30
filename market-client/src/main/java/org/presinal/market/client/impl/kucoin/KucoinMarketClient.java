@@ -56,6 +56,8 @@ import org.presinal.market.client.types.OrderBook;
  */
 public class KucoinMarketClient extends AbstractMarketClient {
     
+    private static final String MARKET_NAME ="kucoin";
+    
     public static final String API_URL = "https://api.kucoin.com";
     private static final String ORDER_BOOK_ENDPOINT = "v1/open/orders";
     private static final String OPEN_TICK_ENDPOINT = "v1/open/tick";
@@ -75,6 +77,10 @@ public class KucoinMarketClient extends AbstractMarketClient {
         builder.registerTypeAdapter(OrderBook.class, new OrderBookDeserializer());
         builder.registerTypeAdapter(Candlestick[].class, new CandlestickDeserializer());
         builder.registerTypeAdapter(AssetPriceChange.class, new AssetPriceChangeDeserializer());
+    }
+    
+    public String getMarketName() {
+        return MARKET_NAME;
     }
     
     @Override

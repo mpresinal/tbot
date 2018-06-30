@@ -48,6 +48,8 @@ public interface MarketClient extends Serializable {
 
     public static final int MAX_DATA_LIMIT = 500;
     
+    public String getMarketName();
+    
     /**
      * Make a test connection to validate the api url.
      * 

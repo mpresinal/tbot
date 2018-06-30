@@ -54,11 +54,12 @@ import org.presinal.market.client.types.OrderBook;
  */
 public class BinanceMarketClient extends AbstractMarketClient {
 
+    private static final String MARKET_NAME = "binance";
+    
     public static final String API_URL = "https://api.binance.com/api/";    
     private static final String OPEN_TICK_ENDPOINT = "v1/ticker/24hr";
     private static final String CANDLESTICK_ENDPOINT = "v1/klines";
-    
-    
+
     private static final int ORDER_BOOK_LIMIT = 100;    
     private static final String SYMBOL_SEPERATOR = "";
     
@@ -72,6 +73,10 @@ public class BinanceMarketClient extends AbstractMarketClient {
         builder.registerTypeAdapter(Candlestick[].class, new CandlestickDeserializer());
     }
 
+    public String getMarketName() {
+        return MARKET_NAME;
+    }
+    
     @Override
     public boolean testConnection() throws MarketClientException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

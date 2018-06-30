@@ -38,7 +38,6 @@ import org.presinal.market.client.types.AccountBalance;
 import org.presinal.market.client.types.Order;
 import org.presinal.trading.bot.action.AbstractBotAction;
 import org.presinal.trading.bot.action.BotAction;
-import org.presinal.trading.bot.action.BotActionListener;
 import org.presinal.trading.tbot.AssetLostProfit;
 import org.presinal.trading.tbot.util.ProfitLedgerFile;
 

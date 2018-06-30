@@ -112,20 +112,22 @@ public abstract class AbstractMarketClient implements MarketClient {
     
     protected String doGetRequest(String endPoint, Map<String, Object> requestParam) throws MarketClientException {        
         
-        Response response = addQueryParam(baseTarget.path(endPoint), requestParam)
-                .request(MediaType.APPLICATION_JSON)
-                .get();
         
-        String strResponse = null;
-        Status responseCode = Status.fromStatusCode(response.getStatus());
-        
-        if(Status.OK == responseCode) {
-            strResponse = response.readEntity(String.class);
-        } else {
-            throw new MarketClientException("Error resquesting the target: "+endPoint+". "+responseCode.getStatusCode()+" "+responseCode.getReasonPhrase());
-        }      
-
-        return strResponse;
+        try {
+            Response response = addQueryParam(baseTarget.path(endPoint), requestParam)
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            Status responseCode = Status.fromStatusCode(response.getStatus());
+            String strResponse = null;
+            if (Status.OK == responseCode) {
+                strResponse = response.readEntity(String.class);
+            } else {
+                throw new MarketClientException("Error resquesting the target: " + endPoint + ". " + responseCode.getStatusCode() + " " + responseCode.getReasonPhrase());
+            }
+            return strResponse;
+        } catch (javax.ws.rs.ProcessingException e) {
+            throw new MarketClientException("Error resquesting the target: " + endPoint + ". "+e.getMessage(), e );
+        }        
     }
     
     private WebTarget addQueryParam(WebTarget target, Map<String, Object> params)  {

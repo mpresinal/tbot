@@ -180,7 +180,7 @@ public class AssetSelectionAction extends AbstractBotAction {
         logger.info("Notifying the list of assets...");
         
         String outputFormat = "Asset: %s, Price: %s, Price Change: %s, Change Rate: %s, High: %s, Volume: %s , Qute Volume: %s";
-
+        long sleepTime = 5 * 1000;
         for (AssetPriceChange asset : assets) {
 
             logger.info(String.format(outputFormat, asset.getAssetPair().toSymbol(ASSET_SYMBOL_SEPARATOR),
@@ -197,7 +197,7 @@ public class AssetSelectionAction extends AbstractBotAction {
             notifyListener();
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException ex) {
                 Logger.getLogger(AssetSelectionAction.class.getName()).log(Level.SEVERE, null, ex);
             }
