@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean name="sma5" class="com.presinal.tradingbot.indicator.SMA" scope="prototype">
+        <property name="period" value="5" />
+        <property name="id" value="sma5" />
+    </bean>
+    
+    <bean name="sma8" class="com.presinal.tradingbot.indicator.SMA" scope="prototype">
+        <property name="period" value="8" />
+        <property name="id" value="sma8" />                    
+    </bean>
+    
+    <bean name="sma13" class="com.presinal.tradingbot.indicator.SMA" scope="prototype">
+        <property name="period" value="13" />
+        <property name="id" value="sma13" />
+    </bean>
+            
+</beans>

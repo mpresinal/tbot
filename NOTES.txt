@@ -1,0 +1,19 @@
+
+trading bot project:
+
+To delete:
+DefaultTradingAction
+DefaultStrategy (BasedRuleStrategy replace DefaultStrategy)
+
+to improve:
+the BotActionStrategy should cache the strategy to avoid create new strategy for the same asset.
+
+To add:
+The boot need a strategy execution manager to manage the running strategy. 
+Right now the bot does not have the option to stop a running strategy.
+
+The boot need a component to monitor the profit ledger book. When a strategy
+fail x time, I mean it is losing many time, the monitor component will notify 
+to strategy execution manager that the strategy for the particular asset is not generating profit 
+and it need to be shutdown. The bot will shutdown the strategy and will band the asset for some period of time,
+it maybe days, hours, minutes, etc.

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"       
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    
+    <!-- Kucoin Market Client Implementation bean -->
+    <bean name="kucoinMarket" class="com.presinal.tradingbot.market.client.impl.kucoin.KucoinMarketClient">
+        <constructor-arg index="0" value="https://api.kucoin.com" />
+        <constructor-arg index="1" value="myAPI-key" />
+        <constructor-arg index="2" value="myscretet" />
+    </bean>
+    
+    <!-- Binance Market Client Implementation bean -->
+    <bean name="binanceMarket" class="com.presinal.tradingbot.market.client.impl.binance.BinanceMarketClient">
+        <constructor-arg index="0" value="https://api.binance.com/api/" />
+        <constructor-arg index="1" value="myAPI-key" />
+        <constructor-arg index="2" value="myscretet" />
+    </bean>    
+    
+    <!-- Asset selection for Kucoin market -->
+    <bean name="kucoinAssetSelecctionAction" class="com.presinal.tradingbot.bot.action.common.AssetSelectionAction">
+        <constructor-arg index="0" ref="kucoinMarket" />
+        <property name="quoteAsset" value="BTC" />
+        <property name="maxAssetsToSelect" value="2" />
+        <property name="minAssetVolume" value="1000" />
+        <property name="excludedAssets">
+            <list>
+                <value type="java.lang.String">ETH</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- Asset selection for Binance market -->
+    <bean name="binanceAssetSelecctionAction" class="com.presinal.tradingbot.bot.action.common.AssetSelectionAction">
+        <constructor-arg index="0" ref="binanceMarket" />
+        <property name="quoteAsset" value="BTC" />
+        <property name="maxAssetsToSelect" value="2" />
+        <property name="minAssetVolume" value="1000" />
+        <property name="excludedAssets">
+            <list>
+                <value type="java.lang.String">ETH</value>                
+                <value type="java.lang.String">TRX</value>
+                <value type="java.lang.String">BNB</value>
+            </list>
+        </property>
+    </bean>    
+    
+    <!-- 
+        Kucoin Trading Bot
+    -->
+    
+    <!-- Binance trading action -->
+    <bean name="kucoinDefaultTradingAction" class="com.presinal.tradingbot.bot.DefaultTradingAction">   
+        <constructor-arg index="0" ref="kucoinMarket" />        
+        <property name="takeProfitAtPercentage" value="2" />
+        <property name="stopLostAtPercentage" value="2" />
+    </bean>
+    
+    <bean name="kucoinBuySellAction" class="com.presinal.tradingbot.bot.action.common.BuySellAction">
+        <constructor-arg index="0" ref="kucoinMarket" />
+        <constructor-arg index="1" type="com.presinal.tradingbot.bot.action.BotAction" ref="kucoinDefaultTradingAction" />
+    </bean>
+    
+    <bean name="kucoinDefaultTradingBot" class="com.presinal.tradingbot.bot.DefaultTradingBot">
+        <constructor-arg index="0" ref="kucoinMarket" />        
+        <property name="actions">
+            <set>
+                <ref bean="kucoinAssetSelecctionAction" />
+                <ref bean="kucoinDefaultTradingAction" />
+                <ref bean="kucoinBuySellAction" />
+            </set>
+        </property>
+        
+        <property name="actionReactionConfigs">
+            <set>
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <!-- action to react on change of source action -->
+                    <constructor-arg index="0" ref="kucoinDefaultTradingAction" />
+                    <!-- source action -->
+                    <constructor-arg index="1" ref="kucoinAssetSelecctionAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="kucoinBuySellAction" />
+                    <constructor-arg index="1" ref="kucoinDefaultTradingAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="kucoinAssetSelecctionAction" />
+                    <constructor-arg index="1" ref="kucoinBuySellAction" />
+                </bean>                
+            </set>
+        </property>
+    </bean>
+    
+    <!-- 
+        Binance Trading Bot
+    -->
+    
+    <!-- Binance trading action -->
+    <bean name="binanceDefaultTradingAction" class="com.presinal.tradingbot.bot.DefaultTradingAction">   
+        <constructor-arg index="0" ref="binanceMarket" />        
+        <property name="takeProfitAtPercentage" value="1" />
+        <property name="stopLostAtPercentage" value="1" />
+    </bean>
+    
+    <bean name="binanceBuySellAction" class="com.presinal.tradingbot.bot.action.common.BuySellAction">
+        <constructor-arg index="0" ref="binanceMarket" />
+        <constructor-arg index="1" type="com.presinal.tradingbot.bot.action.BotAction" ref="binanceDefaultTradingAction" />
+    </bean>
+    
+    <bean name="binanceDefaultTradingBot" class="com.presinal.tradingbot.bot.DefaultTradingBot">
+        <constructor-arg index="0" ref="binanceMarket" />        
+        <property name="actions">
+            <set>
+                <ref bean="binanceAssetSelecctionAction" />
+                <ref bean="binanceDefaultTradingAction" />
+                <ref bean="binanceBuySellAction" />
+            </set>
+        </property>
+        
+        <property name="actionReactionConfigs">
+            <set>
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <!-- action to react on change of source action -->
+                    <constructor-arg index="0" ref="binanceDefaultTradingAction" />
+                    <!-- source action -->
+                    <constructor-arg index="1" ref="binanceAssetSelecctionAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceBuySellAction" />
+                    <constructor-arg index="1" ref="binanceDefaultTradingAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceAssetSelecctionAction" />
+                    <constructor-arg index="1" ref="binanceBuySellAction" />
+                </bean>                
+            </set>
+        </property>
+    </bean>
+    
+    <!-- 
+        Binance Bot
+        Based on Strategy Rules
+    -->
+    
+    
+    <bean name="dataReader" class="com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader" scope="prototype">
+        <property name="marketClient" ref="binanceMarket" />
+        <property name="period" value="200" />
+        <property name="timeFrame" value="FIFTEEN_MINUTES" />
+    </bean>
+    
+    <!-- Rule definitions -->
+    <import resource="mat-bot-rule-beans-def.xml" />
+    
+    <bean name="strategyFactory" class="com.presinal.tradingbot.bot.strategy.factory.impl.DIBasedRuleStrategyFactoryImpl">
+        <property name="prototypeBeanName" value="basedRuleStrategy" />
+    </bean>
+    
+    <bean name="actionStrategy" class="com.presinal.tradingbot.bot.action.BotActionStrategy">        
+        <property name="strategyFactory" ref="strategyFactory" />
+    </bean>
+    
+    <bean name="binanceBuySellAction2" class="com.presinal.tradingbot.bot.action.common.BuySellAction">
+        <constructor-arg index="0" ref="binanceMarket" />
+        <constructor-arg index="1" type="com.presinal.tradingbot.bot.action.BotAction" ref="actionStrategy" />
+    </bean>
+    
+    <bean name="binanceStrategyBot" class="com.presinal.tradingbot.bot.DefaultTradingBot">
+        <constructor-arg index="0" ref="binanceMarket" />        
+        <property name="actions">
+            <set>
+                <ref bean="binanceAssetSelecctionAction" />
+                <ref bean="actionStrategy" />
+                <ref bean="binanceBuySellAction2" />
+            </set>
+        </property>
+        
+        <property name="actionReactionConfigs">
+            <set>
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <!-- action to react on change of source action -->
+                    <constructor-arg index="0" ref="actionStrategy" />
+                    <!-- source action -->
+                    <constructor-arg index="1" ref="binanceAssetSelecctionAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceBuySellAction2" />
+                    <constructor-arg index="1" ref="actionStrategy" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceAssetSelecctionAction" />
+                    <constructor-arg index="1" ref="binanceBuySellAction2" />
+                </bean>                
+            </set>
+        </property>
+    </bean>
+    
+    <!-- Bot launcher -->
+    <bean name="botLauncher" class="com.presinal.tradingbot.bot.BotLauncher">
+        <property name="bots">
+            <set>
+                <ref bean="binanceStrategyBot" />
+                <!--
+                <ref bean="binanceDefaultTradingBot" />
+                <ref bean="kucoinDefaultTradingBot" /> -->
+            </set>
+        </property>
+    </bean>
+        
+</beans>

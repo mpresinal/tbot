@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+                    
+    <bean name="greenCrossingYellowUp" class="com.presinal.tradingbot.bot.strategy.rule.definitions.IndicatorStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="GREATER_THAN" />
+        <property name="leftOpererandId" value="sma5" />
+        <property name="rightOpererandId" value="sma8" />        
+    </bean>
+    
+    <bean name="greenCrossingYellowDown" class="com.presinal.tradingbot.bot.strategy.rule.definitions.IndicatorStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="LESS_THAN" />
+        <property name="leftOpererandId" value="sma5" />
+        <property name="rightOpererandId" value="sma8" />        
+    </bean>
+    
+    <bean name="greenCrossingRedUp" class="com.presinal.tradingbot.bot.strategy.rule.definitions.IndicatorStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="GREATER_THAN" />
+        <property name="leftOpererandId" value="sma5" />
+        <property name="rightOpererandId" value="sma13" />        
+    </bean>
+    
+    <bean name="crossingSmaUpGrp" class="com.presinal.tradingbot.bot.strategy.rule.definitions.StrategyRuleGroupDefinition" scope="prototype">
+        <property name="logicalOperator" value="AND"/>
+        <property name="rulesDefinition">
+            <set>
+                <ref bean="greenCrossingYellowUp" />
+                <ref bean="greenCrossingRedUp" />
+            </set>        
+        </property>
+    </bean>
+    
+    <bean name="basedRuleStrategy" class="com.presinal.tradingbot.bot.strategy.BasedRuleStrategy" scope="prototype">
+        <property name="client" ref="binanceMarket" />
+        <property name="buyRuleDefinition" ref="crossingSmaUpGrp" />
+        <property name="sellRuleDefinition" ref="greenCrossingYellowDown" />        
+        <property name="dataReadIntervalSeconds" value="25" />
+        
+        <property name="indicators">
+            <set>
+                <ref bean="sma5" />
+                <ref bean="sma8" />
+                <ref bean="sma13" />
+            </set>
+        </property>
+        
+        <property name="dataReader">
+            <bean class="com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader">
+                <property name="marketClient" ref="binanceMarket" />
+                <property name="period" value="200" />
+                <property name="timeFrame" value="FIFTEEN_MINUTES" />
+            </bean>
+        </property>
+    </bean>
+        
+</beans>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    
+    <!-- 
+        Binance Bot
+        Based on Strategy Rules
+    -->
+    
+    <!-- Rule definitions -->
+    <import resource="rule-beans-def.xml" />
+    
+    <bean name="strategyFactory" autowire="constructor" class="com.presinal.tradingbot.bot.strategy.factory.impl.DIBasedRuleStrategyFactoryImpl">
+        <property name="prototypeBeanName" value="basedRuleStrategy" />        
+    </bean>
+    
+    <bean name="actionStrategy" class="com.presinal.tradingbot.bot.action.BotActionStrategy">        
+        <property name="strategyFactory" ref="strategyFactory" />
+    </bean>
+    
+    <bean name="binanceBuySellAction2" class="com.presinal.tradingbot.bot.action.common.BuySellAction">
+        <constructor-arg index="0" ref="binanceMarket" />
+        <constructor-arg index="1" type="com.presinal.tradingbot.bot.action.BotAction" ref="actionStrategy" />
+    </bean>
+    
+    <bean name="binanceStrategyBot" class="com.presinal.tradingbot.bot.DefaultTradingBot">
+        <constructor-arg index="0" ref="binanceMarket" />        
+        <constructor-arg index="1" type="java.lang.String" value="Mat"  /> <!-- bot name -->
+        <constructor-arg index="2" type="java.lang.String" value="1.0"  /> <!-- version -->
+        
+        <property name="actions">
+            <set>
+                <ref bean="binanceAssetSelecctionAction" />
+                <ref bean="actionStrategy" />
+                <ref bean="binanceBuySellAction2" />
+            </set>
+        </property>
+        
+        <property name="actionReactionConfigs">
+            <set>
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <!-- action to react on change of source action -->
+                    <constructor-arg index="0" ref="actionStrategy" />
+                    <!-- source action -->
+                    <constructor-arg index="1" ref="binanceAssetSelecctionAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceBuySellAction2" />
+                    <constructor-arg index="1" ref="actionStrategy" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceAssetSelecctionAction" />
+                    <constructor-arg index="1" ref="binanceBuySellAction2" />
+                </bean>                
+            </set>
+        </property>
+    </bean>
+    
+</beans>
