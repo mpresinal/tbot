@@ -24,6 +24,7 @@
 
 package com.presinal.tradingbot.indicator;
 
+import com.presinal.tradingbot.indicator.util.NumberUtil;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.List;
@@ -103,7 +104,7 @@ public class MovingAverage extends AbstractIndicator<BigDecimal> {
                 sum = sum.add(BigDecimal.valueOf(value));
             }            
             
-            mean = sum.divide(BigDecimal.valueOf(p), MathContext.DECIMAL64);            
+            mean = sum.divide(BigDecimal.valueOf(p), NumberUtil.MATHCONTEXT);            
             notifyListeners();            
         }
     }

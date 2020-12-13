@@ -23,6 +23,7 @@
  */
 package com.presinal.tradingbot.indicator;
 
+import com.presinal.tradingbot.indicator.util.NumberUtil;
 import java.util.List;
 import java.util.logging.Logger;
 import com.presinal.tradingbot.market.client.enums.TimeFrame;
@@ -74,7 +75,7 @@ public class EMA extends MovingAverage {
             int dataLength = data.size();
             
             if (alpha == null) {
-                alpha = BigDecimal.valueOf(2.0).divide( BigDecimal.valueOf(getPeriod() + 1.0), MathContext.DECIMAL64);
+                alpha = BigDecimal.valueOf(2.0).divide( BigDecimal.valueOf(getPeriod() + 1.0), NumberUtil.MATHCONTEXT);
             }
             
             if(dataLength > getPeriod()) {

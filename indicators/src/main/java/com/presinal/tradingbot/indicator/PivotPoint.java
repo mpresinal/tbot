@@ -21,14 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.presinal.tradingbot.indicator;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import com.presinal.tradingbot.market.client.types.Candlestick;
-import com.presinal.tradingbot.indicator.PivotPoint.PivotPointResult;
+import com.presinal.tradingbot.indicator.result.PivotPointResult;
+import com.presinal.tradingbot.indicator.util.NumberUtil;
+import java.math.BigDecimal;
 
 /**
  *
@@ -37,12 +36,27 @@ import com.presinal.tradingbot.indicator.PivotPoint.PivotPointResult;
  */
 public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
+    public static enum PivotType {
+        TRADITIONAL, FIBONACCI, CLASSIC
+    }
+
     private static final String NAME = "Pivot Point";
-    
-    private final int LEVELS = 3;
+    private final int LEVELS = 5;
+
     private PivotPointResult result;
+    private final PivotType type;
+    private BigDecimal[] resistances;
+    private BigDecimal[] supports;
+
     public PivotPoint() {
+        this(PivotType.TRADITIONAL);        
+    }
+
+    public PivotPoint(PivotType type) {
         super(NAME, ResultType.SINGLE_RESULT);
+        resistances = new BigDecimal[LEVELS];
+        supports = new BigDecimal[LEVELS];
+        this.type = type;
     }
     
     @Override
@@ -52,75 +66,168 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        if(data != null && !data.isEmpty()){
-            evaluate(data.get(data.size()-1));
+        if (data != null && !data.isEmpty()) {
+            evaluate(data.get(data.size() - 1));
         }
     }
-    
+
     public void evaluate(Candlestick previousDay) {
-        /*
-        Formula:
-        PP: (H+L+C)/3 (a simple average of the three prices)  
-        R1: (2*PP)-L  
-        S1: (2*PP) – H  
+
+        BigDecimal low = BigDecimal.valueOf(previousDay.lowPrice);
+        BigDecimal high = BigDecimal.valueOf(previousDay.highPrice);
+        BigDecimal diffHL = high.subtract(low);
+
+        BigDecimal pp = high.add(low)
+                .add(BigDecimal.valueOf(previousDay.closePrice))
+                .divide(BigDecimal.valueOf(3), NumberUtil.MATHCONTEXT);
+
+        switch (type) {
+
+            case FIBONACCI:
+                computeFibonacci(previousDay, pp, diffHL);
+                break;
+
+            case CLASSIC:
+                computeClassic(previousDay, pp, high, low, diffHL);
+                break;
+
+            default:
+                computeTraditional(previousDay, pp, high, low, diffHL);
+                break;
+
+        }
+
+        result = new PivotPointResult(pp, supports, resistances);
+        notifyListeners();
+    }
+
+    /**
+     * Formula:
+     * <pre>
+     * PP = (HIGHprev + LOWprev + CLOSEprev) / 3
+     * R1 = PP * 2 - LOWprev
+     * S1 = PP * 2 - HIGHprev
+     * R2 = PP + (HIGHprev - LOWprev)
+     * S2 = PP - (HIGHprev - LOWprev)
+     * R3 = PP * 2 + (HIGHprev - 2 * LOWprev)
+     * S3 = PP * 2 - (2 * HIGHprev - LOWprev)
+     * R4 = PP * 3 + (HIGHprev - 3 * LOWprev)
+     * S4 = PP * 3 - (3 * HIGHprev - LOWprev)
+     * R5 = PP * 4 + (HIGHprev - 4 * LOWprev)
+     * S5 = PP * 4 - (4 * HIGHprev - LOWprev)
+     * </pre><br/>
+     * Read more on:
+     * https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
+     */
+    public void computeTraditional(Candlestick previousDay, BigDecimal pp, BigDecimal high, BigDecimal low, BigDecimal diffHL) {
+
+        // R1-S1 and R2-S2
+        doCommonComputation(pp, high, low, diffHL);
+
+        // R3 and S3
+        computeTraditionalLevels(3, pp, high, low);
+
+        // R4 and S4
+        computeTraditionalLevels(4, pp, high, low);
+
+        // R5 and S5
+        computeTraditionalLevels(5, pp, high, low);
+
+    }
+
+    /**
+     * Formula:
+     * <pre>
+     * PP = (HIGHprev + LOWprev + CLOSEprev) / 3
+     * R1 = PP + 0.382 * (HIGHprev - LOWprev)
+     * S1 = PP - 0.382 * (HIGHprev - LOWprev)
+     * R2 = PP + 0.618 * (HIGHprev - LOWprev)
+     * S2 = PP - 0.618 * (HIGHprev - LOWprev)
+     * R3 = PP + (HIGHprev - LOWprev)
+     * S3 = PP - (HIGHprev - LOWprev)
+     * </pre><br/>
+     * Read more on:
+     * https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
+     */
+    public void computeFibonacci(Candlestick previousDay, BigDecimal pp, BigDecimal diffHL) {
+
+        // R1-S1
+        computeFibonacciLevels(1, BigDecimal.valueOf(0.382), pp, diffHL);
         
-        R2: PP+(H-L)
-        S2: PP-(H-L)        
-        
-        R3 = H + 2(PP – L) => R1 + (H − L)
-        S3 = L – 2(H – PP) => S1 − (H − L)
-        Leer más en: http://www.pullback.es/los-niveles-psicologicos-los-pivot-points/
-        https://www.babypips.com/learn/forex/how-to-calculate-pivot-points
-        https://en.wikipedia.org/wiki/Pivot_point_(technical_analysis)        
-        */
-        double pp = (previousDay.highPrice+previousDay.lowPrice+previousDay.closePrice) / 3.0;
-        
-        Double[] resistance = new Double[LEVELS];
-        Double[] supports = new Double[LEVELS];
-        
-        // First level resistance and support
-        resistance[0] = (2.0*pp) - previousDay.lowPrice;
-        supports[0] = (2.0*pp) - previousDay.highPrice;
-        
-        // Second level resistance and support
-        resistance[1] = pp + (previousDay.highPrice - previousDay.lowPrice);
-        supports[1] = pp - (previousDay.highPrice - previousDay.lowPrice);
-        
-        // Thierd level resistance and support
-        resistance[2] =  resistance[0] + (previousDay.highPrice - previousDay.lowPrice);//previousDay.highPrice + (2*(pp - previousDay.lowPrice));
-        supports[2] = supports[0] - (previousDay.highPrice - previousDay.lowPrice);//previousDay.lowPrice + (2*(previousDay.highPrice - pp));
-        
-        result = new PivotPointResult(pp, supports, resistance);
-        notifyListeners();        
+        // R2-S2
+        computeFibonacciLevels(2, BigDecimal.valueOf(0.618), pp, diffHL);
+
+        // R3 and S3
+        resistances[2] = pp.add(diffHL);
+        supports[2] = pp.subtract(diffHL);
+
+    }
+
+    /**
+     * Formula:
+     * <pre>
+     * PP = (HIGHprev + LOWprev + CLOSEprev) / 3
+     * R1 = 2 * PP - LOWprev
+     * S1 = 2 * PP - HIGHprev
+     * R2 = PP + (HIGHprev - LOWprev)
+     * S2 = PP - (HIGHprev - LOWprev)
+     * R3 = PP + 2 * (HIGHprev - LOWprev)
+     * S3 = PP - 2 * (HIGHprev - LOWprev)
+     * R4 = PP + 3 * (HIGHprev - LOWprev)
+     * S4 = PP - 3 * (HIGHprev - LOWprev)
+     * </pre><br/>
+     * Read more on:
+     * https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
+     */
+    public void computeClassic(Candlestick previousDay, BigDecimal pp, BigDecimal high, BigDecimal low, BigDecimal diffHL) {
+
+        // R1-S1 and R2-S2
+        doCommonComputation(pp, high, low, diffHL);
+
+        // R3 and S3
+        computeClassicLevels(3, pp, high, low, diffHL);
+
+        // R4 and S4
+        computeClassicLevels(4, pp, high, low, diffHL);
+
+        // R5 and S5
+        computeClassicLevels(5, pp, high, low, diffHL);
+
+    }
+
+    private void doCommonComputation(BigDecimal pp, BigDecimal high, BigDecimal low, BigDecimal diffHL) {
+        BigDecimal doubledPP = BigDecimal.valueOf(2).multiply(pp);
+
+        // R1 and S1
+        resistances[0] = doubledPP.subtract(low);
+        supports[0] = doubledPP.subtract(high);
+
+        // R2 and S2
+        resistances[1] = pp.add(diffHL);
+        supports[1] = pp.subtract(diffHL);
+    }
+
+    private void computeFibonacciLevels(int level, BigDecimal fibonacciPoint, BigDecimal pp, BigDecimal diffHL) {
+        int idx = level - 1;
+        BigDecimal r = fibonacciPoint.multiply(diffHL);
+        resistances[idx] = pp.add(r);
+        supports[idx] = pp.subtract(r);
     }
     
-    private double round(double value ){
-        return value;
-        //return NumberUtil.round(value);
+    private void computeTraditionalLevels(int level, BigDecimal pp, BigDecimal high, BigDecimal low) {
+        int idx = level - 1;
+        BigDecimal x = BigDecimal.valueOf(idx).multiply(pp);
+        resistances[idx] = x.add(high.subtract(BigDecimal.valueOf(idx).multiply(low)));
+        supports[idx] = x.subtract(high.multiply(BigDecimal.valueOf(idx)).subtract(low));
     }
 
-    public static class PivotPointResult implements Comparable<PivotPointResult>{
-        public final Double pivotPoint;
-        public final Double[] supports;
-        public final Double[] resistance;
+    private void computeClassicLevels(int level, BigDecimal pp, BigDecimal high, BigDecimal low, BigDecimal diffHL) {
+        int idx = level - 1;
+        resistances[idx] = pp.add(BigDecimal.valueOf(idx).multiply(diffHL));
+        supports[idx] = pp.subtract(BigDecimal.valueOf(idx).multiply(diffHL));
+    }
 
-        public PivotPointResult(Double pivotPoint, Double[] supports, Double[] resistance) {
-            this.pivotPoint = pivotPoint;
-            this.supports = supports;
-            this.resistance = resistance;
-        }
-
-        @Override
-        public String toString() {
-            return "PivotPointResult{" + "pivotPoint=" + pivotPoint 
-                    + ", supports=" + (supports != null? Arrays.toString(supports) : null) 
-                    + ", resistance=" + (resistance != null? Arrays.toString(resistance) : null) + '}';
-        }
-
-        @Override
-        public int compareTo(PivotPointResult o) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
+    public PivotType getType() {
+        return type;
     }
 }

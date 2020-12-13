@@ -24,6 +24,8 @@
 
 package com.presinal.tradingbot.indicator.util;
 
+import java.math.MathContext;
+
 /**
  *
  * @author Miguel Presinal<mpresinal@gmail.com>
@@ -31,6 +33,8 @@ package com.presinal.tradingbot.indicator.util;
  */
 public class NumberUtil {
 
+    public static final MathContext MATHCONTEXT = MathContext.DECIMAL64;
+    
     public static int decimalPlace = 8;
     
     public static void setDecimalPlace(int decimalPlace){
