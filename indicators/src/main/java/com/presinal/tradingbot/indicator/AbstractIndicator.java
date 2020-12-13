@@ -28,7 +28,6 @@ import com.presinal.tradingbot.indicator.listener.IndicatorListener;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import static javafx.scene.input.KeyCode.R;
 import com.presinal.tradingbot.market.client.enums.TimeFrame;
 
 /**
@@ -87,8 +86,8 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     @Override
     public int compareTo(T o) {
         
-       Comparable compData = getAsComparableIfIsIt(getResult());
-       Comparable compWith = getAsComparableIfIsIt(o) ;
+       Comparable compData = getAsComparableIfItIs(getResult());
+       Comparable compWith = getAsComparableIfItIs(o) ;
        
        if (Objects.isNull(compData) && Objects.isNull(compWith)) {           
            return 0;
@@ -104,7 +103,7 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
        }
     }
     
-    private Comparable getAsComparableIfIsIt(Object o) {
+    private Comparable getAsComparableIfItIs(Object o) {
         if(o != null && o instanceof Comparable) {
             return (Comparable) o;
         }
@@ -137,7 +136,7 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     public void setId(String id) {
         this.id = id;
     }
-
+    
     @Override
     public String toString() {
         return String.format(TO_STR_FORMAT, name, period, getResult());

@@ -23,31 +23,34 @@
  */
 package com.presinal.tradingbot.indicator;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import com.presinal.tradingbot.market.client.enums.TimeFrame;
 import com.presinal.tradingbot.market.client.types.Candlestick;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 /**
- *
+ * This indicator required data list size greater than the period.
+ * 
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class EMA extends AbstractIndicator<Double> {
+public class EMA extends MovingAverage {
 
     private final String CLASS_NAME = EMA.class.getSimpleName();
     private Logger logger = Logger.getLogger(CLASS_NAME);
 
     private static final String NAME = "EMA";
 
-    private double ema;
-    private double previousEma = -1.0;
-
+    private BigDecimal ema;
+    private BigDecimal previousEma = BigDecimal.valueOf(-1.0);
+    private BigDecimal alpha;
     private SMA sma;
 
     public EMA() {
-        super(NAME, ResultType.SINGLE_RESULT);
+        super(NAME);        
     }
 
     public EMA(int period, TimeFrame timeFrame) {
@@ -56,11 +59,10 @@ public class EMA extends AbstractIndicator<Double> {
         setTimeFrame(timeFrame);
     }
 
-    public Double getResult() {
-        return ema;
-    }
-
-    @Override
+    /**
+     * @param data data list size must be greater than the period
+     */
+    @Override    
     public void evaluate(List<Candlestick> data) {
 
         if (data != null && !data.isEmpty()) {
@@ -71,38 +73,42 @@ public class EMA extends AbstractIndicator<Double> {
             
             int dataLength = data.size();
             
+            if (alpha == null) {
+                alpha = BigDecimal.valueOf(2.0).divide( BigDecimal.valueOf(getPeriod() + 1.0), MathContext.DECIMAL64);
+            }
+            
             if(dataLength > getPeriod()) {
-                if (previousEma <= 0) {
+                //if (previousEma <= 0) {
+                if (previousEma.compareTo(BigDecimal.ZERO) <= 0) {
                     // computing simple moving average
                     sma.evaluate(data.subList(0, getPeriod()));
-                    previousEma = sma.getResult().doubleValue();
+                    previousEma = sma.getResult();                    
                 }
-                
-                for(int i = getPeriod(); i < dataLength; i++) {
-                    double currentPrice = data.get(i).closePrice;
+                                
+                for(int i = getPeriod(); i < dataLength; i++) {                    
                     evaluate(data.get(i), previousEma);
                     previousEma = getResult();
                 }
-                
-                ema = previousEma;
+
             }           
             
         }
 
     }
 
-    public void evaluate(Candlestick current, Double previousEma) {        
+    public void evaluate(Candlestick current, BigDecimal previousEma) {        
         /*
-         * Formula:
-         * EMA = PREVIOUS_EMA + ALPHA (CURRENT_PRICE - PREVIOUS_EMA)
+         * Formula:         
+         * EMA = CLOSING_PRICE * ALPHA + PREVIOUS_EMA * (1 - ALPHA)
          * Where ALPHA = 2 / (PERIOD + 1)
          * we are goin to use a SMA as a previous EMA for the first EMA calculation
-         */        
-        double alpha = 2.0 / (getPeriod() + 1);
-        double currentPrice = current.closePrice;
-        ema = previousEma + alpha * (currentPrice - previousEma);
+         */
+        BigDecimal a = BigDecimal.valueOf(current.closePrice).multiply(alpha);
+        BigDecimal b = previousEma.multiply(BigDecimal.ONE.subtract(alpha));                  
+        this.setResult(a.add(b));
         notifyListeners();
-    }
+    }    
+    
 
     private void initSMA() {
         sma = new SMA();

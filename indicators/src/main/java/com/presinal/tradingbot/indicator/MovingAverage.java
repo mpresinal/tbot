@@ -37,7 +37,7 @@ import com.presinal.tradingbot.market.client.types.Candlestick;
 public class MovingAverage extends AbstractIndicator<BigDecimal> {
 
     private static final String NAME = "Moving Average";
-    private BigDecimal mean;
+    private BigDecimal mean = BigDecimal.ZERO;
     
     public static enum CandlestickSource {
         CLOSED_PRICE, VOLUME
@@ -63,6 +63,10 @@ public class MovingAverage extends AbstractIndicator<BigDecimal> {
     @Override
     public BigDecimal getResult() {
         return mean;
+    }
+    
+    protected void setResult(BigDecimal mean) {
+        this.mean = mean;        
     }
 
     @Override

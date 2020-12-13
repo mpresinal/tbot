@@ -52,5 +52,5 @@ public interface Indicator<T> extends Comparable<T> {
     void addListener(IndicatorListener listener);
     
     void evaluate(List<Candlestick> data);
-        
+
 }
