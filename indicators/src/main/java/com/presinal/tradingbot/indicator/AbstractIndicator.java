@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.presinal.tradingbot.indicator;
 
 import com.presinal.tradingbot.indicator.listener.IndicatorListener;
@@ -35,23 +34,27 @@ import com.presinal.tradingbot.market.client.enums.TimeFrame;
  * @author Miguel Presinal<mpresinal@gmail.com>
  * @since 1.0
  */
-public abstract class AbstractIndicator<T extends Comparable> implements Indicator<T>{
+public abstract class AbstractIndicator<T extends Comparable> implements Indicator<T> {
 
     private static final String TO_STR_FORMAT = "%1$s(%2$d): %3$s";
     protected int period;
     protected TimeFrame timeFrame;
     private String name;
     private String id;
-    private ResultType resultType;    
-    
+    private ResultType resultType;
+    private T result;
+
     protected Set<IndicatorListener> listeners;
+
+    protected AbstractIndicator(String name) {
+        this(name, ResultType.SINGLE_RESULT);
+    }
     
     protected AbstractIndicator(String name, ResultType resultType) {
         this.name = name;
-        this.resultType=resultType;        
+        this.resultType = resultType;
     }
-    
-    
+
     @Override
     public String getName() {
         return name;
@@ -64,15 +67,15 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
 
     @Override
     public void addListener(IndicatorListener listener) {
-        if(listeners == null) {
+        if (listeners == null) {
             this.listeners = new HashSet<>();
         }
-        
+
         listeners.add(listener);
     }
-    
-    protected void notifyListeners(){
-        if(listeners != null && !listeners.isEmpty()){
+
+    protected void notifyListeners() {
+        if (listeners != null && !listeners.isEmpty()) {
             for (IndicatorListener listener : listeners) {
                 listener.onEvaluate(this);
             }
@@ -80,34 +83,34 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     }
 
     public int compareTo(Indicator<T> o) {
-       return compareTo(o.getResult());
+        return compareTo(o.getResult());
     }
-    
+
     @Override
     public int compareTo(T o) {
-        
-       Comparable compData = getAsComparableIfItIs(getResult());
-       Comparable compWith = getAsComparableIfItIs(o) ;
-       
-       if (Objects.isNull(compData) && Objects.isNull(compWith)) {           
-           return 0;
-           
-       } else if ( !Objects.isNull(compData) && Objects.isNull(compWith)) {
-           return 1;           
-           
-       } else if ( Objects.isNull(compData) && !Objects.isNull(compWith)) {
-           return -1;           
-           
-       } else {           
-           return compData.compareTo(compWith);
-       }
+
+        Comparable compData = getAsComparableIfItIs(getResult());
+        Comparable compWith = getAsComparableIfItIs(o);
+
+        if (Objects.isNull(compData) && Objects.isNull(compWith)) {
+            return 0;
+
+        } else if (!Objects.isNull(compData) && Objects.isNull(compWith)) {
+            return 1;
+
+        } else if (Objects.isNull(compData) && !Objects.isNull(compWith)) {
+            return -1;
+
+        } else {
+            return compData.compareTo(compWith);
+        }
     }
-    
+
     private Comparable getAsComparableIfItIs(Object o) {
-        if(o != null && o instanceof Comparable) {
+        if (o != null && o instanceof Comparable) {
             return (Comparable) o;
         }
-        
+
         return null;
     }
 
@@ -136,11 +139,19 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public T getResult() {
+        return this.result;
+    }
     
+    protected void setResult(T result) {
+        this.result = result;
+    }
+
     @Override
     public String toString() {
         return String.format(TO_STR_FORMAT, name, period, getResult());
     }
 
-    
 }

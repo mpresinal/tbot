@@ -24,15 +24,11 @@
 
 package com.presinal.tradingbot.indicator;
 
+import com.presinal.tradingbot.indicator.util.NumberUtil;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Collection;
 import java.util.List;
 import com.presinal.tradingbot.market.client.types.Candlestick;
-import com.presinal.tradingbot.indicator.listener.IndicatorListener;
 
 /**
  *
@@ -41,16 +37,17 @@ import com.presinal.tradingbot.indicator.listener.IndicatorListener;
  */
 public class RSI extends AbstractIndicator<Double> {
 
-    private static final String INDICATOR_NAME = "RSI";
+    private static final String INDICATOR_NAME = "RSI";    
     
-    private Double rsiValue = null;
+    private final BigDecimal ONE_HUNDRE = new BigDecimal("100.0");
+    
     private int overBoughtLevel = 70;
     private int overSoldLevel = 30;
     
-    private int normalLevel = 50;
+    private int normalLevel = 50;   
     
     public RSI() {
-        super(INDICATOR_NAME, ResultType.SINGLE_RESULT);
+        super(INDICATOR_NAME);
     }
     
     public RSI(int period) {
@@ -59,22 +56,19 @@ public class RSI extends AbstractIndicator<Double> {
     }
     
     public boolean isOverBought() {
-        return rsiValue >= overBoughtLevel;
+        return getResult() >= overBoughtLevel;
     }
     
     public boolean isOverSold(){
-        return rsiValue <= overSoldLevel;
+        return getResult() <= overSoldLevel;
     }
     
     public boolean isNormal(){
+        Double rsiValue = getResult();
         return (rsiValue >= ((overSoldLevel+normalLevel) / 2.0) && rsiValue <= normalLevel)
                 || (rsiValue <= ((overBoughtLevel+normalLevel) / 2.0) && rsiValue >= normalLevel);
     }
     
-    @Override
-    public Double getResult() {
-        return rsiValue;
-    }
 
     @Override
     public void evaluate(List<Candlestick> data) {
@@ -104,19 +98,11 @@ public class RSI extends AbstractIndicator<Double> {
                 start = 1;
             }
 
-            System.out.println("period = "+period);
-            System.out.println("length = "+length);
-            System.out.println("start = "+start);
-            System.out.println("end = "+end);
-            
-            //DecimalFormat format = new DecimalFormat("#.########");
-            Candlestick prev = data.get(start);
-            //System.out.println(format.format(prev.closePrice));
+            Candlestick prev = data.get(start);            
             Candlestick current;
             //start; 
             for (int i = start+1; i <= end; i++) {
                 current = data.get(i);
-                //System.out.println(format.format(current.closePrice));
                                 
                 if(current.closePrice > prev.closePrice ) {
                     
@@ -132,18 +118,18 @@ public class RSI extends AbstractIndicator<Double> {
             }
             
             BigDecimal tmpPeriod =  BigDecimal.valueOf(period);
-            BigDecimal avgUpward = upward.divide(tmpPeriod, MathContext.DECIMAL64);
-            BigDecimal avgDownward = downward.divide(tmpPeriod, MathContext.DECIMAL64);
+            BigDecimal avgUpward = upward.divide(tmpPeriod, NumberUtil.MATHCONTEXT);
+            BigDecimal avgDownward = downward.divide(tmpPeriod, NumberUtil.MATHCONTEXT);
 
             rs =  avgUpward.divide(avgDownward, MathContext.DECIMAL64);             
             
             //rs = (upward/tmpPeriod) / (downward/tmpPeriod);
-            //rsiValue = 100.0 - (100.0/(1+rs));
-            BigDecimal oneHundre = new BigDecimal("100.0");
-            rsiValue = oneHundre.subtract(
-                    oneHundre.divide(BigDecimal.ONE.add(rs), MathContext.DECIMAL64)
+            //rsiValue = 100.0 - (100.0/(1+rs));            
+            Double rsiValue = ONE_HUNDRE.subtract(
+                    ONE_HUNDRE.divide(BigDecimal.ONE.add(rs), NumberUtil.MATHCONTEXT)
             ).doubleValue(); 
             
+            setResult(rsiValue);         
             notifyListeners();
         }
     }

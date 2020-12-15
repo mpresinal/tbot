@@ -42,8 +42,7 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
     private static final String NAME = "Pivot Point";
     private final int LEVELS = 5;
-
-    private PivotPointResult result;
+    
     private final PivotType type;
     private BigDecimal[] resistances;
     private BigDecimal[] supports;
@@ -53,15 +52,10 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
     }
 
     public PivotPoint(PivotType type) {
-        super(NAME, ResultType.SINGLE_RESULT);
+        super(NAME);
         resistances = new BigDecimal[LEVELS];
         supports = new BigDecimal[LEVELS];
         this.type = type;
-    }
-    
-    @Override
-    public PivotPointResult getResult() {
-        return result;
     }
 
     @Override
@@ -97,7 +91,7 @@ public class PivotPoint extends AbstractIndicator<PivotPointResult> {
 
         }
 
-        result = new PivotPointResult(pp, supports, resistances);
+        setResult(new PivotPointResult(pp, supports, resistances));
         notifyListeners();
     }
 

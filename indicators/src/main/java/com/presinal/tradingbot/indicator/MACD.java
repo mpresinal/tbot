@@ -58,20 +58,14 @@ public class MACD extends AbstractIndicator<MACDResult> {
      * false by default which means exponential moving average will get used for the calculation
      */
     private boolean useSimpleMA = false;
-
-    private MACDResult result;
+    
     private MovingAverage fastMA;
     private MovingAverage slowMA;
     private MovingAverage signalMA;
 
     public MACD() {
-        super(NAME, ResultType.MULTI_RESULT);
+        super(NAME);
         changeMAType();
-    }
-
-    @Override
-    public MACDResult getResult() {
-        return result;
     }
 
     @Override
@@ -87,7 +81,7 @@ public class MACD extends AbstractIndicator<MACDResult> {
         signalMA.evaluate(data.subList(0, incrementByOneIfNotUseSimpleMA(signalPeriod)));
         
         BigDecimal macdValue = fastMA.getResult().subtract(slowMA.getResult());
-        result = new MACDResult(macdValue, signalMA.getResult(), fastMA.getResult(), slowMA.getResult());
+        setResult(new MACDResult(macdValue, signalMA.getResult(), fastMA.getResult(), slowMA.getResult()));
         notifyListeners();
     }
 
@@ -151,7 +145,5 @@ public class MACD extends AbstractIndicator<MACDResult> {
     public String toString() {
         return String.format(TO_STR_FORMAT, NAME, fastPeriod, slowPeriod, getResult());
     }
-    
-    
-    
+
 }
