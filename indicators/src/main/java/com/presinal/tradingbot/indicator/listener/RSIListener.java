@@ -26,7 +26,7 @@ package com.presinal.tradingbot.indicator.listener;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public interface RSIListener extends IndicatorListener {

@@ -26,7 +26,7 @@ package com.presinal.tradingbot.market.client.enums;
 /**
  * Time frame constants for candlestick
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public enum TimeFrame {
@@ -91,8 +91,8 @@ public enum TimeFrame {
     }
 
     /**
-     * This method determine how many time one time frame can fit in the other
-     * time frame. The order of the time frame does not matter.
+     * This method determine how many time lower time frame can fit in the higher
+     * time frame. The order of the time frame does not matter, it is determined in run time
      *
      * @param a
      * @param b

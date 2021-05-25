@@ -31,7 +31,7 @@ import com.presinal.tradingbot.market.client.enums.TimeFrame;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public abstract class AbstractIndicator<T extends Comparable> implements Indicator<T> {

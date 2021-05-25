@@ -43,7 +43,7 @@ import com.presinal.tradingbot.market.client.types.AccountBalance.Balance;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class AccountBalanceDeserializerTest {

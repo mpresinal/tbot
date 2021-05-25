@@ -30,7 +30,7 @@ import com.presinal.tradingbot.bot.strategy.rule.Rule;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class StrategyRuleGroupDefinition implements StrategyRuleDefinition {

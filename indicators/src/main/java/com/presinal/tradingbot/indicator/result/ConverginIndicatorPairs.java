@@ -22,37 +22,23 @@
  * THE SOFTWARE.
  */
 
-package com.presinal.tradingbot.indicator.util;
+package com.presinal.tradingbot.indicator.result;
 
-import java.math.MathContext;
+import com.presinal.tradingbot.indicator.Indicator;
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class NumberUtil {
+public class ConverginIndicatorPairs {
 
-    public static final MathContext MATHCONTEXT = MathContext.DECIMAL64;
-    
-    public static int decimalPlace = 8;
-    
-    public static void setDecimalPlace(int decimalPlace){
-        NumberUtil.decimalPlace = decimalPlace;
+    public final Indicator indicator1;
+    public final Indicator indicator2;
+
+    public ConverginIndicatorPairs(Indicator indicator1, Indicator indicator2) {
+        this.indicator1 = indicator1;
+        this.indicator2 = indicator2;
     }
     
-    public static double round(double value){
-        return round(value, decimalPlace);
-    }
-    
-    public static double round(double value, int decimalPlaces){
-        String strNum = "1";
-        for(int i = 0 ; i < decimalPlaces; i++) {
-            strNum += "0";
-        }
-        
-        double factor = Double.parseDouble(strNum);
-        //double)Math.round(expectedPP*100)/100)
-        return ((double) Math.round(value*factor)/factor);
-    }
 }

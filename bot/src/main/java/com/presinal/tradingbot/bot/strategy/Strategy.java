@@ -34,7 +34,7 @@ import com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public interface Strategy extends Runnable{

@@ -39,7 +39,7 @@ import com.presinal.tradingbot.market.client.security.PayloadSigner;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public abstract class AbstractMarketClient implements MarketClient {

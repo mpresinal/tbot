@@ -2,11 +2,13 @@
 trading bot project:
 
 To delete:
-DefaultTradingAction
-DefaultStrategy (BasedRuleStrategy replace DefaultStrategy)
+DefaultTradingAction....DONE!
+DefaultStrategy (BasedRuleStrategy replace DefaultStrategy)...PENDING
 
 to improve:
 the BotActionStrategy should cache the strategy to avoid create new strategy for the same asset.
+improve the way data is loaded from the market. At first time a bunch data is loaded, that's fine, but loading data for the same period in the same sesion
+should not load previous data instead the most recent.
 
 To add:
 The boot need a strategy execution manager to manage the running strategy. 
@@ -17,3 +19,10 @@ fail x time, I mean it is losing many time, the monitor component will notify
 to strategy execution manager that the strategy for the particular asset is not generating profit 
 and it need to be shutdown. The bot will shutdown the strategy and will band the asset for some period of time,
 it maybe days, hours, minutes, etc.
+
+
+New indicators:
+Add the pivot high low indicator
+
+New Bot Actions: 
+create a new action to identify char patterns like: triangle patttern (the pivot high low help to identify this type of pattern)

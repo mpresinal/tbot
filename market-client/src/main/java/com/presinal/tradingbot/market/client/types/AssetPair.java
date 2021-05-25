@@ -31,7 +31,7 @@ import java.util.Objects;
  * This class represent a symbol in a trading platform.
  * A symbol is compounded by a pair of assets.
  * 
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class AssetPair implements Serializable {

@@ -62,7 +62,7 @@ import static com.presinal.tradingbot.market.client.util.JsonObjectDeserializerU
  *   "count": 76         // Trade count
  * }
  * 
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class AssetPriceChangeDeserializer implements JsonDeserializer<AssetPriceChange> {

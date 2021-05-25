@@ -22,37 +22,40 @@
  * THE SOFTWARE.
  */
 
-package com.presinal.tradingbot.indicator.util;
+package com.presinal.tradingbot.indicator.result;
 
-import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class NumberUtil {
+public class ConvergingResult implements Comparable<ConvergingResult> {
+    
+    private List<ConverginIndicatorPairs> convergingIndicators;
 
-    public static final MathContext MATHCONTEXT = MathContext.DECIMAL64;
-    
-    public static int decimalPlace = 8;
-    
-    public static void setDecimalPlace(int decimalPlace){
-        NumberUtil.decimalPlace = decimalPlace;
-    }
-    
-    public static double round(double value){
-        return round(value, decimalPlace);
-    }
-    
-    public static double round(double value, int decimalPlaces){
-        String strNum = "1";
-        for(int i = 0 ; i < decimalPlaces; i++) {
-            strNum += "0";
+    public List<ConverginIndicatorPairs> getConvergingIndicators() {
+        if (convergingIndicators == null) {
+            convergingIndicators = new ArrayList<>();
         }
         
-        double factor = Double.parseDouble(strNum);
-        //double)Math.round(expectedPP*100)/100)
-        return ((double) Math.round(value*factor)/factor);
+        return convergingIndicators;
     }
+
+    @Override
+    public int compareTo(ConvergingResult resultToCompare) {
+        List<ConverginIndicatorPairs> list = getConvergingIndicators();
+        List<ConverginIndicatorPairs> listToC = resultToCompare.getConvergingIndicators();
+        Integer listSize = Integer.valueOf(list.size());         
+        int r = listSize.compareTo(listToC.size());
+        
+        if (r == 0) {
+            return list.containsAll(listToC)? 0 : -1;
+        }
+        
+        return  r == 0? list.containsAll(listToC)? 0 : -1 : r;
+    }
+
 }

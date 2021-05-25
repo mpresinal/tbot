@@ -27,7 +27,7 @@ package com.presinal.tradingbot.market.client.enums;
 /**
  * Order status constants
  * 
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public enum OrderStatus {

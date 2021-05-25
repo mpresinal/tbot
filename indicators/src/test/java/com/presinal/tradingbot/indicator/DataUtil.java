@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class DataUtil {
@@ -22,10 +22,10 @@ public class DataUtil {
     
     static {
         data = new ArrayList<>();
-        data.add(new Candlestick(10.00, 10.00, 10.00, 10.00, 10.00, Instant.now()));
-        data.add(new Candlestick(15.00, 15.00, 15.00, 15.00, 15.00, Instant.now()));
-        data.add(new Candlestick(30.00, 30.00, 30.00, 30.00, 30.00, Instant.now()));
-        data.add(new Candlestick(35.00, 35.00, 35.00, 35.00, 35.00, Instant.now()));
+        data.add(new Candlestick(9.00, 10.00, 8.00, 10.00, 10.00, Instant.now()));
+        data.add(new Candlestick(10.00, 5.00, 5.00, 10.00, 5.00, Instant.now()));
+        data.add(new Candlestick(5.00, 30.00, 05.00, 30.00, 30.00, Instant.now()));
+        data.add(new Candlestick(25.00, 25.00, 25.00, 25.00, 25.00, Instant.now()));
         data.add(new Candlestick(50.00, 50.00, 50.00, 50.00, 50.00, Instant.now()));
         data.add(new Candlestick(45.00, 45.00, 45.00, 45.00, 45.00, Instant.now()));
         data.add(new Candlestick(32.00, 32.00, 32.00, 32.00, 32.00, Instant.now()));

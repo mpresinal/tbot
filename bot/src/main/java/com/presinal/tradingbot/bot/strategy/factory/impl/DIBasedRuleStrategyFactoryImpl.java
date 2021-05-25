@@ -36,7 +36,7 @@ import org.springframework.context.ApplicationContext;
  * dependency injection system this class get strategy instance and make it available to
  * bot action strategy. 
  * 
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class DIBasedRuleStrategyFactoryImpl implements StrategyFactory, SpringContextRequired {

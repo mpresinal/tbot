@@ -25,20 +25,18 @@
 package com.presinal.tradingbot.indicator.datareader;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.presinal.tradingbot.market.client.MarketClient;
 import com.presinal.tradingbot.market.client.MarketClientException;
 import com.presinal.tradingbot.market.client.enums.TimeFrame;
-import com.presinal.tradingbot.market.client.impl.kucoin.KucoinMarketClient;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.market.client.types.Candlestick;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class PeriodIndicatorDataReader implements IndicatorDataReader<List<Candlestick>> {

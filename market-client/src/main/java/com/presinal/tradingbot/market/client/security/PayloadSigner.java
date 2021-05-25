@@ -32,7 +32,7 @@ import org.apache.commons.codec.binary.Hex;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class PayloadSigner {

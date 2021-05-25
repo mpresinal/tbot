@@ -29,11 +29,11 @@ import com.presinal.tradingbot.indicator.Indicator;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public interface IndicatorListener {
 
     void onEvaluate(Indicator indicator);
-    
+
 }

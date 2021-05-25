@@ -36,7 +36,7 @@ import com.presinal.tradingbot.bot.strategy.listener.TradingStrategyListener;
 /**
  * Run a strategy when the asset selection action notify a new asset selected.
  * 
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class BotActionStrategy extends AbstractBotAction implements TradingStrategyListener {

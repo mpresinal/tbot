@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.presinal.tradingbot.indicator;
 
 import com.presinal.tradingbot.indicator.util.NumberUtil;
@@ -32,30 +31,30 @@ import com.presinal.tradingbot.market.client.types.Candlestick;
 
 /**
  *
- * @author Miguel Presinal<mpresinal@gmail.com>
+ * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
 public class MovingAverage extends AbstractIndicator<BigDecimal> {
 
-    private static final String NAME = "Moving Average";    
-    
+    private static final String NAME = "Moving Average";
+
     public static enum CandlestickSource {
         CLOSED_PRICE, VOLUME
     }
-    
+
     private CandlestickSource source;
 
     public MovingAverage() {
         this(NAME);
-        
+
     }
-    
+
     protected MovingAverage(String name) {
         super(name);
         source = CandlestickSource.CLOSED_PRICE;
         setResult(BigDecimal.ZERO);
     }
-    
+
     protected MovingAverage(String name, CandlestickSource source) {
         this(name);
         this.source = source;
@@ -63,40 +62,47 @@ public class MovingAverage extends AbstractIndicator<BigDecimal> {
 
     @Override
     public void evaluate(List<Candlestick> data) {
-        
+
         if (data != null && !data.isEmpty()) {
             BigDecimal sum = BigDecimal.ZERO;
-            
+
             // calculating the range index
-            int length = data.size();            
-            int start=0;
-            
+            int length = data.size();
+            int start = 0;
+
             int p = getPeriod();
-            
-            if(length > p){
-                start = length - p;                
+
+            if (length >= p) {
+                start = length - p;
+                
             } else {
-                p =  length;
-            }         
-            
-            double value;
-            for (int i = start; i < length; i++) {
-                
-                switch(source) {                    
-                    case VOLUME:                        
-                        value = data.get(i).volume;
-                        break;
-                    case CLOSED_PRICE:    
-                    default:
-                        value = data.get(i).closePrice;
-                        break;                        
+                // not enough data.
+                start = -1;                
+            }
+
+            if (start >= 0) {
+                double value;
+                for (int i = start; i < length; i++) {
+
+                    switch (source) {
+                        case VOLUME:
+                            value = data.get(i).volume;
+                            break;
+                        case CLOSED_PRICE:
+                        default:
+                            value = data.get(i).closePrice;
+                            break;
+                    }
+
+                    sum = sum.add(BigDecimal.valueOf(value));
                 }
-                
-                sum = sum.add(BigDecimal.valueOf(value));
-            }            
+
+                setResult(sum.divide(BigDecimal.valueOf(p), NumberUtil.MATHCONTEXT));
+            } else {
+                setResult(BigDecimal.ZERO);
+            }
             
-            setResult(sum.divide(BigDecimal.valueOf(p), NumberUtil.MATHCONTEXT));
-            notifyListeners();            
+            notifyListeners();
         }
     }
 }
