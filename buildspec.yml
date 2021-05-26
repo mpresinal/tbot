@@ -10,6 +10,7 @@ phases:
         commands:
             - echo Nothing to do in the pre_build phase...
     build:
+        on-failure: ABORT
         commands:
             - echo Build started on `date`
             - mvn install
