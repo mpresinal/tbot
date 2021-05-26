@@ -39,7 +39,7 @@ import org.junit.Ignore;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-@Ignore
+
 public class BinanceMarketClientTest {
 
     @Test
