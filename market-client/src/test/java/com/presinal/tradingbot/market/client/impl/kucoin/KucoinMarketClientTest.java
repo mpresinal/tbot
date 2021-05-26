@@ -24,8 +24,6 @@
 
 package com.presinal.tradingbot.market.client.impl.kucoin;
 
-import com.google.gson.GsonBuilder;
-import java.util.Date;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,22 +31,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import com.presinal.tradingbot.market.client.enums.OrderStatus;
-import com.presinal.tradingbot.market.client.enums.OrderType;
-import com.presinal.tradingbot.market.client.enums.TimeFrame;
-import com.presinal.tradingbot.market.client.types.AccountBalance;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.market.client.types.AssetPriceChange;
-import com.presinal.tradingbot.market.client.types.Candlestick;
-import com.presinal.tradingbot.market.client.types.OpenedOrder;
-import com.presinal.tradingbot.market.client.types.Order;
 import com.presinal.tradingbot.market.client.types.OrderBook;
+import org.junit.Ignore;
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
+@Ignore
 public class KucoinMarketClientTest {
 
 

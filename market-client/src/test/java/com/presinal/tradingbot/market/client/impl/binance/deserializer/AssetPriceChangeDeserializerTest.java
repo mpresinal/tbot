@@ -50,7 +50,7 @@ import com.presinal.tradingbot.market.client.types.AssetPriceChange;
 public class AssetPriceChangeDeserializerTest {
 
     private static Gson gson;    
-    private static final String CLASS_NAME = com.presinal.tradingbot.market.client.impl.kucoin.deserializer.AssetPriceChangeDeserializerTest.class.getSimpleName();
+    private static final String CLASS_NAME = AssetPriceChangeDeserializerTest.class.getSimpleName();
     
     private static final Path JSON_FILE_ASSETS_PRICE_CHANGE = Paths.get("src", "test", "resources", "binance", "assets_price_change.json");
     private static final Path JSON_FILE_ASSETS_PRICE_CHANGE_R_BTC = Paths.get("src", "test", "resources", "binance", "assets_price_change_LTC-BTC.json");

@@ -24,7 +24,6 @@
 
 package com.presinal.tradingbot.bot.strategy.rule;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.AbstractList;

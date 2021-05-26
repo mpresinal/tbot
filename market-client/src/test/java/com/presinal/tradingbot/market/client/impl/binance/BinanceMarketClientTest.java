@@ -32,12 +32,14 @@ import org.junit.Test;
 import com.presinal.tradingbot.market.client.enums.TimeFrame;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.market.client.types.Candlestick;
+import org.junit.Ignore;
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
+@Ignore
 public class BinanceMarketClientTest {
 
     @Test

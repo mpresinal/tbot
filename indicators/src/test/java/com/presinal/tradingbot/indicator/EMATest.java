@@ -31,7 +31,7 @@ public class EMATest {
         EMA ema = new EMA(12, TimeFrame.ONE_DAY);
         ema.evaluate(data.subList(0, 13));
         BigDecimal result = ema.getResult();
-        BigDecimal expected = BigDecimal.valueOf(30.83974);
+        BigDecimal expected = BigDecimal.valueOf(29.42949);
         System.out.println(ema);        
         Assert.assertNotNull(result);
         System.out.println(result.round(MathContext.DECIMAL32));
@@ -43,7 +43,7 @@ public class EMATest {
         EMA ema = new EMA(26, TimeFrame.ONE_DAY);
         ema.evaluate(data.subList(0, 27));
         BigDecimal result = ema.getResult();
-        BigDecimal expected = BigDecimal.valueOf(39.80199);
+        BigDecimal expected = BigDecimal.valueOf(39.08974);
         System.out.println(ema);
         Assert.assertNotNull(result);        
         //System.out.println(result.setScale(2, RoundingMode.HALF_EVEN).round(new MathContext(8, RoundingMode.HALF_EVEN)));        
