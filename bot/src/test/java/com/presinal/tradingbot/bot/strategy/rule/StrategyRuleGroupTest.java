@@ -92,7 +92,7 @@ public class StrategyRuleGroupTest {
         instance.getRules().add(rule1);
         instance.getRules().add(rule2);
         
-        boolean expResult = false; // changed to false to make the AWS CodeBuild fail 
+        boolean expResult = true;
         boolean result = instance.evaluate();
         assertEquals("The test has failed. ",expResult, result);    
         
