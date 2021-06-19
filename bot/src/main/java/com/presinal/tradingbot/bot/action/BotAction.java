@@ -37,7 +37,7 @@ public interface BotAction extends Serializable {
     String getContextKey();
     
     /**
-     * Return a list of actions that must be executed first of this action
+     * Return a list of actions that must be executed ahead of this action
      * 
      * @return A list of the dependency action.
      */
