@@ -33,66 +33,15 @@ import com.presinal.tradingbot.indicator.Indicator;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
+@Deprecated
 public class IndicatorStrategyRule extends AbstractRule<AbstractIndicator> {
 
     @Override
     public boolean evaluate() throws IllegalStateException {
-        AbstractIndicator leftOperand = getLeftOperand();
-        AbstractIndicator rightOperand = getRightOperand();
-        
-        if(Objects.isNull(leftOperand) && Objects.isNull(rightOperand)) {
+        if(Objects.isNull(getLeftOperand()) && Objects.isNull(getRightOperand())) {
             return false;
         }      
         
-        return doEvalLogic(leftOperand.compareTo(rightOperand));        
+        return doEvalLogic(getLeftOperand().compareTo(getRightOperand()));        
     }
-    
-    public boolean evaluatex() throws IllegalStateException {
-        Comparable leftOperand = getLeftOperand();
-        Comparable rightOperand = getRightOperand();
-        
-        if(Objects.isNull(leftOperand) && Objects.isNull(rightOperand)) {
-            return false;
-        }
-        
-        if( !(leftOperand instanceof Indicator) || !(rightOperand instanceof Indicator)) {
-            throw new IllegalStateException("Both left operand and right operand must be an Indicator implementation");
-        }        
-        
-        int result = 0;       
-        
-        AbstractIndicator indLeftOperand = (AbstractIndicator) leftOperand;
-        AbstractIndicator indRightOperand = (AbstractIndicator) rightOperand;
-        
-       /* System.out.println("IndicatorStrategyRule.indLeftOperand = "+indLeftOperand);
-        System.out.println("IndicatorStrategyRule.indRightOperand = "+indRightOperand);
-        System.out.println("IndicatorStrategyRule.comparisonOperator = "+getComparisonOperator());*/
-        
-        switch(getComparisonOperator()) {
-            case EQUAL:
-                return indLeftOperand.compareTo(indRightOperand) == 0;
-                
-            case LESS_EQUAL_THAN:
-                result = indLeftOperand.compareTo(indRightOperand);
-                return result <= 0;
-                
-            case LESS_THAN:
-                result = indLeftOperand.compareTo(indRightOperand);
-                return result < 0;
-                
-            case GREATER_EQUAL_THAN:
-                result = indLeftOperand.compareTo(indRightOperand);
-                return result >= 0;
-                
-            case GREATER_THAN:
-                result = indLeftOperand.compareTo(indRightOperand);
-                return result > 0;
-                
-            default:
-                return false;
-                
-        }
-        
-    }
-
 }

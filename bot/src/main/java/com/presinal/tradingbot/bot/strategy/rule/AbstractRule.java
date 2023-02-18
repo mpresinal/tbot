@@ -24,8 +24,6 @@
 
 package com.presinal.tradingbot.bot.strategy.rule;
 
-import java.util.Objects;
-
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
@@ -34,8 +32,8 @@ import java.util.Objects;
 public abstract class AbstractRule<T extends Comparable> implements Rule{
 
     private ComparisonOperator comparisonOperator;
-    private T leftOperand;
-    private T rightOperand;
+    private OperandValue<T> leftOperand;
+    private OperandValue<T> rightOperand;
     
     protected boolean doEvalLogic(int comparisonResult ){
          switch(comparisonOperator) {
@@ -58,14 +56,7 @@ public abstract class AbstractRule<T extends Comparable> implements Rule{
                 return false;                
         }
     }
-    protected boolean evaluate(T operandLeft, T operandRight) {
-        int result = 0;
-        
-        if(Objects.isNull(leftOperand) && Objects.isNull(rightOperand)) {
-            return false;
-        }
-        return doEvalLogic(leftOperand.compareTo(rightOperand));       
-    } 
+ 
     
     public ComparisonOperator getComparisonOperator() {
         return comparisonOperator;
@@ -75,24 +66,32 @@ public abstract class AbstractRule<T extends Comparable> implements Rule{
         this.comparisonOperator = comparisonOperator;
     }    
 
-    public T getLeftOperand() {
+    public OperandValue<T> getLeftOperand() {
         return leftOperand;
     }
 
-    public void setLeftOperand(T leftOperand) {
+    public void setLeftOperand(OperandValue<T> leftOperand) {
         this.leftOperand = leftOperand;
     }
 
-    public T getRightOperand() {
+    public OperandValue<T> getRightOperand() {
         return rightOperand;
     }
 
-    public void setRightOperand(T rightOperand) {
+    public void setRightOperand(OperandValue<T> rightOperand) {
         this.rightOperand = rightOperand;
     }
     
     @Override
     public String toString() {
-        return leftOperand+" "+comparisonOperator.toStringOperator()+" "+rightOperand;
+        return operandValueToString(leftOperand)+" "+comparisonOperator.toStringOperator()+" "+operandValueToString(rightOperand);
+    }
+    
+    private String operandValueToString(OperandValue operandVal) {
+        if (operandVal != null) {
+            return operandVal.readValue().toString();
+        } else {
+            return null;
+        }        
     }
 }

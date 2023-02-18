@@ -88,9 +88,13 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
 
     @Override
     public int compareTo(T o) {
-
         Comparable compData = getAsComparableIfItIs(getResult());
-        Comparable compWith = getAsComparableIfItIs(o);
+        Comparable compWith;
+        if (o instanceof Indicator) {
+            compWith = getAsComparableIfItIs(((Indicator) o).getResult());
+        } else {
+            compWith = getAsComparableIfItIs(o);
+        }
 
         if (Objects.isNull(compData) && Objects.isNull(compWith)) {
             return 0;
@@ -151,7 +155,7 @@ public abstract class AbstractIndicator<T extends Comparable> implements Indicat
 
     @Override
     public String toString() {
-        return String.format(TO_STR_FORMAT, name, period, getResult());
+        return String.format(TO_STR_FORMAT, name, period, getResult().toString());
     }
 
 }

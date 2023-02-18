@@ -21,9 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.presinal.tradingbot.bot.strategy.listener;
 
+import com.presinal.tradingbot.bot.strategy.BuySellSignal;
+import com.presinal.tradingbot.bot.strategy.Signal;
+import com.presinal.tradingbot.bot.strategy.Strategy;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 
 /**
@@ -31,9 +33,17 @@ import com.presinal.tradingbot.market.client.types.AssetPair;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public interface TradingStrategyListener extends StrategyListener {
+public interface TradingStrategyListener extends StrategyListener<BuySellSignal> {
 
     void onBuySignal(AssetPair asset, double price);
-    
+
     void onSellSignal(AssetPair asset, double price);
+
+    public default void onSignal(BuySellSignal signal, Strategy source) {
+        if (signal.isBuySignal()) {
+            onBuySignal(signal.getAsset(), signal.getPrice());
+        } else {
+            onSellSignal(signal.getAsset(), signal.getPrice());
+        }
+    }
 }

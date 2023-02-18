@@ -24,25 +24,24 @@
 
 package com.presinal.tradingbot.bot.strategy;
 
-import com.presinal.tradingbot.bot.strategy.rule.definitions.IndicatorStrategyRuleDefinition;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import com.presinal.tradingbot.market.client.MarketClient;
-import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.market.client.types.Candlestick;
-import com.presinal.tradingbot.bot.strategy.listener.StrategyListener;
 import com.presinal.tradingbot.bot.strategy.rule.ComparisonOperator;
-import com.presinal.tradingbot.bot.strategy.rule.IndicatorStrategyRule;
+import com.presinal.tradingbot.bot.strategy.rule.ContextOperandValue;
+import com.presinal.tradingbot.bot.strategy.rule.DefaultStrategyRule;
+import com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue;
 import com.presinal.tradingbot.bot.strategy.rule.LogicalOperator;
+import com.presinal.tradingbot.bot.strategy.rule.OperandValue;
 import com.presinal.tradingbot.bot.strategy.rule.Rule;
 import com.presinal.tradingbot.bot.strategy.rule.StrategyRuleGroup;
+import com.presinal.tradingbot.bot.strategy.rule.definitions.DefaultStrategyRuleDefinition;
 import com.presinal.tradingbot.bot.strategy.rule.definitions.StrategyRuleGroupDefinition;
 import com.presinal.tradingbot.bot.strategy.rule.definitions.StrategyRuleDefinition;
-import com.presinal.tradingbot.indicator.AbstractIndicator;
 import com.presinal.tradingbot.indicator.Indicator;
 import com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader;
 
@@ -51,15 +50,12 @@ import com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class BasedRuleStrategy implements Strategy {
+public class BasedRuleStrategy extends AbstractStrategy {
 
     private static final Logger logger = Logger.getLogger(BasedRuleStrategy.class.getName());
     private static final long DEFAULT_DATA_READ_INTERVAL_SECONDS = 30;
     
     // Properties
-    private StrategyListener listener;
-    private MarketClient client;
-    private AssetPair asset;    
     private PeriodIndicatorDataReader dataReader;
     
     private Set<Indicator> indicators;
@@ -87,28 +83,36 @@ public class BasedRuleStrategy implements Strategy {
         return this;
     }
 
-    private IndicatorStrategyRule createRule(IndicatorStrategyRuleDefinition def, Map<String, Indicator> map) {
-        String leftOpId = def.getLeftOpererandId();
-        String rightOpId = def.getRightOpererandId();
-        
-        if(leftOpId == null || !map.containsKey(leftOpId)) {
+    private DefaultStrategyRule createRule(DefaultStrategyRuleDefinition def, Map<String, Indicator> map) {        
+        if (def.getLeftOperandValue() == null || def.getRightOperandValue() == null)  {
             return null;
         }
-        
-        if(rightOpId == null || !map.containsKey(rightOpId)) {
-            return null;
-        }
-        
-        IndicatorStrategyRule rule = new IndicatorStrategyRule();
-        rule.setLeftOperand((AbstractIndicator)map.get(leftOpId));
-        rule.setRightOperand((AbstractIndicator)map.get(rightOpId));
-        
-        ComparisonOperator cp = ComparisonOperator.valueOf(def.getComparisonOperator());
-        
+        ComparisonOperator cp = ComparisonOperator.valueOf(def.getComparisonOperator());        
+        DefaultStrategyRule rule = new DefaultStrategyRule();
+        rule.setLeftOperand(def.getLeftOperandValue());
+        rule.setRightOperand(def.getRightOperandValue());        
         rule.setComparisonOperator(cp != null? cp : ComparisonOperator.EQUAL);
+        
+        setOperandValueRef(def.getLeftOperandValue(), map);
+        setOperandValueRef(def.getRightOperandValue(), map);        
         
         return rule;
     }
+    
+    private void setOperandValueRef(OperandValue value, Map<String, Indicator> indicatorsMap) {
+        if (value instanceof IndicatorOperandValue) {
+            setIndicatorToOperandValue((IndicatorOperandValue) value, indicatorsMap);
+        } else if (value instanceof ContextOperandValue) {
+            ((ContextOperandValue) value).setContext(getContext());
+        }
+    }
+    
+    private void setIndicatorToOperandValue(IndicatorOperandValue operandValue, Map<String, Indicator> map) {
+        Indicator ind = map.get(operandValue.getIndicatorId());
+        if (ind != null) {
+            operandValue.setIndicator(ind);
+        }        
+    }    
     
     private StrategyRuleGroup createRule(StrategyRuleGroupDefinition groupDef, Map<String, Indicator> map) {
         
@@ -116,10 +120,10 @@ public class BasedRuleStrategy implements Strategy {
         LogicalOperator op = LogicalOperator.valueOf(groupDef.getLogicalOperator());                
         group.setLogicalOperator(op == null? LogicalOperator.AND : op);
         
-        Set<IndicatorStrategyRuleDefinition> list = groupDef.getRulesDefinition();
+        Set<DefaultStrategyRuleDefinition> list = groupDef.getRulesDefinition();        
         Rule rule;
         
-        for (IndicatorStrategyRuleDefinition idf : list) {
+        for (DefaultStrategyRuleDefinition idf : list) {
             rule = createRule(idf, map);
             if(rule == null){
                 return null;
@@ -134,8 +138,8 @@ public class BasedRuleStrategy implements Strategy {
         
         Rule rule = null;
         
-        if(def instanceof IndicatorStrategyRuleDefinition) {
-            rule = createRule((IndicatorStrategyRuleDefinition) def, map);
+        if(def instanceof DefaultStrategyRuleDefinition) {
+            rule = createRule((DefaultStrategyRuleDefinition) def, map);
             
         } else if(def instanceof StrategyRuleGroupDefinition) {
             
@@ -167,8 +171,8 @@ public class BasedRuleStrategy implements Strategy {
         List<Candlestick> data;
         Candlestick currentCandlestick;
         
-        dataReader.setMarketClient(client);
-        dataReader.setAsset(asset);
+        dataReader.setMarketClient(getClient());
+        dataReader.setAsset(getAsset());
         
         long sleepTime = dataReadIntervalSeconds * 1000;
         
@@ -203,7 +207,7 @@ public class BasedRuleStrategy implements Strategy {
                 if (currentCandlestick.closePrice > 0) {
                     
                     logger.info("-----------------------------------------------------------------");
-                    logger.info("*** asset = " + asset.toSymbol());
+                    logger.info("*** asset = " + getAsset().toSymbol());
                     logger.info("*** current price = " + currentCandlestick.closePrice);
                     logger.info("*** current volume = " + currentCandlestick.volume);                   
 
@@ -256,31 +260,8 @@ public class BasedRuleStrategy implements Strategy {
     }
     
     protected void notifySignal(double price, boolean buySignal) {
-        BuySellSignal signal = new BuySellSignal(asset, price, buySignal);
-        notifySignal(signal, listener);
-    }
-     
-    @Override
-    public void setListener(StrategyListener listener) {
-        this.listener = listener;
-    }
-
-    public MarketClient getClient() {
-        return client;
-    }
-
-    @Override
-    public void setClient(MarketClient client) {
-        this.client = client;
-    }
-
-    public AssetPair getAsset() {
-        return asset;
-    }
-
-    @Override
-    public void setAsset(AssetPair asset) {
-        this.asset = asset;
+        BuySellSignal signal = new BuySellSignal(getAsset(), price, buySignal);
+        notifySignal(signal, getListener());
     }
 
     public PeriodIndicatorDataReader getDataReader() {

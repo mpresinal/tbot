@@ -49,13 +49,14 @@
     </bean>    
     
     <import resource="indicators-beans-def.xml" />    
-    <import resource="bot/mat/binance/bot-beans-def.xml" />
-    
+    <!-- <import resource="bot/mat/binance/bot-beans-def.xml" /> -->
+    <import resource="bot/monitor/binance/bot-monitor-beans-def.xml" />    
     <!-- Bot launcher -->
     <bean name="botLauncher" class="com.presinal.tradingbot.bot.BotLauncher">
         <property name="bots">
             <set>
-                <ref bean="binanceStrategyBot" />
+                <!-- <ref bean="binanceStrategyBot" /> -->
+                <ref bean="binanceMonitorStrategyBot" />
                 <!--
                 <ref bean="binanceDefaultTradingBot" />
                 <ref bean="kucoinDefaultTradingBot" /> -->

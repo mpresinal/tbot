@@ -26,7 +26,6 @@ package com.presinal.tradingbot.bot.strategy.rule;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -66,8 +65,8 @@ public class StrategyRuleTest {
         System.out.println("evaluate.volume avg = "+volume.getResult());
         
         StrategyRule instance = new StrategyRule();
-        instance.setLeftOperand(volume);
-        instance.setRightOperand(new BigDecimal(1_0000));
+        instance.setLeftOperand(new IndicatorOperandValue(volume));
+        instance.setRightOperand(new DefaultOperandValue(new BigDecimal(1_0000)));
         instance.setComparisonOperator(ComparisonOperator.GREATER_EQUAL_THAN);
         
         boolean expResult = true;
@@ -87,8 +86,8 @@ public class StrategyRuleTest {
         System.out.println("testEvaluate_condition_greater_than.volume avg = "+volume.getResult());
         
         StrategyRule instance = new StrategyRule();
-        instance.setLeftOperand(volume);
-        instance.setRightOperand(new BigDecimal(1_0000));
+        instance.setLeftOperand(new IndicatorOperandValue(volume));
+        instance.setRightOperand(new DefaultOperandValue(new BigDecimal(1_0000)));
         instance.setComparisonOperator(ComparisonOperator.GREATER_THAN);
         
         boolean expResult = false;
@@ -107,8 +106,8 @@ public class StrategyRuleTest {
         System.out.println("testEvaluate_condition_less_than.volume avg = "+volume.getResult());
         
         StrategyRule instance = new StrategyRule();
-        instance.setLeftOperand(volume);
-        instance.setRightOperand(new BigDecimal(10_0000));
+        instance.setLeftOperand(new IndicatorOperandValue(volume));
+        instance.setRightOperand(new DefaultOperandValue(new BigDecimal(10_0000)));        
         instance.setComparisonOperator(ComparisonOperator.LESS_THAN);
         
         boolean expResult = true;
@@ -129,11 +128,11 @@ public class StrategyRuleTest {
         sma8.evaluate(data);
 
         System.out.println("testEvaluate_idicator_SMA_condition_less_than.sma(5) = "+sma5.getResult());
-        System.out.println("testEvaluate_idicator_SMA_condition_less_than.sma(8) = "+sma8.getResult());
+        System.out.println("testEvaluate_idicator_SMA_condition_less_than.sma(8) = "+sma8.getResult());        
         
-        AbstractRule instance = new IndicatorStrategyRule();
-        instance.setLeftOperand(sma5);
-        instance.setRightOperand(sma8);
+        StrategyRule instance = new StrategyRule();
+        instance.setLeftOperand(new IndicatorOperandValue(sma5));
+        instance.setRightOperand(new IndicatorOperandValue(sma8));        
         instance.setComparisonOperator(ComparisonOperator.GREATER_THAN);
         
         boolean expResult = true;
@@ -156,9 +155,9 @@ public class StrategyRuleTest {
         System.out.println("testEvaluate_idicator_SMA_condition_less_than.sma(5) = "+sma5.getResult());
         System.out.println("testEvaluate_idicator_SMA_condition_less_than.sma(8) = "+sma8.getResult());
         
-        AbstractRule instance = new IndicatorStrategyRule();
-        instance.setLeftOperand(sma5);
-        instance.setRightOperand(sma8);
+        StrategyRule instance = new StrategyRule();
+        instance.setLeftOperand(new IndicatorOperandValue(sma5));
+        instance.setRightOperand(new IndicatorOperandValue(sma8));
         instance.setComparisonOperator(ComparisonOperator.LESS_THAN);
         
         boolean expResult = false;

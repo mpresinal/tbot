@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    
+    <!-- 
+        Binance Bot
+        Based on Strategy Rules
+    -->
+    
+    <!-- Indicators Section -->
+    <bean name="sma50" class="com.presinal.tradingbot.indicator.SMA" scope="prototype">
+        <property name="period" value="50" />
+        <property name="id" value="sma50" />
+    </bean>
+    
+    <bean name="sma200" class="com.presinal.tradingbot.indicator.SMA" scope="prototype">
+        <property name="period" value="200" />
+        <property name="id" value="sma200" />                    
+    </bean>
+    
+    <bean name="ema20" class="com.presinal.tradingbot.indicator.EMA" scope="prototype">
+        <property name="period" value="20" />
+        <property name="id" value="ema20" />
+    </bean>
+    
+    <!-- End indicators section -->       
+    
+    
+    <!-- Rule definitions -->    
+    <bean name="ema20CrossingUpSma50" class="com.presinal.tradingbot.bot.strategy.rule.definitions.DefaultStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="GREATER_THAN" />
+        <property name="leftOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="ema20" />
+            </bean>
+        </property>
+        <property name="rightOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma50" />
+            </bean>
+        </property>        
+    </bean>
+    
+    <bean name="ema20CrossingDownSma50" class="com.presinal.tradingbot.bot.strategy.rule.definitions.DefaultStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="LESS_THAN" />
+        <property name="leftOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="ema20" />
+            </bean>
+        </property>
+        <property name="rightOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma50" />
+            </bean>
+        </property>       
+    </bean>
+    
+     <bean name="sma50CrossingUpSma200" class="com.presinal.tradingbot.bot.strategy.rule.definitions.DefaultStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="GREATER_THAN" />
+        <property name="leftOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma50" />
+            </bean>
+        </property>
+        <property name="rightOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma200" />
+            </bean>
+        </property>   
+    </bean>
+    
+      <bean name="sma50CrossingDownSma200" class="com.presinal.tradingbot.bot.strategy.rule.definitions.DefaultStrategyRuleDefinition" scope="prototype">
+        <property name="comparisonOperator" value="LESS_THAN" />
+        <property name="leftOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma50" />
+            </bean>
+        </property>
+        <property name="rightOperandValue">
+            <bean class="com.presinal.tradingbot.bot.strategy.rule.IndicatorOperandValue">
+                <constructor-arg type="String" value="sma200" />
+            </bean>
+        </property>      
+    </bean>
+    
+    <bean name="crossingMaUpGrp" class="com.presinal.tradingbot.bot.strategy.rule.definitions.StrategyRuleGroupDefinition" scope="prototype">
+        <property name="logicalOperator" value="AND"/>
+        <property name="rulesDefinition">
+            <set>
+                <ref bean="ema20CrossingUpSma50" />
+                <ref bean="sma50CrossingUpSma200" />
+            </set>        
+        </property>
+    </bean>
+    
+    <bean name="crossingMaDownGrp" class="com.presinal.tradingbot.bot.strategy.rule.definitions.StrategyRuleGroupDefinition" scope="prototype">
+        <property name="logicalOperator" value="AND"/>
+        <property name="rulesDefinition">
+            <set>
+                <ref bean="sma50CrossingDownSma200" />
+                <ref bean="ema20CrossingDownSma50" />
+            </set>        
+        </property>
+    </bean>
+    
+    <bean name="basedRuleStrategy" class="com.presinal.tradingbot.bot.strategy.BasedRuleStrategy" scope="prototype">
+        <property name="client" ref="binanceMarket" />
+        <property name="buyRuleDefinition" ref="crossingMaUpGrp" />
+        <property name="sellRuleDefinition" ref="crossingMaDownGrp" />        
+        <property name="dataReadIntervalSeconds" value="5" />
+        
+        <property name="indicators">
+            <set>
+                <ref bean="ema20" />
+                <ref bean="sma50" />
+                <ref bean="sma200" />
+            </set>
+        </property>
+        
+        <property name="dataReader">
+            <bean class="com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader">
+                <property name="marketClient" ref="binanceMarket" />
+                <property name="period" value="200" />
+                <property name="timeFrame" value="FIFTEEN_MINUTES" />
+            </bean>
+        </property>
+    </bean>
+    <!-- End rule -->
+    
+    <bean name="strategyFactory" autowire="constructor" class="com.presinal.tradingbot.bot.strategy.factory.impl.DIBasedRuleStrategyFactoryImpl">
+        <property name="prototypeBeanName" value="basedRuleStrategy" />        
+    </bean>
+    
+    <bean name="actionStrategy" class="com.presinal.tradingbot.bot.action.BotActionStrategy">        
+        <property name="strategyFactory" ref="strategyFactory" />
+    </bean>
+    
+    <bean name="binanceBuySellAction2" class="com.presinal.tradingbot.bot.action.common.BuySellAction">
+        <constructor-arg index="0" ref="binanceMarket" />
+        <constructor-arg index="1" type="com.presinal.tradingbot.bot.action.BotAction" ref="actionStrategy" />
+    </bean>
+    
+    <bean name="binanceMonitorStrategyBot" class="com.presinal.tradingbot.bot.DefaultTradingBot">
+        <constructor-arg index="0" ref="binanceMarket" />        
+        <constructor-arg index="1" type="java.lang.String" value="Monitor Bot"  /> <!-- bot name -->
+        <constructor-arg index="2" type="java.lang.String" value="1.0"  /> <!-- version -->
+        
+        <property name="actions">
+            <set>
+                <ref bean="binanceAssetSelecctionAction" />
+                <ref bean="actionStrategy" />
+                <ref bean="binanceBuySellAction2" />
+            </set>
+        </property>
+        
+        <property name="actionReactionConfigs">
+            <set>
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <!-- action to react on change of source action -->
+                    <constructor-arg index="0" ref="actionStrategy" />
+                    <!-- source action -->
+                    <constructor-arg index="1" ref="binanceAssetSelecctionAction" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceBuySellAction2" />
+                    <constructor-arg index="1" ref="actionStrategy" />
+                </bean>
+                
+                <bean class="com.presinal.tradingbot.bot.action.ActionChangeReactionConfig">
+                    <constructor-arg index="0" ref="binanceAssetSelecctionAction" />
+                    <constructor-arg index="1" ref="binanceBuySellAction2" />
+                </bean>                
+            </set>
+        </property>
+    </bean>
+    
+</beans>

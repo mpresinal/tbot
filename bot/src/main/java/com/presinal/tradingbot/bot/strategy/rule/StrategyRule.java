@@ -24,20 +24,22 @@
 
 package com.presinal.tradingbot.bot.strategy.rule;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-import com.presinal.tradingbot.indicator.Indicator;
+
 
 /**
  *
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public class StrategyRule extends AbstractRule<Comparable> {
+public class StrategyRule<T extends Comparable> extends AbstractRule<T> {
     
     @Override
-    public boolean evaluate() {
-        return evaluate(getLeftOperand(), getRightOperand());
+    public boolean evaluate() throws IllegalStateException {
+        if(Objects.isNull(getLeftOperand()) && Objects.isNull(getRightOperand())) {
+            return false;
+        }      
+        
+        return doEvalLogic(getLeftOperand().compareTo(getRightOperand()));        
     }   
 }

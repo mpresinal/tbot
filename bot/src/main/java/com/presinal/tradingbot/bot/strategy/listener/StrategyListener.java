@@ -32,7 +32,7 @@ import com.presinal.tradingbot.bot.strategy.Strategy;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
-public interface StrategyListener {
+public interface StrategyListener<T extends Signal> {
 
-    void onSignal(Signal sginal, Strategy source);
+    void onSignal(T signal, Strategy source);
 }

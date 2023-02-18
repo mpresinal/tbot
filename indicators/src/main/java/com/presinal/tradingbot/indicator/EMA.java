@@ -104,9 +104,9 @@ public class EMA extends MovingAverage {
          * Where ALPHA = 2 / (PERIOD + 1)
          * we are goin to use a SMA as a previous EMA for the first EMA calculation
          */
-        BigDecimal a = BigDecimal.valueOf(current.closePrice).multiply(alpha);
-        BigDecimal b = previousEma.multiply(BigDecimal.ONE.subtract(alpha));                  
-        this.setResult(a.add(b));
+        BigDecimal a = BigDecimal.valueOf(current.closePrice).multiply(alpha, NumberUtil.MATHCONTEXT);
+        BigDecimal b = previousEma.multiply(BigDecimal.ONE.subtract(alpha, NumberUtil.MATHCONTEXT), NumberUtil.MATHCONTEXT);                  
+        this.setResult(a.add(b, NumberUtil.MATHCONTEXT));
         notifyListeners();
     }    
     

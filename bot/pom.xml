@@ -64,7 +64,10 @@
                             <goal>java</goal>
                         </goals>
                     </execution>
-                </executions>                
+                </executions> 
+                <configuration>
+                    <mainClass>com.presinal.tradingbot.bot.Main</mainClass>
+                </configuration>               
             </plugin>
             
         </plugins>

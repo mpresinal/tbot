@@ -24,12 +24,12 @@
 
 package com.presinal.tradingbot.bot.strategy;
 
+import com.presinal.tradingbot.bot.action.BotActionContext;
 import java.time.Instant;
 import java.util.Calendar;
 import com.presinal.tradingbot.market.client.MarketClient;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.bot.strategy.listener.StrategyListener;
-import com.presinal.tradingbot.bot.strategy.listener.TradingStrategyListener;
 import com.presinal.tradingbot.indicator.datareader.PeriodIndicatorDataReader;
 
 /**
@@ -47,6 +47,8 @@ public interface Strategy extends Runnable{
     
     void setAsset(AssetPair asset);
     
+    void setContext(BotActionContext context);
+    
     public default void computeDataReaderDateRange(PeriodIndicatorDataReader dataReader) {
 
         long perioTimestamp = dataReader.getTimeFrame().toMilliSecond() * dataReader.getPeriod();
@@ -63,17 +65,7 @@ public interface Strategy extends Runnable{
     
     public default void notifySignal(BuySellSignal signal, StrategyListener listener) {
         if (listener != null) {
-            if (listener instanceof TradingStrategyListener) {
-                TradingStrategyListener tradingListener = (TradingStrategyListener) listener;
-                if (signal.isBuySignal()) {
-                    tradingListener.onBuySignal(signal.getAsset(), signal.getPrice());
-                } else {
-                    tradingListener.onSellSignal(signal.getAsset(), signal.getPrice());
-                }
-
-            } else {
-                listener.onSignal(signal, getImpl());
-            }
+            listener.onSignal(signal, getImpl());
         }
     }
 }

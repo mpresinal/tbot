@@ -1,3 +1,5 @@
+package com.presinal.tradingbot.bot;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,9 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import com.presinal.tradingbot.market.client.MarketClientException;
-import com.presinal.tradingbot.bot.BotLauncher;
-import com.presinal.tradingbot.bot.strategy.StrategyFactory;
-import com.presinal.tradingbot.bot.misc.SpringContextRequired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

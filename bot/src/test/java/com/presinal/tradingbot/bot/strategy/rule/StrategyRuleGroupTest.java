@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -70,9 +69,9 @@ public class StrategyRuleGroupTest {
         System.out.println("evaluate.sma(5) = "+sma5.getResult());
         System.out.println("evaluate.sma(8) = "+sma8.getResult());
         
-        AbstractRule rule1 = new IndicatorStrategyRule();
-        rule1.setLeftOperand(sma5);
-        rule1.setRightOperand(sma8);
+        StrategyRule rule1 = new StrategyRule();
+        rule1.setLeftOperand(new IndicatorOperandValue(sma5));
+        rule1.setRightOperand(new IndicatorOperandValue(sma8));
         rule1.setComparisonOperator(ComparisonOperator.GREATER_THAN);
         
         VolumeMovingAverage volume = new VolumeMovingAverage();
@@ -82,8 +81,8 @@ public class StrategyRuleGroupTest {
         System.out.println("evaluate.volume avg = "+volume.getResult());
         
         StrategyRule rule2 = new StrategyRule();
-        rule2.setLeftOperand(volume);
-        rule2.setRightOperand(new BigDecimal(1_0000));
+        rule2.setLeftOperand(new IndicatorOperandValue(volume));
+        rule2.setRightOperand(new DefaultOperandValue(new BigDecimal(1_0000)));
         rule2.setComparisonOperator(ComparisonOperator.GREATER_EQUAL_THAN);
         
         
@@ -113,9 +112,9 @@ public class StrategyRuleGroupTest {
         System.out.println("evaluate.sma(5) = "+sma5.getResult());
         System.out.println("evaluate.sma(8) = "+sma8.getResult());
         
-        AbstractRule rule1 = new IndicatorStrategyRule();
-        rule1.setLeftOperand(sma5);
-        rule1.setRightOperand(sma8);
+        StrategyRule rule1 = new StrategyRule();
+        rule1.setLeftOperand(new IndicatorOperandValue(sma5));
+        rule1.setRightOperand(new IndicatorOperandValue(sma8));
         rule1.setComparisonOperator(ComparisonOperator.LESS_THAN);
         
         VolumeMovingAverage volume = new VolumeMovingAverage();
@@ -125,8 +124,8 @@ public class StrategyRuleGroupTest {
         System.out.println("evaluate.volume avg = "+volume.getResult());
         
         StrategyRule rule2 = new StrategyRule();
-        rule2.setLeftOperand(volume);
-        rule2.setRightOperand(new BigDecimal(1_0000));
+        rule2.setLeftOperand(new IndicatorOperandValue(volume));
+        rule2.setRightOperand(new DefaultOperandValue(new BigDecimal(1_0000)));
         rule2.setComparisonOperator(ComparisonOperator.GREATER_EQUAL_THAN);
         
         

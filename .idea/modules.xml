@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/bot/bot.iml" filepath="$PROJECT_DIR$/bot/bot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/indicators/indicators.iml" filepath="$PROJECT_DIR$/indicators/indicators.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-client/market-client.iml" filepath="$PROJECT_DIR$/market-client/market-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trading-bot.iml" filepath="$PROJECT_DIR$/trading-bot.iml" />
+    </modules>
+  </component>
+</project>

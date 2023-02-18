@@ -1,14 +1,21 @@
 
 trading bot project:
 
+TODOs:
+TDO-1: Strategy.notifySignal violate the Lisk of Substitution principle.
+        To fix this make TradingStrategyListener interface to implements via default method the onSignal
+        and make the StrategyListener interface to be generic, the generic parameter type is T extends Signal.
+        The TradingStrategyListener.onSignal must expect signal of type of BuySellSignal.
+
 To delete:
 DefaultTradingAction....DONE!
 DefaultStrategy (BasedRuleStrategy replace DefaultStrategy)...PENDING
 
 to improve:
-the BotActionStrategy should cache the strategy to avoid create new strategy for the same asset.
+the BotActionStrategy should cache the strategy to avoid create new strategy for the same asset....DONE!
 improve the way data is loaded from the market. At first time a bunch data is loaded, that's fine, but loading data for the same period in the same sesion
 should not load previous data instead the most recent.
+
 
 To add:
 The boot need a strategy execution manager to manage the running strategy. 

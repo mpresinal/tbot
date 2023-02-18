@@ -23,11 +23,6 @@
  */
 package com.presinal.tradingbot.bot;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import com.presinal.tradingbot.market.client.MarketClient;
-import com.presinal.tradingbot.bot.action.ActionChangeReactionConfig;
 import com.presinal.tradingbot.bot.action.BotAction;
 import com.presinal.tradingbot.bot.action.BotActionContext;
 

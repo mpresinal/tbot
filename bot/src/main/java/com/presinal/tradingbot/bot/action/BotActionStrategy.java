@@ -27,10 +27,11 @@ package com.presinal.tradingbot.bot.action;
 import com.presinal.tradingbot.market.client.enums.OrderType;
 import com.presinal.tradingbot.market.client.types.AssetPair;
 import com.presinal.tradingbot.market.client.types.Order;
-import com.presinal.tradingbot.bot.strategy.Signal;
 import com.presinal.tradingbot.bot.strategy.Strategy;
 import com.presinal.tradingbot.bot.strategy.StrategyFactory;
 import com.presinal.tradingbot.bot.strategy.listener.TradingStrategyListener;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -47,6 +48,12 @@ public class BotActionStrategy extends AbstractBotAction implements TradingStrat
     private boolean signalRecieved = false;
     private boolean running = false;
     private StrategyFactory strategyFactory;
+    private Map<String, Strategy> strategyCache;
+
+    public BotActionStrategy() {
+        strategyCache = new HashMap<>();
+    }
+    
     
     public String getContextKey() {
         return CONTEXT_KEY;
@@ -56,6 +63,7 @@ public class BotActionStrategy extends AbstractBotAction implements TradingStrat
     public void run() {
         System.out.println(name + " :: performeAction() Enter");
         Strategy strategy;
+        AssetPair asset;
         while (!isActionEnded()) {
 
             synchronized (this) {
@@ -75,10 +83,11 @@ public class BotActionStrategy extends AbstractBotAction implements TradingStrat
                 System.out.println(name + " :: performeAction() signalData = " + signalData);
 
                 if (signalData instanceof AssetPair) {
-                    // TODO: cache the strategy to avoid creating new strategy for the same asset
-                    strategy = strategyFactory.newStrategy();
+                    asset = (AssetPair) signalData;
+                    strategy = strategyCache.computeIfAbsent(asset.toSymbol(), key -> strategyFactory.newStrategy());
+                    strategy.setContext(getContext());
                     System.out.println(name + " :: performeAction() strategy = "+strategy);
-                    strategy.setAsset((AssetPair) signalData);
+                    strategy.setAsset(asset);
                     strategy.setListener(this);                    
                     new Thread(strategy).start();
                 }
@@ -102,22 +111,19 @@ public class BotActionStrategy extends AbstractBotAction implements TradingStrat
     @Override
     public void onBuySignal(AssetPair asset, double price) {
         System.out.println("buy signal: asset = " + asset + ", price=" + price);
-        Order order = createOrder(asset, price, Order.SIDE_BUY);
-        getContext().put(getContextKey(), order);        
-        notifyListener();
+        createOrderAndNotify(asset, price, Order.SIDE_BUY);   
     }
 
     @Override
     public void onSellSignal(AssetPair asset, double price) {
         System.out.println("sell signal: asset = " + asset + ", price=" + price);
+        createOrderAndNotify(asset, price, Order.SIDE_SELL);
+    }
+    
+    private void createOrderAndNotify(AssetPair asset, double price, String side) {        
         Order order = createOrder(asset, price, Order.SIDE_SELL);
         getContext().put(getContextKey(), order);        
         notifyListener();
-    }
-
-    @Override
-    public void onSignal(Signal sginal, Strategy source) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     private Order createOrder(AssetPair asset, double price, String side) {

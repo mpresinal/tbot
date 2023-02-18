@@ -31,6 +31,7 @@ import com.presinal.tradingbot.bot.strategy.rule.Rule;
  * @author Miguel Presinal<presinal378@gmail.com>
  * @since 1.0
  */
+@Deprecated(forRemoval = true)
 public class IndicatorStrategyRuleDefinition implements StrategyRuleDefinition {
 
     private String leftOpererandId;

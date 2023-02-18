@@ -26,7 +26,6 @@ package com.presinal.tradingbot.bot.strategy.rule.definitions;
 
 import java.util.HashSet;
 import java.util.Set;
-import com.presinal.tradingbot.bot.strategy.rule.Rule;
 
 /**
  *
@@ -36,7 +35,7 @@ import com.presinal.tradingbot.bot.strategy.rule.Rule;
 public class StrategyRuleGroupDefinition implements StrategyRuleDefinition {
 
     private String logicalOperator;
-    private Set<IndicatorStrategyRuleDefinition> rulesDefinition;
+    private Set<DefaultStrategyRuleDefinition> rulesDefinition;
     
     public String getLogicalOperator() {
         return logicalOperator;
@@ -46,7 +45,7 @@ public class StrategyRuleGroupDefinition implements StrategyRuleDefinition {
         this.logicalOperator = logicalOperator;
     }
 
-    public Set<IndicatorStrategyRuleDefinition> getRulesDefinition() {
+    public Set<DefaultStrategyRuleDefinition> getRulesDefinition() {
         if(rulesDefinition == null){
             rulesDefinition = new HashSet<>();
         }
@@ -54,7 +53,7 @@ public class StrategyRuleGroupDefinition implements StrategyRuleDefinition {
         return rulesDefinition;
     }
 
-    public void setRulesDefinition(Set<IndicatorStrategyRuleDefinition> rulesDefinition) {
+    public void setRulesDefinition(Set<DefaultStrategyRuleDefinition> rulesDefinition) {
         this.rulesDefinition = rulesDefinition;
     }
 

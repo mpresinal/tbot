@@ -23,6 +23,7 @@
  */
 package com.presinal.tradingbot.bot.strategy;
 
+import com.presinal.tradingbot.bot.action.BotActionContext;
 import java.util.List;
 import java.util.logging.Logger;
 import com.presinal.tradingbot.market.client.MarketClient;
@@ -50,6 +51,11 @@ public class DefaultStrategy implements Strategy {
     private static final int RSI_PERIOD = 14;
 
     private static final long RETRIEVE_DATA_EVERY_TEN_SECONDS = 20 * 1000;
+
+    @Override
+    public void setContext(BotActionContext context) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
     private enum StopLostTaketProfitResult {
 
